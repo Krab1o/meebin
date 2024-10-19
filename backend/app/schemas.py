@@ -44,5 +44,5 @@ class RequestOut(RequestBase):
     creator_id: int
     accepted_by: Optional[int] = None
 
-    class Config:
-        orm_mode = True
+class Config:
+    orm_mode = True

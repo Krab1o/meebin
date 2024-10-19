@@ -85,12 +85,11 @@ def accept_request(request_id: int, db: Session = Depends(get_db), current_user:
     db.refresh(request)
     return request
 
-
 @router.post("/{request_id}/complete", response_model=schemas.RequestOut)
 def complete_request(request_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     request = db.query(models.Request).filter(models.Request.id == request_id, models.Request.accepted_by == current_user.id).first()
     if not request:
-        raise HTTPException(status_code=404, detail="Заявка не найдена или вы не её приняли")
+        raise HTTPException(status_code=404, detail="Заявка не найдена или вы её не приняли")
     request.status = models.RequestStatus.completed
     db.commit()
     db.refresh(request)

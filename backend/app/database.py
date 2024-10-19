@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///./test.db"  # Измени на нужный URL к БД
+DATABASE_URL = "postgresql://meebin_user:password@localhost/meebin_db"
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})  # Для SQLite
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
