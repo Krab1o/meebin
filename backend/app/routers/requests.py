@@ -38,43 +38,50 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
-@router.post("/", response_model=schemas.RequestOut)
-def create_request(request: schemas.RequestCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    new_request = models.Request(
-        description=request.description,
-        address=request.address,
-        latitude=request.latitude,
-        longitude=request.longitude,
-        cleaning_time=request.cleaning_time,
-        comment=request.comment,
-        creator_id=current_user.id
+@router.post("/", response_model=schemas.TrashEventOut)
+def create_request(
+    event: schemas.TrashEventCreate, 
+    db: Session = Depends(database.get_db), 
+    current_user: models.User = Depends(auth.get_current_user)
+    ):
+    new_event = models.TrashEvent(
+        photo_url=event.photo_url,
+        address=event.address,
+        caller_id=current_user.id,
+        utilizator_id=event.utilizator_id,
+        event_status=event.event_status,
+        time_called=event.time_called,
+        time_cleaned=event.time_cleaned,
+        comment=event.comment,
+        confirmation_photo_url=event.confirmation_photo_url,
+        price=event.price
     )
-    db.add(new_request)
+    db.add(new_event)
     db.commit()
-    db.refresh(new_request)
-    return new_request
+    db.refresh(new_event)
+    return new_event
 
-@router.get("/", response_model=List[schemas.RequestOut])
+@router.get("/", response_model=List[schemas.TrashEventOut])
 def get_available_requests(db: Session = Depends(get_db)):
     requests = db.query(models.Request).filter(models.Request.status == models.RequestStatus.available).all()
     return requests
 
-@router.get("/my", response_model=List[schemas.RequestOut])
+@router.get("/my", response_model=List[schemas.TrashEventOut])
 def get_my_requests(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     requests = db.query(models.Request).filter(models.Request.creator_id == current_user.id).all()
     return requests
 
-@router.get("/accepted", response_model=List[schemas.RequestOut])
+@router.get("/accepted", response_model=List[schemas.TrashEventOut])
 def get_accepted_requests(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     requests = db.query(models.Request).filter(models.Request.accepted_by == current_user.id).all()
     return requests
 
-@router.get("/completed", response_model=List[schemas.RequestOut])
+@router.get("/completed", response_model=List[schemas.TrashEventOut])
 def get_completed_requests(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     requests = db.query(models.Request).filter(models.Request.status == models.RequestStatus.completed, models.Request.accepted_by == current_user.id).all()
     return requests
 
-@router.post("/{request_id}/accept", response_model=schemas.RequestOut)
+@router.post("/{request_id}/accept", response_model=schemas.TrashEventOut)
 def accept_request(request_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     request = db.query(models.Request).filter(models.Request.id == request_id, models.Request.status == models.RequestStatus.available).first()
     if not request:
@@ -85,7 +92,7 @@ def accept_request(request_id: int, db: Session = Depends(get_db), current_user:
     db.refresh(request)
     return request
 
-@router.post("/{request_id}/complete", response_model=schemas.RequestOut)
+@router.post("/{request_id}/complete", response_model=schemas.TrashEventOut)
 def complete_request(request_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     request = db.query(models.Request).filter(models.Request.id == request_id, models.Request.accepted_by == current_user.id).first()
     if not request:

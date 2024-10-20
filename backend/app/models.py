@@ -1,42 +1,66 @@
-# app/models.py
-
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime, Text, Enum
+from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey, Float, TIMESTAMP
 from sqlalchemy.orm import relationship
 from .database import Base
-import enum
-from datetime import datetime
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "Users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    
-    created_requests = relationship("Request", back_populates="creator")
-    accepted_requests = relationship("Request", back_populates="accepted_by_user")
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    login = Column(String(30), nullable=False)
+    mail = Column(String(50), nullable=False)
+    password = Column(String(50), nullable=False)
+    name = Column(String(40), nullable=False)
+    lastname = Column(String(40), nullable=False)
+    surname = Column(String(40), nullable=True)
+    birthdate = Column(TIMESTAMP, nullable=False, default='-1')
+    report_counter = Column(BigInteger, default=0, nullable=False)
+    utilized_counter = Column(BigInteger, default=0, nullable=False)
+    rating = Column(Float, nullable=False)
+    city = Column(String(40), nullable=False)
 
-class RequestStatus(enum.Enum):
-    available = "available"
-    accepted = "accepted"
-    completed = "completed"
+    roles = relationship("Role", secondary="Users_Roles", back_populates="users")
+    called_events = relationship("TrashEvent", foreign_keys="[TrashEvent.caller_id]", back_populates="caller")
+    utilized_events = relationship("TrashEvent", foreign_keys="[TrashEvent.utilizator_id]", back_populates="utilizator")
 
-class Request(Base):
-    __tablename__ = "requests"
 
-    id = Column(Integer, primary_key=True, index=True)
-    description = Column(Text, nullable=False)
-    address = Column(String, nullable=False)
-    latitude = Column(Float, nullable=False)
-    longitude = Column(Float, nullable=False)
-    request_time = Column(DateTime, default=datetime.utcnow, nullable=False)
-    cleaning_time = Column(DateTime, nullable=False)
-    comment = Column(Text, nullable=True)
-    status = Column(Enum(RequestStatus), default=RequestStatus.available, nullable=False)
-    
-    creator_id = Column(Integer, ForeignKey("users.id"))
-    accepted_by = Column(Integer, ForeignKey("users.id"), nullable=True)
-    
-    creator = relationship("User", back_populates="created_requests", foreign_keys=[creator_id])
-    accepted_by_user = relationship("User", back_populates="accepted_requests", foreign_keys=[accepted_by])
+class TrashEvent(Base):
+    __tablename__ = "TrashEvent"
+
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    photo_url = Column(String(100), nullable=False)
+    address = Column(String(255), nullable=False)
+    caller_id = Column(BigInteger, ForeignKey("Users.id"), nullable=False)
+    utilizator_id = Column(BigInteger, ForeignKey("Users.id"), nullable=False)
+    event_status = Column(BigInteger, ForeignKey("TrashStatus.id"), default=0, nullable=False)
+    time_called = Column(TIMESTAMP, nullable=False)
+    time_cleaned = Column(TIMESTAMP, nullable=False)
+    comment = Column(String(255), nullable=False)
+    confirmation_photo_url = Column(String(255), nullable=False)
+    price = Column(BigInteger, nullable=False)
+
+    caller = relationship("User", foreign_keys=[caller_id], back_populates="called_events")
+    utilizator = relationship("User", foreign_keys=[utilizator_id], back_populates="utilized_events")
+    status = relationship("TrashStatus")
+
+
+class Role(Base):
+    __tablename__ = "Roles"
+
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    title = Column(String(60), nullable=False)
+
+    users = relationship("User", secondary="Users_Roles", back_populates="roles")
+
+
+class UsersRoles(Base):
+    __tablename__ = "Users_Roles"
+
+    id_roles = Column(BigInteger, ForeignKey("Roles.id"), primary_key=True)
+    id_users = Column(BigInteger, ForeignKey("Users.id"), primary_key=True)
+
+
+class TrashStatus(Base):
+    __tablename__ = "TrashStatus"
+
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    title = Column(String(30), nullable=False)
