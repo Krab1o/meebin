@@ -11,8 +11,8 @@ from alembic import context
 # Добавляем путь к проекту
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app')))
 
-from database import Base
-import models  # Убедитесь, что ваши модели импортируются
+from app.database import Base
+from app import models  # Убедитесь, что ваши модели импортируются
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
