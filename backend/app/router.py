@@ -9,7 +9,7 @@ router = APIRouter()
 def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     db_user = db.query(models.User).filter(models.User.login == user.login).first()
     if db_user:
-        raise HTTPException(status_code=400, detail="Login уже зарегистрирован")
+        raise HTTPException(status_code=400, detail="Такой пользователь уже зарегистрирован")
     
     hashed_password = auth.get_password_hash(user.password)
     new_user = models.User(
@@ -33,15 +33,16 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
     user = db.query(models.User).filter(models.User.login == form_data.username).first()
     if not user or not auth.verify_password(form_data.password, user.password):
-        raise HTTPException(status_code=400, detail="Неверный login или пароль")
+        raise HTTPException(status_code=400, detail="Неверный логин или пароль")
     
     access_token = auth.create_access_token(data={"sub": user.login})
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 # Включаем маршруты заявок
-from .routers import requests
+from .routers import events, users
 
 main_router = APIRouter()
 main_router.include_router(router, prefix="/auth", tags=["Authentication"])
-main_router.include_router(requests.router)
+main_router.include_router(events.router)
+main_router.include_router(users.router)

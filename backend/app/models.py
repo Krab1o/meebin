@@ -6,17 +6,17 @@ class User(Base):
     __tablename__ = "Users"
 
     id = Column(Integer, primary_key=True, index=True, unique=True)
-    login = Column(String(30), nullable=False)
-    mail = Column(String(50), nullable=False)
-    password = Column(String(50), nullable=False)
-    name = Column(String(40), nullable=False)
-    lastname = Column(String(40), nullable=False)
-    surname = Column(String(40), nullable=True)
+    login = Column(String(50), nullable=False)
+    mail = Column(String(80), nullable=False)
+    password = Column(String(255), nullable=False)
+    name = Column(String(60), nullable=False)
+    lastname = Column(String(60), nullable=False)
+    surname = Column(String(60), nullable=True)
     birthdate = Column(TIMESTAMP, nullable=False, default='-1')
     report_counter = Column(BigInteger, default=0, nullable=False)
     utilized_counter = Column(BigInteger, default=0, nullable=False)
-    rating = Column(Float, nullable=False)
-    city = Column(String(40), nullable=False)
+    rating = Column(Float, nullable=True)
+    city = Column(String(60), nullable=False)
 
     roles = relationship("Role", secondary="Users_Roles", back_populates="users")
     called_events = relationship("TrashEvent", foreign_keys="[TrashEvent.caller_id]", back_populates="caller")
@@ -63,4 +63,4 @@ class TrashStatus(Base):
     __tablename__ = "TrashStatus"
 
     id = Column(Integer, primary_key=True, index=True, unique=True)
-    title = Column(String(30), nullable=False)
+    title = Column(String(60), nullable=False)

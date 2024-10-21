@@ -2,7 +2,7 @@ services:
   web:
     build: .  # Эта строка говорит Compose использовать Dockerfile в текущей директории
     container_name: fastapi-app
-    # restart: always
+    restart: always
     volumes:
       - .:/app  # Монтируем локальную папку в контейнер
     ports:

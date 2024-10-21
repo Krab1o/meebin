@@ -1,4 +1,4 @@
-# app/routers/requests.py
+# app/routers/events.py
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -8,7 +8,7 @@ from .. import models, schemas, database, auth
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
-router = APIRouter(prefix="/requests", tags=["Requests"])
+router = APIRouter(prefix="/events", tags=["Events"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login")
 
@@ -39,7 +39,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 @router.post("/", response_model=schemas.TrashEventOut)
-def create_request(
+def create_event(
     event: schemas.TrashEventCreate, 
     db: Session = Depends(database.get_db), 
     current_user: models.User = Depends(auth.get_current_user)
@@ -62,42 +62,51 @@ def create_request(
     return new_event
 
 @router.get("/", response_model=List[schemas.TrashEventOut])
-def get_available_requests(db: Session = Depends(get_db)):
-    requests = db.query(models.Request).filter(models.Request.status == models.RequestStatus.available).all()
-    return requests
+def get_available_events(db: Session = Depends(get_db)):
+    events = db.query(models.TrashEvent).filter(models.TrashEvent.status == models.TrashStatus.available).all()
+    return events
 
 @router.get("/my", response_model=List[schemas.TrashEventOut])
-def get_my_requests(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    requests = db.query(models.Request).filter(models.Request.creator_id == current_user.id).all()
-    return requests
+def get_my_events(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    events = db.query(models.TrashEvent).filter(models.TrashEvent.creator_id == current_user.id).all()
+    return events
 
 @router.get("/accepted", response_model=List[schemas.TrashEventOut])
-def get_accepted_requests(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    requests = db.query(models.Request).filter(models.Request.accepted_by == current_user.id).all()
-    return requests
+def get_accepted_events(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    events = db.query(models.TrashEvent).filter(models.TrashEvent.accepted_by == current_user.id).all()
+    return events
 
 @router.get("/completed", response_model=List[schemas.TrashEventOut])
-def get_completed_requests(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    requests = db.query(models.Request).filter(models.Request.status == models.RequestStatus.completed, models.Request.accepted_by == current_user.id).all()
-    return requests
+def get_completed_events(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    events = db.query(models.TrashEvent).filter(models.TrashEvent.status == models.TrashStatus.completed, models.TrashEvent.accepted_by == current_user.id).all()
+    return events
 
-@router.post("/{request_id}/accept", response_model=schemas.TrashEventOut)
-def accept_request(request_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    request = db.query(models.Request).filter(models.Request.id == request_id, models.Request.status == models.RequestStatus.available).first()
-    if not request:
+@router.post("/{event_id}/accept", response_model=schemas.TrashEventOut)
+def accept_event(event_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    event = db.query(models.TrashEvent).filter(models.TrashEvent.id == event_id, models.TrashEvent.status == models.TrashStatus.available).first()
+    if not event:
         raise HTTPException(status_code=404, detail="Заявка не найдена или уже принята")
-    request.status = models.RequestStatus.accepted
-    request.accepted_by = current_user.id
+    event.status = models.TrashStatus.accepted
+    event.accepted_by = current_user.id
     db.commit()
-    db.refresh(request)
-    return request
+    db.refresh(event)
+    return event
 
-@router.post("/{request_id}/complete", response_model=schemas.TrashEventOut)
-def complete_request(request_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    request = db.query(models.Request).filter(models.Request.id == request_id, models.Request.accepted_by == current_user.id).first()
-    if not request:
+@router.post("/{event_id}/complete", response_model=schemas.TrashEventOut)
+def complete_event(event_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    event = db.query(models.TrashEvent).filter(models.TrashEvent.id == event_id, models.TrashEvent.accepted_by == current_user.id).first()
+    if not event:
         raise HTTPException(status_code=404, detail="Заявка не найдена или вы её не приняли")
-    request.status = models.RequestStatus.completed
+    event.status = models.TrashStatus.completed
     db.commit()
-    db.refresh(request)
-    return request
+    db.refresh(event)
+    return event
+
+# Получить историю заявок пользователя
+@router.get("/users/{user_id}/history", response_model=List[schemas.TrashEventOut])
+def get_user_request_history(user_id: int, db: Session = Depends(get_db)):
+    requests = db.query(models.TrashEvent).filter(
+        (models.TrashEvent.caller_id == user_id) | (models.TrashEvent.utilizator_id == user_id),
+        models.TrashEvent.status == models.TrashStatus.completed
+    ).all()
+    return requests
