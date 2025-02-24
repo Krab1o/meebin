@@ -2,21 +2,24 @@ package dto
 
 import "time"
 
-//TODO: create custom user DTO
 type User struct {
-	Id 			int64
-	Email 		string
-	Password	string
-	PersonalData struct {
-		FirstName 	string
-		SurName		string
-		LastName	string
-		City		string
-		Birthdate	time.Time
-	}
-	Stats struct {
-		UtilizeCount	int64
-		ReportCount		int64
-		Rating			float64
-	}
+	ID       uint64        `json:"id"`
+	Username string        `json:"username"`
+	Password string        `json:"password"`
+	Email    string        `json:"email"`
+	Data     PersonalData  `json:"personalData"`
+	Stats    PersonalStats `json:"personalStats"`
+}
+type PersonalData struct {
+	Firstname string    `json:"firstname"`
+	Surname   string    `json:"surname"`
+	Lastname  string    `json:"lastname"`
+	BirthDate time.Time `json:"birthDate"`
+	City      string    `json:"city"`
+}
+
+type PersonalStats struct {
+	UtilizeCount int64   `json:"utilizeCount"`
+	ReportCount  int64   `json:"reportCount"`
+	Rating       float64 `json:"rating"`
 }

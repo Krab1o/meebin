@@ -9,11 +9,11 @@ func addAPIEndpoints(api *gin.RouterGroup) {
 	authHandler := auth.NewHandler()
 	auth := api.Group("/auth")
 	{
-		auth.POST("/register", authHandler.Register)  // Регистрация
-		auth.POST("/login", authHandler.Login)        // Логин
-		auth.POST("/refresh", authHandler.Refresh)    // Обновление токена
-		auth.POST("/logout", authHandler.Logout)      // Выход
-		auth.GET("/profile", authHandler.Profile)       // Данные пользователя
+		auth.POST("/register", authHandler.Register) // Регистрация
+		// auth.POST("/login", authHandler.Login)        // Логин
+		// auth.POST("/refresh", authHandler.Refresh)    // Обновление токена
+		// auth.POST("/logout", authHandler.Logout)      // Выход
+		// auth.GET("/profile", authHandler.Profile)       // Данные пользователя
 	}
 	// users := api.Group("/users")
 	// usersHandler := user.NewHandler()
@@ -22,7 +22,7 @@ func addAPIEndpoints(api *gin.RouterGroup) {
 	// users.POST("", usersHandler.CreateUser)
 	// users.PATCH("/:id", usersHandler.UpdateUser)
 	// users.DELETE("/:id", usersHandler.DeleteUser)
-	
+
 	// events := api.Group("/events")
 	// eventsHandler := event.NewHandler()
 	// events.GET("", eventsHandler.ListEvents)
