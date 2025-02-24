@@ -8,11 +8,11 @@ type User struct {
 	Username     string
 	Password     string
 	PersonalData struct {
-		FirstName string
-		SurName   string
-		LastName  string
-		City      string
-		Birthdate time.Time
+		GivenName  string
+		Surname    string
+		Patronymic string
+		City       string
+		Birthdate  time.Time
 	}
 	Stats struct {
 		UtilizeCount int64
@@ -30,3 +30,5 @@ type Tokens struct {
 	RefreshToken string
 	AccessToken  string
 }
+
+type AccessToken string

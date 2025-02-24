@@ -1,5 +1,4 @@
-package model
+package rmodel
 
 type Event struct {
-	
 }

@@ -1,6 +1,6 @@
 module github.com/Krab1o/meebin
 
-go 1.23.6
+go 1.24.0
 
 require (
 	github.com/gin-gonic/gin v1.10.0

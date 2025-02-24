@@ -1,6 +1,7 @@
 package env
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -23,13 +24,29 @@ type pgConfig struct {
 	DBName   string
 }
 
-func NewPGConfig() config.PGConfig {
-	//TODO: Add validation
+// TODO: Add error messages
+func NewPGConfig() (config.PGConfig, error) {
+
 	host := os.Getenv(pgHostEnvName)
+	if len(host) == 0 {
+		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+	}
 	port := os.Getenv(pgPortEnvName)
+	if len(host) == 0 {
+		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+	}
 	user := os.Getenv(pgUserEnvName)
+	if len(host) == 0 {
+		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+	}
 	password := os.Getenv(pgPasswordEnvName)
+	if len(host) == 0 {
+		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+	}
 	dbname := os.Getenv(pgDatabaseEnvName)
+	if len(host) == 0 {
+		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+	}
 
 	return &pgConfig{
 		Host:     host,
@@ -37,11 +54,11 @@ func NewPGConfig() config.PGConfig {
 		User:     user,
 		Password: password,
 		DBName:   dbname,
-	}
+	}, nil
 }
 
 func (c *pgConfig) DSN() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s",
 		c.Host,
 		c.Port,
 		c.User,

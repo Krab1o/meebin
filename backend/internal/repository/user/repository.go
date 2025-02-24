@@ -1,8 +1,8 @@
 package user
 
 import (
+	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	"github.com/Krab1o/meebin/internal/repository"
-	repoModel "github.com/Krab1o/meebin/internal/repository/user/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -16,18 +16,13 @@ func NewRepository(db *pgxpool.Pool) repository.UserRepository {
 	return &repo{db: db}
 }
 
-// TODO: implement repo add user logic
-func (r *repo) Add(*repoModel.User) (int64, error) {
-	return 0, nil
-}
-
 // TODO: implement repo get one user logic
-func (r *repo) GetById(id int64) (*repoModel.User, error) {
+func (r *repo) GetById(id int64) (*rmodel.User, error) {
 	return nil, nil
 }
 
 // TODO: implement repo get users logic
-func (r *repo) List() ([]repoModel.User, error) {
+func (r *repo) List() ([]rmodel.User, error) {
 	return nil, nil
 }
 

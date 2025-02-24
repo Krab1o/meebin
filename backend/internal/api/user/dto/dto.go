@@ -11,11 +11,11 @@ type User struct {
 	Stats    PersonalStats `json:"personalStats"`
 }
 type PersonalData struct {
-	Firstname string    `json:"firstname"`
-	Surname   string    `json:"surname"`
-	Lastname  string    `json:"lastname"`
-	BirthDate time.Time `json:"birthDate"`
-	City      string    `json:"city"`
+	GivenName  string    `json:"givenName"`
+	Surname    string    `json:"surname"`
+	Patronymic string    `json:"patronymic"`
+	BirthDate  time.Time `json:"birthDate"`
+	City       string    `json:"city"`
 }
 
 type PersonalStats struct {

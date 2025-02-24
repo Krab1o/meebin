@@ -1,27 +1,60 @@
 package main
 
 import (
+	"context"
 	"log"
 
-	hAuth "github.com/Krab1o/meebin/internal/api/auth"
-	sAuth "github.com/Krab1o/meebin/internal/service/auth"
+	apiAuth "github.com/Krab1o/meebin/internal/api/auth"
+	"github.com/Krab1o/meebin/internal/config/env"
+	repoUser "github.com/Krab1o/meebin/internal/repository/user"
+	servAuth "github.com/Krab1o/meebin/internal/service/auth"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// TODO: replace error messages with strings
 func main() {
 	s := gin.Default()
-	SetupRoutes(s)
 
-	api := g.Group("/api")
-	authService := sAuth.NewService()
-	authHandler := hAuth.NewHandler(authService)
-	auth := api.Group("/auth")
+	httpConfig, err := env.NewHTTPConfig()
+	if err != nil {
+		log.Fatal("Failed to read httpConfig")
+	}
+	postgresConfig, err := env.NewPGConfig()
+	if err != nil {
+		log.Fatal("Failed to read pgConfig")
+	}
+
+	//TODO: remove DB init to another function
+	ctx := context.Background()
+	pool, err := pgxpool.New(ctx, postgresConfig.DSN())
+	if err != nil {
+		log.Fatalf("Failed to connect to DB: %v", err)
+	}
+	defer pool.Close()
+
+	err = pool.Ping(ctx)
+	if err != nil {
+		log.Fatalf("DB is not reachable, %v", err)
+	}
+
+	userRepository := repoUser.NewRepository(pool)
+	sessionRepository := repoUser.NewRepository(pool)
+
+	authService := servAuth.NewService(userRepository, sessionRepository)
+	authHandler := apiAuth.NewHandler(authService)
+
+	api := s.Group("/api")
 	{
-		auth.POST("/register", authHandler.Register) // Регистрация
-		// auth.POST("/login", authHandler.Login)        // Логин
-		// auth.POST("/refresh", authHandler.Refresh)    // Обновление токена
-		// auth.POST("/logout", authHandler.Logout)      // Выход
-		// auth.GET("/profile", authHandler.Profile)       // Данные пользователя
+		//repository
+		auth := api.Group("/auth")
+		{
+			auth.POST("/register", authHandler.Register) // Регистрация
+			// auth.POST("/login", authHandler.Login)        // Логин
+			// auth.POST("/refresh", authHandler.Refresh)    // Обновление токена
+			// auth.POST("/logout", authHandler.Logout)      // Выход
+			// auth.GET("/profile", authHandler.Profile)       // Данные пользователя
+		}
 	}
 	// users := api.Group("/users")
 	// usersHandler := user.NewHandler()
@@ -38,7 +71,7 @@ func main() {
 	// events.POST("", eventsHandler.CreateEvent)
 	// events.PATCH("/:id", eventsHandler.UpdateEvent)
 	// events.DELETE("/:id", eventsHandler.DeleteEvent)
-	if err := s.Run(); err != nil {
+	if err := s.Run(httpConfig.Port()); err != nil {
 		log.Fatal(err)
 	}
 }
