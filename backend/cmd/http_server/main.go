@@ -24,6 +24,10 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to read pgConfig")
 	}
+	jwtConfig, err := env.NewJWTConfig()
+	if err != nil {
+		log.Fatal("Failed to read jwtConfig")
+	}
 
 	//TODO: remove DB init to another function
 	ctx := context.Background()
@@ -39,9 +43,11 @@ func main() {
 	}
 
 	userRepository := repoUser.NewRepository(pool)
+	dataRepository := repoUser.NewRepository(pool)
+	statsRepository := repoUser.NewRepository(pool)
 	sessionRepository := repoUser.NewRepository(pool)
 
-	authService := servAuth.NewService(userRepository, sessionRepository)
+	authService := servAuth.NewService(userRepository, dataRepository, statsRepository, sessionRepository, jwtConfig)
 	authHandler := apiAuth.NewHandler(authService)
 
 	api := s.Group("/api")

@@ -1,32 +1,33 @@
-package smodel
+package rmodel
 
 import "time"
 
 type User struct {
-	Id        uint64
-	UserCreds Creds
-	UserStats Stats
-	UserData  PersonalData
+	Id       uint64
+	Creds    *UserCreds
+	Data     *PersonalData
+	Stats    *Stats
+	Sessions *Tokens
 }
 
-type Creds struct {
+type UserCreds struct {
 	Username string
 	Email    string
 	Password string
 }
 
-type Stats struct {
-	UtilizeCount int64
-	ReportCount  int64
-	Rating       float64
-}
-
 type PersonalData struct {
-	GivenName  string
+	FirstName  string
 	Surname    string
 	Patronymic string
 	City       string
 	Birthdate  time.Time
+}
+
+type Stats struct {
+	UtilizeCount uint64
+	ReportCount  uint64
+	Rating       float64
 }
 
 type Tokens struct {

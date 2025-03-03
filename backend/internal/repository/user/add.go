@@ -17,9 +17,9 @@ func (r *repo) Add(ctx context.Context, tx pgx.Tx, user *rmodel.User) (uint64, e
 			repository.UserPasswordColumn,
 		).
 		Values(
-			user.UserCreds.Username,
-			user.UserCreds.Email,
-			user.UserCreds.Password,
+			user.Creds.Username,
+			user.Creds.Email,
+			user.Creds.Password,
 		).
 		Suffix("RETURNING %s", repository.UserIdColumn).
 		ToSql()
