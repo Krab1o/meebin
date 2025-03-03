@@ -1,11 +1,25 @@
 package repository
 
+import (
+	"context"
+
+	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
+	"github.com/jackc/pgx/v5"
+)
+
 type UserRepository interface {
-	// Add(*user.User) (int64, error)
+	Add(context.Context, pgx.Tx, *rmodel.User) (uint64, error)
 	// GetById(id int64) (*user.User, error)
 	// List() ([]user.User, error)
 	// Update(id int64) error
 	// Delete(id int64) error
+}
+
+type UserDataRepository interface {
+}
+type UserStatsRepository interface {
+}
+type UserSessionRepository interface {
 }
 
 type EventRepository interface {
@@ -14,7 +28,4 @@ type EventRepository interface {
 	// List() ([]event.Event, error)
 	// Update(id int64) error
 	// Delete(id int64) error
-}
-
-type SessionRepository interface {
 }

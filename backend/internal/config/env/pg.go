@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	pgHostEnvName     = "PG_HOST"
+	pgHostEnvName     = "DB_HOST"
 	pgPortEnvName     = "PG_PORT"
 	pgUserEnvName     = "PG_USER"
 	pgPasswordEnvName = "PG_PASSWORD"
@@ -33,19 +33,19 @@ func NewPGConfig() (config.PGConfig, error) {
 	}
 	port := os.Getenv(pgPortEnvName)
 	if len(host) == 0 {
-		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+		return nil, errors.New(fmt.Sprintf("Empty %s", pgPortEnvName))
 	}
 	user := os.Getenv(pgUserEnvName)
 	if len(host) == 0 {
-		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+		return nil, errors.New(fmt.Sprintf("Empty %s", pgUserEnvName))
 	}
 	password := os.Getenv(pgPasswordEnvName)
 	if len(host) == 0 {
-		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+		return nil, errors.New(fmt.Sprintf("Empty %s", pgPasswordEnvName))
 	}
 	dbname := os.Getenv(pgDatabaseEnvName)
 	if len(host) == 0 {
-		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+		return nil, errors.New(fmt.Sprintf("Empty %s", pgDatabaseEnvName))
 	}
 
 	return &pgConfig{

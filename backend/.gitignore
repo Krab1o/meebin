@@ -1,6 +1,5 @@
 .env
 temp/
 bin/
-docker-compose.yml
 tmp
 .air.toml

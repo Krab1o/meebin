@@ -3,12 +3,17 @@ package rmodel
 import "time"
 
 type User struct {
-	ID          int64
-	Email       string
-	Password    string
+	ID          uint64
+	UserCreds   Creds
 	UserStats   Stats
 	UserData    PersonalData
 	UserSession Session
+}
+
+type Creds struct {
+	Username string
+	Email    string
+	Password string
 }
 
 type Stats struct {

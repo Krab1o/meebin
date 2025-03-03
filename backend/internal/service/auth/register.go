@@ -7,5 +7,6 @@ import (
 )
 
 func (s *authService) Register(ctx context.Context, user smodel.User) error {
-	return nil
+
+	s.userRepo.Add(ctx, nil)
 }

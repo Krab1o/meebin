@@ -5,7 +5,7 @@ export PATH := $(LOCAL_BIN):$(PATH)
 
 LOCAL_INTEGRATION_TEST_DIR="./integration_test"
 LOCAL_MIGRATION_DIR=$(MIGRATION_DIR)
-LOCAL_MIGRATION_DSN="host=$(ACCESS_HOST) port=$(PG_PORT) dbname=$(PG_DB) user=$(PG_USER) password=$(PG_PASSWORD)"
+LOCAL_MIGRATION_DSN="host=$(DB_HOST) port=$(PG_PORT) dbname=$(PG_DB) user=$(PG_USER) password=$(PG_PASSWORD)"
 
 install-deps:
 	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/goose@v3.24
