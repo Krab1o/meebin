@@ -4,20 +4,20 @@ import "time"
 
 type User struct {
 	Id       uint64
-	Creds    *UserCreds
+	Creds    *Creds
 	Data     *PersonalData
 	Stats    *Stats
-	Sessions *Tokens
+	Sessions *Session
 }
 
-type UserCreds struct {
+type Creds struct {
 	Username string
 	Email    string
 	Password string
 }
 
 type PersonalData struct {
-	FirstName  string
+	GivenName  string
 	Surname    string
 	Patronymic string
 	City       string
@@ -30,9 +30,8 @@ type Stats struct {
 	Rating       float64
 }
 
-type Tokens struct {
-	RefreshToken string
-	AccessToken  string
+type Session struct {
+	UserId         uint64
+	RefreshToken   string
+	ExpirationTime time.Time
 }
-
-type AccessToken string

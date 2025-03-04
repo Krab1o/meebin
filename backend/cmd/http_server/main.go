@@ -4,17 +4,29 @@ import (
 	"context"
 	"log"
 
+	"github.com/Krab1o/meebin/internal/api"
 	apiAuth "github.com/Krab1o/meebin/internal/api/auth"
+	"github.com/Krab1o/meebin/internal/config"
 	"github.com/Krab1o/meebin/internal/config/env"
+	repoSession "github.com/Krab1o/meebin/internal/repository/session"
 	repoUser "github.com/Krab1o/meebin/internal/repository/user"
 	servAuth "github.com/Krab1o/meebin/internal/service/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+const (
+	path = ".env"
+)
+
 // TODO: replace error messages with strings
 func main() {
 	s := gin.Default()
+
+	err := config.Load(path)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	httpConfig, err := env.NewHTTPConfig()
 	if err != nil {
@@ -26,6 +38,7 @@ func main() {
 	}
 	jwtConfig, err := env.NewJWTConfig()
 	if err != nil {
+		log.Println(err)
 		log.Fatal("Failed to read jwtConfig")
 	}
 
@@ -43,23 +56,27 @@ func main() {
 	}
 
 	userRepository := repoUser.NewRepository(pool)
-	dataRepository := repoUser.NewRepository(pool)
-	statsRepository := repoUser.NewRepository(pool)
-	sessionRepository := repoUser.NewRepository(pool)
+	sessionRepository := repoSession.NewRepository(pool)
 
-	authService := servAuth.NewService(userRepository, dataRepository, statsRepository, sessionRepository, jwtConfig)
+	authService := servAuth.NewService(
+		userRepository,
+		sessionRepository,
+		jwtConfig,
+	)
 	authHandler := apiAuth.NewHandler(authService)
 
-	api := s.Group("/api")
+	apiGroup := s.Group("/api")
 	{
-		//repository
-		auth := api.Group("/auth")
+		authGroup := apiGroup.Group("/auth")
 		{
-			auth.POST("/register", authHandler.Register) // Регистрация
-			// auth.POST("/login", authHandler.Login)        // Логин
-			// auth.POST("/refresh", authHandler.Refresh)    // Обновление токена
-			// auth.POST("/logout", authHandler.Logout)      // Выход
-			// auth.GET("/profile", authHandler.Profile)       // Данные пользователя
+			authGroup.POST("/register", api.MakeHandler(authHandler.Register)) // Регистрация
+			authGroup.POST("/login", api.MakeHandler(authHandler.Login))       // Логин
+			authGroup.POST("/refresh", api.MakeHandler(authHandler.Refresh))   // Обновление токена
+			authGroup.POST("/logout", api.MakeHandler(authHandler.Logout))     // Выход
+			authGroup.GET(
+				"/profile",
+				api.MakeHandler(authHandler.Profile),
+			) // Данные пользователя
 		}
 	}
 	// users := api.Group("/users")

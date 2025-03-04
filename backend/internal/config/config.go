@@ -5,7 +5,7 @@ type PGConfig interface {
 }
 
 type HTTPConfig interface {
-	Address() string
+	// Address() string
 	Port() string
 }
 

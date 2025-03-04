@@ -3,11 +3,11 @@ package smodel
 import "time"
 
 type User struct {
-	Id    uint64
-	Creds *Creds
-	Data  *PersonalData
-	Stats *Stats
-	// Sessions *Tokens
+	Id       uint64
+	Creds    *Creds
+	Data     *PersonalData
+	Stats    *Stats
+	Sessions *Tokens
 }
 
 type Creds struct {
@@ -17,7 +17,7 @@ type Creds struct {
 }
 
 type PersonalData struct {
-	FirstName  string
+	GivenName  string
 	Surname    string
 	Patronymic string
 	City       string

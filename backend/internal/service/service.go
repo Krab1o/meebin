@@ -13,7 +13,7 @@ type UserService interface {
 }
 
 type AuthService interface {
-	Login(ctx context.Context, id uint64) (*smodel.Tokens, error)
+	Login(ctx context.Context, user *smodel.Creds) (*smodel.Tokens, error)
 	// Logout(ctx context.Context) error
 	// Profile(ctx context.Context) error
 	Refresh(ctx context.Context, id uint64) (*smodel.AccessToken, error)

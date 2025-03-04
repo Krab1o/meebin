@@ -1,6 +1,8 @@
 package auth
 
-import "github.com/Krab1o/meebin/internal/service"
+import (
+	"github.com/Krab1o/meebin/internal/service"
+)
 
 type handler struct {
 	authService service.AuthService

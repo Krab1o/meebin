@@ -8,19 +8,21 @@ import (
 )
 
 type UserRepository interface {
-	Add(context.Context, pgx.Tx, *rmodel.User) (uint64, error)
+	AddUser(context.Context, pgx.Tx, *rmodel.User) (uint64, error)
+	FindUser(context.Context, pgx.Tx, *rmodel.Creds) (uint64, error)
 	// GetById(id int64) (*user.User, error)
 	// List() ([]user.User, error)
 	// Update(id int64) error
 	// Delete(id int64) error
 }
-
-type UserDataRepository interface {
-}
-type UserStatsRepository interface {
-}
 type UserSessionRepository interface {
+	AddSession(context.Context, pgx.Tx, *rmodel.Session) error
 }
+
+// type UserDataRepository interface {
+// }
+// type UserStatsRepository interface {
+// }
 
 type EventRepository interface {
 	// Add(*event.Event) (int64, error)

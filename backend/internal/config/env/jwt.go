@@ -25,15 +25,15 @@ type jwtConfig struct {
 // TODO: move error messages to one place for config
 func NewJWTConfig() (config.JWTConfig, error) {
 	jwt := os.Getenv(jwtSecretEnvName)
-	if len(jwtSecretEnvName) == 0 {
+	if len(jwt) == 0 {
 		return nil, errors.New("No env var")
 	}
 	accessTime := os.Getenv(jwtAccessTimeoutEnvName)
-	if len(jwtSecretEnvName) == 0 {
+	if len(accessTime) == 0 {
 		return nil, errors.New("No env var")
 	}
 	refreshTime := os.Getenv(jwtRefreshTimeoutEnvName)
-	if len(jwtSecretEnvName) == 0 {
+	if len(refreshTime) == 0 {
 		return nil, errors.New("No env var")
 	}
 	accessTimeVal, err := strconv.Atoi(accessTime)

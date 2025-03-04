@@ -1,36 +1,44 @@
 package env
 
 import (
-	"net"
+	"errors"
+	"fmt"
 	"os"
 
 	"github.com/Krab1o/meebin/internal/config"
 )
 
 const (
-	httpHostEnvName = "HTTP_HOST"
+	// httpHostEnvName = "HTTP_HOST"
 	httpPortEnvName = "HTTP_PORT"
 )
 
 type httpConfig struct {
-	host string
+	// host string
 	port string
 }
 
 func NewHTTPConfig() (config.HTTPConfig, error) {
-	host := os.Getenv(httpHostEnvName)
+	// host := os.Getenv(httpHostEnvName)
+	// if len(host) == 0 {
+	// 	return nil, errors.New("No env var")
+	// }
 	port := os.Getenv(httpPortEnvName)
 
+	if len(port) == 0 {
+		return nil, errors.New("No env var")
+	}
+
 	return &httpConfig{
-		host: host,
+		// host: host,
 		port: port,
 	}, nil
 }
 
 func (c *httpConfig) Port() string {
-	return c.port
+	return fmt.Sprintf(":%s", c.port)
 }
 
-func (c *httpConfig) Address() string {
-	return net.JoinHostPort(c.host, c.port)
-}
+// func (c *httpConfig) Address() string {
+// 	return net.JoinHostPort(c.host, c.port)
+// }

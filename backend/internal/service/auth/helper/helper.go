@@ -9,8 +9,12 @@ import (
 
 //TODO: add roles to token
 
-func GenerateAccessToken(userID uint64, timeNow time.Time, jwtSecret []byte, jwtTimeout int) (string, error) {
-	timeNow := time.Now()
+func GenerateAccessToken(
+	userID uint64,
+	timeNow time.Time,
+	jwtSecret []byte,
+	jwtTimeout int,
+) (string, error) {
 	expirationTime := timeNow.Add(time.Duration(jwtTimeout) * time.Minute)
 	claims := shared.Claims{
 		UserID: userID,
@@ -24,8 +28,12 @@ func GenerateAccessToken(userID uint64, timeNow time.Time, jwtSecret []byte, jwt
 	return token.SignedString(jwtSecret)
 }
 
-func GenerateRefreshToken(userID uint64, timeNow time.Time, jwtSecret []byte, jwtTimeout int) (string, error) {
-	timeNow := time.Now()
+func GenerateRefreshToken(
+	userID uint64,
+	timeNow time.Time,
+	jwtSecret []byte,
+	jwtTimeout int,
+) (string, time.Time, error) {
 	expirationTime := timeNow.Add(time.Duration(jwtTimeout) * time.Hour)
 	claims := shared.Claims{
 		UserID: userID,
@@ -36,5 +44,6 @@ func GenerateRefreshToken(userID uint64, timeNow time.Time, jwtSecret []byte, jw
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtSecret)
+	signedToken, err := token.SignedString(jwtSecret)
+	return signedToken, expirationTime, err
 }

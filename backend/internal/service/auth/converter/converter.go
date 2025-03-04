@@ -19,7 +19,7 @@ func UserServiceToRepository(user *smodel.User) (*rmodel.User, error) {
 	}, nil
 }
 
-func CredsServiceToRepo(creds *smodel.Creds) (*rmodel.UserCreds, error) {
+func CredsServiceToRepo(creds *smodel.Creds) (*rmodel.Creds, error) {
 	hashedBytes, err := bcrypt.GenerateFromPassword(
 		[]byte(creds.Password),
 		bcrypt.DefaultCost,
@@ -28,9 +28,11 @@ func CredsServiceToRepo(creds *smodel.Creds) (*rmodel.UserCreds, error) {
 		return nil, err
 	}
 
-	return &rmodel.UserCreds{
+	return &rmodel.Creds{
 		Username: creds.Username,
 		Email:    creds.Email,
 		Password: string(hashedBytes),
 	}, nil
 }
+
+// func

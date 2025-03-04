@@ -4,42 +4,54 @@ import (
 	"context"
 	"time"
 
+	"github.com/Krab1o/meebin/internal/service"
 	"github.com/Krab1o/meebin/internal/service/auth/converter"
 	authHelper "github.com/Krab1o/meebin/internal/service/auth/helper"
+	rmodel "github.com/Krab1o/meebin/internal/struct/r_model"
 	smodel "github.com/Krab1o/meebin/internal/struct/s_model"
-)
-
-const (
-	startUtilizeCount = 0
-	startReportCount  = 0
-	startRating       = 0.0
 )
 
 // TODO: add error messages
 func (s *authService) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens, error) {
-	user.Stats = &smodel.Stats{
-		UtilizeCount: startUtilizeCount,
-		ReportCount:  startReportCount,
-		Rating:       startRating,
-	}
 	repoUser, err := converter.UserServiceToRepository(user)
 	if err != nil {
-		return nil, err
+		return nil, service.ErrorDBToService(err)
 	}
-	id, err := s.userRepo.Add(ctx, nil, repoUser)
+	//TODO: add transaction
+	userId, err := s.userRepo.AddUser(ctx, nil, repoUser)
 	if err != nil {
-		return nil, err
+		return nil, service.ErrorDBToService(err)
 	}
+
 	timeNow := time.Now()
-	accessToken, err := authHelper.GenerateAccessToken(id, s.jwtConf.Secret(), s.jwtConf.AccessTimeout())
+	accessToken, err := authHelper.GenerateAccessToken(
+		userId,
+		timeNow,
+		s.jwtConf.Secret(),
+		s.jwtConf.AccessTimeout(),
+	)
 	if err != nil {
-		return nil, err
+		return nil, service.NewInternalError(err)
 	}
-	refreshToken, err := authHelper.GenerateRefreshToken(id, s.jwtConf.Secret(), s.jwtConf.RefreshTimeout())
+	refreshToken, expirationTime, err := authHelper.GenerateRefreshToken(
+		userId,
+		timeNow,
+		s.jwtConf.Secret(),
+		s.jwtConf.RefreshTimeout(),
+	)
 	if err != nil {
-		return nil, err
+		return nil, service.NewInternalError(err)
 	}
-	//TODO: generate JWT-tokens
+
+	repoSession := &rmodel.Session{
+		UserId:         userId,
+		RefreshToken:   refreshToken,
+		ExpirationTime: expirationTime,
+	}
+	err = s.sessionRepo.AddSession(ctx, nil, repoSession)
+	if err != nil {
+		return nil, service.ErrorDBToService(err)
+	}
 	return &smodel.Tokens{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,

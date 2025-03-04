@@ -2,11 +2,17 @@ package dto
 
 import "time"
 
+type NewUser struct {
+	Id    uint64        `json:"id"`
+	Creds *Creds        `json:"creds"`
+	Data  *PersonalData `json:"personalData"`
+}
+
 type User struct {
 	Id    uint64        `json:"id"`
 	Creds *Creds        `json:"creds"`
 	Data  *PersonalData `json:"personalData"`
-	Stats *Stats        `json:"stats"`
+	Stats *Stats        `json:"stats,omitempty"`
 }
 
 type Creds struct {
@@ -16,7 +22,7 @@ type Creds struct {
 }
 
 type PersonalData struct {
-	FirstName  string    `json:"firstName"`
+	GivenName  string    `json:"givenName"`
 	Surname    string    `json:"surname"`
 	Patronymic string    `json:"patronymic"`
 	City       string    `json:"city"`

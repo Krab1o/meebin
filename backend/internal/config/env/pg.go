@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	pgHostEnvName     = "DB_HOST"
 	pgPortEnvName     = "PG_PORT"
 	pgUserEnvName     = "PG_USER"
 	pgPasswordEnvName = "PG_PASSWORD"
 	pgDatabaseEnvName = "PG_DB"
+	pgHostEnvName     = "DB_HOST"
 )
 
 type pgConfig struct {
