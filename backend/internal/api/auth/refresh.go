@@ -13,11 +13,11 @@ func (h *handler) Refresh(c *gin.Context) error {
 	token := &dto.Token{}
 	err := c.ShouldBindJSON(token)
 	if err != nil {
-		return api.NewBadRequestError("Failed to process token", err)
+		return api.NewBadRequestError(err, nil)
 	}
 	newRefreshToken, err := h.authService.Refresh(ctx, token.Refresh)
 	if err != nil {
-		return api.ErrorServiceToAPI("Service error", err)
+		return api.ErrorServiceToAPI(err, nil)
 	}
 	c.JSON(http.StatusOK, &dto.Token{Refresh: newRefreshToken})
 	return nil

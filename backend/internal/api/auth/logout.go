@@ -10,12 +10,12 @@ func (h *handler) Logout(c *gin.Context) error {
 	ctx := c.Request.Context()
 	sessionId, ok := c.Get(shared.SessionIDJsonName)
 	if !ok {
-		return api.NewInternalError("Failed to get sessionID from JWT token", nil)
+		return api.NewInternalError(nil, nil)
 	}
 
 	err := h.authService.Logout(ctx, sessionId.(uint64))
 	if err != nil {
-		return api.ErrorServiceToAPI("Service error", err)
+		return api.ErrorServiceToAPI(err, nil)
 	}
 
 	return nil

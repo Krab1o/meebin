@@ -13,9 +13,8 @@ import (
 // TODO: check if session with current refresh token exists
 // if yes -> generate access token, return
 // if no  -> error
-func (s *authService) Refresh(ctx context.Context, refreshToken string) (string, error) {
-	//TODO: parse refresh token
 
+func (s *authService) Refresh(ctx context.Context, refreshToken string) (string, error) {
 	//TODO: move to one place (refactor)
 	claims := &shared.RefreshClaims{}
 	token, err := jwt.ParseWithClaims(
@@ -24,14 +23,14 @@ func (s *authService) Refresh(ctx context.Context, refreshToken string) (string,
 		shared.ParseFunction(s.jwtConf.Secret()),
 	)
 	if err != nil {
-		return "", service.NewUnauthorizedError(err)
+		return "", service.NewUnauthorizedError(err, "Unable to parse token")
 	}
 	if !token.Valid {
-		return "", service.NewUnauthorizedError(nil)
+		return "", service.NewUnauthorizedError(nil, "Invalid token")
 	}
 	repoSession, err := s.sessionRepo.FindSession(ctx, nil, claims.SessionID)
 	if err != nil {
-		return "", parseDBError(err)
+		return "", service.ErrorDBToService(err, nil)
 	}
 	timeNow := time.Now()
 	accessToken, err := helper.GenerateAccessToken(

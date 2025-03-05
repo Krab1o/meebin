@@ -18,7 +18,8 @@ func (e Error) Error() string {
 	return fmt.Sprintf("api error: %d", e.StatusCode)
 }
 
-func newError(statusCode int, message any, err error) *Error {
+func newError(statusCode int, err error, message any) *Error {
+
 	return &Error{
 		StatusCode: statusCode,
 		Message:    message,
@@ -26,17 +27,17 @@ func newError(statusCode int, message any, err error) *Error {
 	}
 }
 
-func NewNotFoundError(message any, err error) *Error {
-	return newError(http.StatusNotFound, message, err)
+func NewNotFoundError(err error, message any) *Error {
+	return newError(http.StatusNotFound, err, message)
 }
-func NewUnauthorizedError(message any, err error) *Error {
-	return newError(http.StatusUnauthorized, message, err)
+func NewUnauthorizedError(err error, message any) *Error {
+	return newError(http.StatusUnauthorized, err, message)
 }
-func NewInternalError(message any, err error) *Error {
-	return newError(http.StatusInternalServerError, message, err)
+func NewInternalError(err error, message any) *Error {
+	return newError(http.StatusInternalServerError, err, message)
 }
-func NewBadRequestError(message any, err error) *Error {
-	return newError(http.StatusBadRequest, message, err)
+func NewBadRequestError(err error, message any) *Error {
+	return newError(http.StatusBadRequest, err, message)
 }
 
 // TODO: add messages on service layer.
@@ -53,20 +54,30 @@ func NewBadRequestError(message any, err error) *Error {
 // in handler error should be asserted as service error and then dependent on
 // its code it should be processed in each handler corresponding its requirements
 
-func ErrorServiceToAPI(message any, err error) *Error {
+func defaultAction(serviceError *service.Error) *Error {
+	switch serviceError.Type {
+	case service.NotFound:
+		return NewNotFoundError(serviceError, serviceError.Message)
+	case service.Semantic:
+		return NewBadRequestError(serviceError, serviceError.Message)
+	case service.Unauthorized:
+		return NewUnauthorizedError(serviceError, serviceError.Message)
+	default:
+		return NewInternalError(serviceError, serviceError.Message)
+	}
+}
+
+func ErrorServiceToAPI(
+	err error,
+	customAction func(*service.Error) *Error,
+) *Error {
 	var serviceError *service.Error
 	if errors.As(err, &serviceError) {
-		switch serviceError.Type {
-		case service.NotFound:
-			return NewNotFoundError(message, err)
-		case service.Semantic:
-			return NewBadRequestError(message, err)
-		case service.Unauthorized:
-			return NewUnauthorizedError(message, err)
-		case service.Internal:
-		default:
-			return NewInternalError(message, err)
+		if customAction != nil {
+			return customAction(serviceError)
+		} else {
+			return defaultAction(serviceError)
 		}
 	}
-	return NewInternalError(message, err)
+	return NewInternalError(err, "Internal Server Error")
 }

@@ -15,12 +15,12 @@ import (
 func (s *authService) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens, error) {
 	repoUser, err := converter.UserServiceToRepository(user)
 	if err != nil {
-		return nil, service.ErrorDBToService(err)
+		return nil, service.ErrorDBToService(err, nil)
 	}
 	//TODO: add transaction
 	userId, err := s.userRepo.AddUser(ctx, nil, repoUser)
 	if err != nil {
-		return nil, service.ErrorDBToService(err)
+		return nil, service.ErrorDBToService(err, nil)
 	}
 
 	// Creating database row with session
@@ -32,7 +32,7 @@ func (s *authService) Register(ctx context.Context, user *smodel.User) (*smodel.
 	}
 	sessionId, err := s.sessionRepo.AddSession(ctx, nil, repoSession)
 	if err != nil {
-		return nil, service.ErrorDBToService(err)
+		return nil, service.ErrorDBToService(err, nil)
 	}
 
 	// Write database data to refresh token

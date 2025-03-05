@@ -15,15 +15,15 @@ func (h *handler) Login(c *gin.Context) error {
 	userCreds := &dto.Creds{}
 	err := c.ShouldBindJSON(userCreds)
 	if err != nil {
-		return api.NewBadRequestError("Bad request specified", err)
+		return api.NewBadRequestError(err, "Bad request specified")
 	}
 	if userCreds.Email == "" || userCreds.Username == "" {
-		return api.NewBadRequestError("Empty password or username", err)
+		return api.NewBadRequestError(err, "Empty password or username")
 	}
 	serviceCreds := converter.CredsDTOToService(userCreds)
 	tokens, err := h.authService.Login(ctx, serviceCreds)
 	if err != nil {
-		return api.ErrorServiceToAPI("Service error", err)
+		return api.ErrorServiceToAPI(err, nil)
 	}
 	dtoTokens := converter.TokensServiceToDTO(tokens)
 	c.JSON(http.StatusOK, dtoTokens)
