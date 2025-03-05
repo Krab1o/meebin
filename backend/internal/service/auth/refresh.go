@@ -31,7 +31,7 @@ func (s *authService) Refresh(ctx context.Context, refreshToken string) (string,
 	}
 	repoSession, err := s.sessionRepo.FindSession(ctx, nil, claims.SessionID)
 	if err != nil {
-		return "", service.ErrorDBToService(err)
+		return "", parseDBError(err)
 	}
 	timeNow := time.Now()
 	accessToken, err := helper.GenerateAccessToken(

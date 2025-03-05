@@ -10,6 +10,10 @@ import (
 	smodel "github.com/Krab1o/meebin/internal/struct/s_model"
 )
 
+func parseDBError(err error) *service.Error {
+
+}
+
 func (s *authService) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, error) {
 	repoCreds := &rmodel.Creds{
 		Username: creds.Username,
@@ -18,7 +22,7 @@ func (s *authService) Login(ctx context.Context, creds *smodel.Creds) (*smodel.T
 	}
 	userId, err := s.userRepo.FindUser(ctx, nil, repoCreds)
 	if err != nil {
-		return nil, service.ErrorDBToService(err)
+		return nil, parseDBError(err)
 	}
 
 	timeNow := time.Now()

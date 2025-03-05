@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/Krab1o/meebin/internal/repository"
 )
@@ -9,8 +10,9 @@ import (
 type ErrorType int
 
 type Error struct {
-	Type ErrorType
-	Err  error
+	Type    ErrorType
+	Err     error
+	Message string
 }
 
 const (
@@ -39,23 +41,32 @@ func (e Error) Error() string {
 	return e.Err.Error()
 }
 
-func newError(errType ErrorType, err error) *Error {
+func newError(errType ErrorType, err error, messages ...string) *Error {
+	var messageBuilder strings.Builder
+	for i, message := range messages {
+		messageBuilder.WriteString(message)
+
+		if i < len(messages)-1 {
+			messageBuilder.WriteString("\n")
+		}
+	}
 	return &Error{
-		Type: errType,
-		Err:  err,
+		Type:    errType,
+		Err:     err,
+		Message: messageBuilder.String(),
 	}
 }
 
-func NewSemanticError(err error) *Error {
+func NewSemanticError(err error, messages ...string) *Error {
 	return newError(Semantic, err)
 }
-func NewNotFoundError(err error) *Error {
+func NewNotFoundError(err error, messages ...string) *Error {
 	return newError(NotFound, err)
 }
-func NewUnauthorizedError(err error) *Error {
+func NewUnauthorizedError(err error, messages ...string) *Error {
 	return newError(Unauthorized, err)
 }
-func NewInternalError(err error) *Error {
+func NewInternalError(err error, messages ...string) *Error {
 	return newError(Internal, err)
 }
 
