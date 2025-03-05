@@ -16,7 +16,9 @@ type UserRepository interface {
 	// Delete(id int64) error
 }
 type UserSessionRepository interface {
-	AddSession(context.Context, pgx.Tx, *rmodel.Session) error
+	AddSession(context.Context, pgx.Tx, *rmodel.Session) (uint64, error)
+	DeleteSession(context.Context, pgx.Tx, uint64) error
+	FindSession(context.Context, pgx.Tx, uint64) (*rmodel.Session, error)
 }
 
 // type UserDataRepository interface {

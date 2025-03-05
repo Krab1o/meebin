@@ -31,7 +31,7 @@ type Stats struct {
 }
 
 type Session struct {
+	SessionId      uint64
 	UserId         uint64
-	RefreshToken   string
 	ExpirationTime time.Time
 }

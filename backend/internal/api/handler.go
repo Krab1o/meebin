@@ -12,6 +12,7 @@ type Handler func(c *gin.Context) error
 func MakeHandler(h Handler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if err := h(c); err != nil {
+			c.Abort()
 			var apiError *Error
 			if errors.As(err, &apiError) {
 				c.JSON(apiError.StatusCode, apiError)

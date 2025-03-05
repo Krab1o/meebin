@@ -41,9 +41,6 @@ func (r *repo) AddUser(ctx context.Context, tx pgx.Tx, user *rmodel.User) (uint6
 	var userId uint64
 	err = row.Scan(&userId)
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return 0, repository.NewNotFoundError(err)
-		}
 		return 0, repository.NewInternalError(err)
 	}
 

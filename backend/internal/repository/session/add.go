@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Krab1o/meebin/internal/repository"
 	rmodel "github.com/Krab1o/meebin/internal/struct/r_model"
@@ -9,31 +10,35 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) AddSession(ctx context.Context, tx pgx.Tx, session *rmodel.Session) error {
+func (r *repo) AddSession(ctx context.Context, tx pgx.Tx, session *rmodel.Session) (uint64, error) {
 	sessionTableQuery, sessionTableArgs, err := squirrel.
 		Insert(repository.SessionTableName).
 		PlaceholderFormat(squirrel.Dollar).
 		Columns(
 			repository.SessionIdUserColumn,
-			repository.SessionRefreshTokenColumn,
 			repository.SessionExpirationTimeColumn,
 		).
 		Values(
 			session.UserId,
-			session.RefreshToken,
 			session.ExpirationTime,
+		).
+		Suffix(
+			fmt.Sprintf("RETURNING %s", repository.SessionIdColumn),
 		).
 		ToSql()
 	if err != nil {
-		return err
+		return 0, repository.NewInternalError(err)
 	}
+	var row pgx.Row
 	if tx != nil {
-		_, err = tx.Exec(ctx, sessionTableQuery, sessionTableArgs...)
+		row = tx.QueryRow(ctx, sessionTableQuery, sessionTableArgs...)
 	} else {
-		_, err = r.db.Exec(ctx, sessionTableQuery, sessionTableArgs...)
+		row = r.db.QueryRow(ctx, sessionTableQuery, sessionTableArgs...)
 	}
+	var sessionId uint64
+	err = row.Scan(&sessionId)
 	if err != nil {
-		return err
+		return 0, repository.NewInternalError(err)
 	}
-	return nil
+	return sessionId, nil
 }

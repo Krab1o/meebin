@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/Krab1o/meebin/internal/api"
@@ -27,16 +26,11 @@ func JWTMiddleware(jwtSecret []byte) api.Handler {
 
 		tokenString := parts[1]
 
-		claims := &shared.Claims{}
+		claims := &shared.AccessClaims{}
 		token, err := jwt.ParseWithClaims(
 			tokenString,
 			claims,
-			func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("Unexpected signing method")
-				}
-				return jwtSecret, nil
-			},
+			shared.ParseFunction(jwtSecret),
 		)
 		//TODO: check different types of errors, add messages
 		if err != nil {
@@ -46,6 +40,7 @@ func JWTMiddleware(jwtSecret []byte) api.Handler {
 			return api.NewUnauthorizedError("Invalid token", nil)
 		}
 		c.Set(shared.UserIDJsonName, claims.UserID)
+		c.Set(shared.SessionIDJsonName, claims.SessionID)
 		return nil
 	}
 }

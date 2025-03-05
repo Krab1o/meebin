@@ -11,13 +11,15 @@ import (
 
 func GenerateAccessToken(
 	userID uint64,
+	sessionID uint64,
 	timeNow time.Time,
 	jwtSecret []byte,
 	jwtTimeout int,
 ) (string, error) {
 	expirationTime := timeNow.Add(time.Duration(jwtTimeout) * time.Minute)
-	claims := shared.Claims{
-		UserID: userID,
+	claims := shared.AccessClaims{
+		UserID:    userID,
+		SessionID: sessionID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(timeNow),
@@ -29,14 +31,13 @@ func GenerateAccessToken(
 }
 
 func GenerateRefreshToken(
-	userID uint64,
+	sessionID uint64,
+	expirationTime time.Time,
 	timeNow time.Time,
 	jwtSecret []byte,
-	jwtTimeout int,
-) (string, time.Time, error) {
-	expirationTime := timeNow.Add(time.Duration(jwtTimeout) * time.Hour)
-	claims := shared.Claims{
-		UserID: userID,
+) (string, error) {
+	claims := shared.RefreshClaims{
+		SessionID: sessionID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(timeNow),
@@ -44,6 +45,5 @@ func GenerateRefreshToken(
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString(jwtSecret)
-	return signedToken, expirationTime, err
+	return token.SignedString(jwtSecret)
 }

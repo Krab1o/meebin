@@ -39,6 +39,20 @@ func NewBadRequestError(message any, err error) *Error {
 	return newError(http.StatusBadRequest, message, err)
 }
 
+// TODO: add messages on service layer.
+// take messages from service layer and send them here for api error, so
+// client will see reasonable errors. if no reasonable message provided (empty)
+// there should be inserted basic message like "internal error" or "bad request"
+
+// TODO: think of message as optional argument
+// probably messages may be an optional argument so is there any. if there is,
+// we will insert it into the api error message and send it to client
+
+// TODO: make api errors independent from service errors codes. make logic
+// of creating any api error not dependent to service code moving it to handler.
+// in handler error should be asserted as service error and then dependent on
+// its code it should be processed in each handler corresponding its requirements
+
 func ErrorServiceToAPI(message any, err error) *Error {
 	var serviceError *service.Error
 	if errors.As(err, &serviceError) {

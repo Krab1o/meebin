@@ -28,9 +28,8 @@ const (
 
 	SessionTableName = "session_"
 
-	SessionIdColumn             = "id"
+	SessionIdColumn             = "id_session"
 	SessionIdUserColumn         = "id_user"
-	SessionRefreshTokenColumn   = "refresh_token"
 	SessionExpirationTimeColumn = "expiration_time"
 
 	RoleTableName = "role_"

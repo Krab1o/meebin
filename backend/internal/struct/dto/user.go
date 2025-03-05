@@ -34,8 +34,3 @@ type Stats struct {
 	ReportCount  uint64  `json:"reportCount"`
 	Rating       float64 `json:"rating"`
 }
-
-type Tokens struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
-}

@@ -34,5 +34,3 @@ type Tokens struct {
 	AccessToken  string
 	RefreshToken string
 }
-
-type AccessToken string

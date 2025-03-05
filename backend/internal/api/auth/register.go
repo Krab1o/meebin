@@ -21,12 +21,12 @@ func (h *handler) Register(c *gin.Context) error {
 	newUser := &dto.NewUser{}
 	err := c.ShouldBindJSON(newUser)
 	if err != nil {
-		return api.ErrorServiceToAPI("", err)
+		return api.NewBadRequestError("Cannot process entity", err)
 	}
 	serviceUser := converter.NewUserDTOToService(newUser)
 	tokens, err := h.authService.Register(ctx, serviceUser)
 	if err != nil {
-		return api.ErrorServiceToAPI("", err)
+		return api.ErrorServiceToAPI("Service error", err)
 	}
 	dtoTokens := converter.TokensServiceToDTO(tokens)
 	c.JSON(http.StatusCreated, dtoTokens)

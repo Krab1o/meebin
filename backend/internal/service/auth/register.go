@@ -23,9 +23,33 @@ func (s *authService) Register(ctx context.Context, user *smodel.User) (*smodel.
 		return nil, service.ErrorDBToService(err)
 	}
 
+	// Creating database row with session
 	timeNow := time.Now()
+	refreshExpirationTime := timeNow.Add(time.Duration(s.jwtConf.RefreshTimeout()) * time.Hour)
+	repoSession := &rmodel.Session{
+		UserId:         userId,
+		ExpirationTime: refreshExpirationTime,
+	}
+	sessionId, err := s.sessionRepo.AddSession(ctx, nil, repoSession)
+	if err != nil {
+		return nil, service.ErrorDBToService(err)
+	}
+
+	// Write database data to refresh token
+	refreshToken, err := authHelper.GenerateRefreshToken(
+		sessionId,
+		refreshExpirationTime,
+		timeNow,
+		s.jwtConf.Secret(),
+	)
+	if err != nil {
+		return nil, service.NewInternalError(err)
+	}
+
+	// Generate access token
 	accessToken, err := authHelper.GenerateAccessToken(
 		userId,
+		sessionId,
 		timeNow,
 		s.jwtConf.Secret(),
 		s.jwtConf.AccessTimeout(),
@@ -33,25 +57,7 @@ func (s *authService) Register(ctx context.Context, user *smodel.User) (*smodel.
 	if err != nil {
 		return nil, service.NewInternalError(err)
 	}
-	refreshToken, expirationTime, err := authHelper.GenerateRefreshToken(
-		userId,
-		timeNow,
-		s.jwtConf.Secret(),
-		s.jwtConf.RefreshTimeout(),
-	)
-	if err != nil {
-		return nil, service.NewInternalError(err)
-	}
 
-	repoSession := &rmodel.Session{
-		UserId:         userId,
-		RefreshToken:   refreshToken,
-		ExpirationTime: expirationTime,
-	}
-	err = s.sessionRepo.AddSession(ctx, nil, repoSession)
-	if err != nil {
-		return nil, service.ErrorDBToService(err)
-	}
 	return &smodel.Tokens{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,

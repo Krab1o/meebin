@@ -8,6 +8,7 @@ import (
 	apiAuth "github.com/Krab1o/meebin/internal/api/auth"
 	"github.com/Krab1o/meebin/internal/config"
 	"github.com/Krab1o/meebin/internal/config/env"
+	"github.com/Krab1o/meebin/internal/middleware"
 	repoSession "github.com/Krab1o/meebin/internal/repository/session"
 	repoUser "github.com/Krab1o/meebin/internal/repository/user"
 	servAuth "github.com/Krab1o/meebin/internal/service/auth"
@@ -69,14 +70,33 @@ func main() {
 	{
 		authGroup := apiGroup.Group("/auth")
 		{
-			authGroup.POST("/register", api.MakeHandler(authHandler.Register)) // Регистрация
-			authGroup.POST("/login", api.MakeHandler(authHandler.Login))       // Логин
-			authGroup.POST("/refresh", api.MakeHandler(authHandler.Refresh))   // Обновление токена
-			authGroup.POST("/logout", api.MakeHandler(authHandler.Logout))     // Выход
+			// Регистрация
+			authGroup.POST(
+				"/register",
+				api.MakeHandler(authHandler.Register),
+			)
+			// Логин
+			authGroup.POST(
+				"/login",
+				api.MakeHandler(authHandler.Login),
+			)
+			// Обновление токена
+			authGroup.POST(
+				"/refresh",
+				api.MakeHandler(authHandler.Refresh),
+			)
+			// Выход
+			authGroup.POST(
+				"/logout",
+				api.MakeHandler(middleware.JWTMiddleware(jwtConfig.Secret())),
+				api.MakeHandler(authHandler.Logout),
+			)
+			// Пользователь
 			authGroup.GET(
 				"/profile",
+				api.MakeHandler(middleware.JWTMiddleware(jwtConfig.Secret())),
 				api.MakeHandler(authHandler.Profile),
-			) // Данные пользователя
+			)
 		}
 	}
 	// users := api.Group("/users")
