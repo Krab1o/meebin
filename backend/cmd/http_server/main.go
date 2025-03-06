@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 
 	"github.com/Krab1o/meebin/internal/api"
@@ -13,7 +12,6 @@ import (
 	repoUser "github.com/Krab1o/meebin/internal/repository/user"
 	servAuth "github.com/Krab1o/meebin/internal/service/auth"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
@@ -43,18 +41,11 @@ func main() {
 		log.Fatal("Failed to read jwtConfig")
 	}
 
-	//TODO: remove DB init to another function
-	ctx := context.Background()
-	pool, err := pgxpool.New(ctx, postgresConfig.DSN())
-	if err != nil {
-		log.Fatalf("Failed to connect to DB: %v", err)
-	}
-	defer pool.Close()
+	//TODO: remove DB init to DI container
+	pool := postgresInit(postgresConfig.DSN())
 
-	err = pool.Ping(ctx)
-	if err != nil {
-		log.Fatalf("DB is not reachable, %v", err)
-	}
+	//TODO: move validator init to DI container
+	validator := validatorInit()
 
 	userRepository := repoUser.NewRepository(pool)
 	sessionRepository := repoSession.NewRepository(pool)
@@ -64,7 +55,7 @@ func main() {
 		sessionRepository,
 		jwtConfig,
 	)
-	authHandler := apiAuth.NewHandler(authService)
+	authHandler := apiAuth.NewHandler(validator, authService)
 
 	apiGroup := s.Group("/api")
 	{

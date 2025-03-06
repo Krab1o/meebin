@@ -10,7 +10,7 @@ import (
 
 func (h *handler) Refresh(c *gin.Context) error {
 	ctx := c.Request.Context()
-	token := &dto.Token{}
+	token := &dto.RefreshToken{}
 	err := c.ShouldBindJSON(token)
 	if err != nil {
 		return api.NewBadRequestError(err, nil)
@@ -19,6 +19,6 @@ func (h *handler) Refresh(c *gin.Context) error {
 	if err != nil {
 		return api.ErrorServiceToAPI(err, nil)
 	}
-	c.JSON(http.StatusOK, &dto.Token{Refresh: newRefreshToken})
+	c.JSON(http.StatusOK, &dto.RefreshToken{Refresh: newRefreshToken})
 	return nil
 }

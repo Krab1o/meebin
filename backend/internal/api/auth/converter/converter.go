@@ -5,16 +5,10 @@ import (
 	smodel "github.com/Krab1o/meebin/internal/struct/s_model"
 )
 
-const (
-	startUtilizeCount = 0
-	startReportCount  = 0
-	startRating       = 0.0
-)
-
 // TODO: possibility of shallow copying. Check for errors and search for better
 // solution in case of an error
 
-func NewUserDTOToService(newUser *dto.NewUser) *smodel.User {
+func NewUserDTOToService(newUser *dto.RequestCreateUser) *smodel.User {
 	creds := CredsDTOToService(newUser.Creds)
 	data := DataDTOToService(newUser.Data)
 	return &smodel.User{
@@ -23,7 +17,7 @@ func NewUserDTOToService(newUser *dto.NewUser) *smodel.User {
 	}
 }
 
-func UserDTOToService(user *dto.User) *smodel.User {
+func UserDTOToService(user *dto.ResponseProfileUser) *smodel.User {
 	creds := CredsDTOToService(user.Creds)
 	data := DataDTOToService(user.Data)
 	stats := StatsDTOToService(user.Stats)
@@ -61,6 +55,6 @@ func StatsDTOToService(stats *dto.Stats) *smodel.Stats {
 	}
 }
 
-func TokensServiceToDTO(tokens *smodel.Tokens) *dto.Tokens {
-	return (*dto.Tokens)(tokens)
+func ResponseTokensServiceToDTO(tokens *smodel.Tokens) *dto.ReponseTokens {
+	return (*dto.ReponseTokens)(tokens)
 }

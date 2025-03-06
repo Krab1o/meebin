@@ -25,7 +25,7 @@ func (h *handler) Login(c *gin.Context) error {
 	if err != nil {
 		return api.ErrorServiceToAPI(err, nil)
 	}
-	dtoTokens := converter.TokensServiceToDTO(tokens)
+	dtoTokens := converter.ResponseTokensServiceToDTO(tokens)
 	c.JSON(http.StatusOK, dtoTokens)
 	return nil
 }

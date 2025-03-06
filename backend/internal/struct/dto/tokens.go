@@ -1,10 +1,10 @@
 package dto
 
-type Tokens struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
+type ReponseTokens struct {
+	AccessToken  string `json:"accessToken"  binding:"required,jwt"`
+	RefreshToken string `json:"refreshToken" binding:"required,jwt"`
 }
 
-type Token struct {
-	Refresh string `json:"refreshToken"`
+type RefreshToken struct {
+	Refresh string `json:"refreshToken" binding:"required,jwt"`
 }
