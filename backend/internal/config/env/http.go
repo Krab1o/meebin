@@ -18,6 +18,7 @@ type httpConfig struct {
 	port string
 }
 
+// TODO: add error messages
 func NewHTTPConfig() (config.HTTPConfig, error) {
 	// host := os.Getenv(httpHostEnvName)
 	// if len(host) == 0 {

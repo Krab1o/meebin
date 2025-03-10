@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	"github.com/Krab1o/meebin/internal/repository"
-	rmodel "github.com/Krab1o/meebin/internal/struct/r_model"
 	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 )

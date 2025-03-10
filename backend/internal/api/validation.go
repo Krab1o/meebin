@@ -3,7 +3,7 @@ package api
 import (
 	"fmt"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 const (
@@ -17,8 +17,41 @@ const (
 	defaultMessage   = "Invalid value"
 )
 
-func ValidateStruct(validate validator.Validate, data interface{}) map[string]string {
+func ParseValidationErrors(err error) map[string]string {
+	errs, ok := err.(validator.ValidationErrors)
+	if !ok {
+		return nil
+	}
 
+	errorMap := make(map[string]string)
+	for _, err := range errs {
+		field := err.Field()
+		tag := err.Tag()
+		param := err.Param()
+
+		switch tag {
+		case "min":
+			errorMap[field] = fmt.Sprintf(minMessage, field, param)
+		case "max":
+			errorMap[field] = fmt.Sprintf(maxMessage, field, param)
+		case "required":
+			errorMap[field] = fmt.Sprintf(requiredMessage, field)
+		case "email":
+			errorMap[field] = fmt.Sprintf(emailMessage)
+		case "uppercase":
+			errorMap[field] = fmt.Sprintf(uppercaseMessage)
+		case "lowercase":
+			errorMap[field] = fmt.Sprintf(uppercaseMessage)
+		case "digit":
+			errorMap[field] = fmt.Sprintf(uppercaseMessage)
+		default:
+			errorMap[field] = fmt.Sprintf(defaultMessage)
+		}
+	}
+	return errorMap
+}
+
+func ValidateStruct(validate validator.Validate, data interface{}) map[string]string {
 	errs := validate.Struct(data)
 	if errs == nil {
 		return nil

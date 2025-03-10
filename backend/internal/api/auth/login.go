@@ -5,7 +5,7 @@ import (
 
 	"github.com/Krab1o/meebin/internal/api"
 	"github.com/Krab1o/meebin/internal/api/auth/converter"
-	"github.com/Krab1o/meebin/internal/struct/dto"
+	"github.com/Krab1o/meebin/internal/model/dto"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,10 +15,7 @@ func (h *handler) Login(c *gin.Context) error {
 	userCreds := &dto.Creds{}
 	err := c.ShouldBindJSON(userCreds)
 	if err != nil {
-		return api.NewBadRequestError(err, "Bad request specified")
-	}
-	if userCreds.Email == "" || userCreds.Username == "" {
-		return api.NewBadRequestError(err, "Empty password or username")
+		return api.NewBadRequestError(err, api.ParseValidationErrors(err))
 	}
 	serviceCreds := converter.CredsDTOToService(userCreds)
 	tokens, err := h.authService.Login(ctx, serviceCreds)

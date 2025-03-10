@@ -4,23 +4,63 @@ import (
 	"context"
 	"time"
 
+	"github.com/Krab1o/meebin/internal/model"
+	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
+	smodel "github.com/Krab1o/meebin/internal/model/s_model"
+	"github.com/Krab1o/meebin/internal/repository"
 	"github.com/Krab1o/meebin/internal/service"
 	"github.com/Krab1o/meebin/internal/service/auth/converter"
 	authHelper "github.com/Krab1o/meebin/internal/service/auth/helper"
-	rmodel "github.com/Krab1o/meebin/internal/struct/r_model"
-	smodel "github.com/Krab1o/meebin/internal/struct/s_model"
+	"github.com/Krab1o/meebin/internal/shared"
+	"golang.org/x/crypto/bcrypt"
 )
+
+func registrationRole(email string) []model.Role {
+	if email == service.AdminEmail {
+		return []model.Role{service.RoleAdminName}
+	} else {
+		return []model.Role{service.RoleUserName}
+	}
+}
 
 // TODO: add error messages
 func (s *authService) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens, error) {
-	repoUser, err := converter.UserServiceToRepository(user)
+	hashedBytes, err := bcrypt.GenerateFromPassword(
+		[]byte(user.Creds.Password),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		return nil, service.NewInternalError(err)
+	}
+	user.Creds.Password = string(hashedBytes)
+
+	user.Stats = &smodel.Stats{
+		UtilizeCount: service.StartUtilizeCount,
+		ReportCount:  service.StartReportCount,
+		Rating:       service.StartRating,
+	}
+
+	user.Roles = registrationRole(user.Creds.Email)
+
+	repoUser := converter.UserServiceToRepo(user)
+
+	// TODO: add multiple roles
+	roleId, err := s.roleRepo.GetRolesByTitle(ctx, nil, user.Roles)
 	if err != nil {
 		return nil, service.ErrorDBToService(err, nil)
 	}
-	//TODO: add transaction
-	userId, err := s.userRepo.AddUser(ctx, nil, repoUser)
+	// TODO: add transaction
+	userId, err := s.userRepo.AddUser(ctx, nil, repoUser, roleId)
 	if err != nil {
-		return nil, service.ErrorDBToService(err, nil)
+		return nil, service.ErrorDBToService(err, func(err *repository.Error) *service.Error {
+			//TODO: think how to return either nickname or email or both occupied
+			switch err.Type {
+			case repository.Duplicate:
+				return service.NewDuplicateError(err, "User already exists")
+			default:
+				return service.NewInternalError(err, "Internal Error")
+			}
+		})
 	}
 
 	// Creating database row with session
@@ -37,7 +77,9 @@ func (s *authService) Register(ctx context.Context, user *smodel.User) (*smodel.
 
 	// Write database data to refresh token
 	refreshToken, err := authHelper.GenerateRefreshToken(
-		sessionId,
+		shared.CustomRefreshFields{
+			SessionID: sessionId,
+		},
 		refreshExpirationTime,
 		timeNow,
 		s.jwtConf.Secret(),
@@ -48,8 +90,11 @@ func (s *authService) Register(ctx context.Context, user *smodel.User) (*smodel.
 
 	// Generate access token
 	accessToken, err := authHelper.GenerateAccessToken(
-		userId,
-		sessionId,
+		shared.CustomAccessFields{
+			UserID:    userId,
+			SessionID: sessionId,
+			Roles:     user.Roles,
+		},
 		timeNow,
 		s.jwtConf.Secret(),
 		s.jwtConf.AccessTimeout(),

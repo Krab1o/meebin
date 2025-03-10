@@ -2,15 +2,24 @@ package user
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	"github.com/Krab1o/meebin/internal/repository"
-	rmodel "github.com/Krab1o/meebin/internal/struct/r_model"
 	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func (r *repo) AddUser(ctx context.Context, tx pgx.Tx, user *rmodel.User) (uint64, error) {
+// TODO: cache roles to avoid queries
+// TODO: add multiple role support
+func (r *repo) AddUser(
+	ctx context.Context,
+	tx pgx.Tx,
+	user *rmodel.User,
+	roleId uint64,
+) (uint64, error) {
 	userTableQuery, userTableArgs, err := squirrel.Insert(repository.UserTableName).
 		PlaceholderFormat(squirrel.Dollar).
 		Columns(
@@ -21,7 +30,7 @@ func (r *repo) AddUser(ctx context.Context, tx pgx.Tx, user *rmodel.User) (uint6
 		Values(
 			user.Creds.Username,
 			user.Creds.Email,
-			user.Creds.Password,
+			user.Creds.HashedPassword,
 		).
 		Suffix(fmt.Sprintf("RETURNING %s", repository.UserIdColumn)).
 		ToSql()
@@ -41,6 +50,13 @@ func (r *repo) AddUser(ctx context.Context, tx pgx.Tx, user *rmodel.User) (uint6
 	var userId uint64
 	err = row.Scan(&userId)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case repository.SQLCodeDuplicate:
+				return 0, repository.NewDuplicateError(err)
+			}
+		}
 		return 0, repository.NewInternalError(err)
 	}
 
@@ -97,6 +113,27 @@ func (r *repo) AddUser(ctx context.Context, tx pgx.Tx, user *rmodel.User) (uint6
 		_, err = tx.Exec(ctx, statsTableQuery, statsTableArgs...)
 	} else {
 		_, err = r.db.Exec(ctx, statsTableQuery, statsTableArgs...)
+	}
+	if err != nil {
+		return 0, repository.NewInternalError(err)
+	}
+
+	userRoleQuery, userRoleArgs, err := squirrel.Insert(repository.UserRoleTableName).
+		PlaceholderFormat(squirrel.Dollar).
+		Columns(
+			repository.UserRoleIdRoleColumn,
+			repository.UserRoleIdUserColumn,
+		).Values(
+		roleId,
+		userId,
+	).ToSql()
+	if err != nil {
+		return 0, repository.NewInternalError(err)
+	}
+	if tx != nil {
+		_, err = tx.Exec(ctx, userRoleQuery, userRoleArgs...)
+	} else {
+		_, err = r.db.Exec(ctx, userRoleQuery, userRoleArgs...)
 	}
 	if err != nil {
 		return 0, repository.NewInternalError(err)

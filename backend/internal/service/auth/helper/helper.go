@@ -5,21 +5,24 @@ import (
 
 	"github.com/Krab1o/meebin/internal/shared"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
-//TODO: add roles to token
+// TODO: add roles to token
+func VerifyPassword(hashedPassword string, candidatePassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(candidatePassword))
+	return err == nil
+}
 
 func GenerateAccessToken(
-	userID uint64,
-	sessionID uint64,
+	accessFields shared.CustomAccessFields,
 	timeNow time.Time,
 	jwtSecret []byte,
 	jwtTimeout int,
 ) (string, error) {
 	expirationTime := timeNow.Add(time.Duration(jwtTimeout) * time.Minute)
 	claims := shared.AccessClaims{
-		UserID:    userID,
-		SessionID: sessionID,
+		CustomAccessFields: accessFields,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(timeNow),
@@ -31,13 +34,13 @@ func GenerateAccessToken(
 }
 
 func GenerateRefreshToken(
-	sessionID uint64,
+	refreshFields shared.CustomRefreshFields,
 	expirationTime time.Time,
 	timeNow time.Time,
 	jwtSecret []byte,
 ) (string, error) {
 	claims := shared.RefreshClaims{
-		SessionID: sessionID,
+		CustomRefreshFields: refreshFields,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(timeNow),

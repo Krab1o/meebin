@@ -13,7 +13,7 @@ func (h *handler) Profile(c *gin.Context) error {
 	ctx := c.Request.Context()
 	userId, ok := c.Get(shared.UserIDJsonName)
 	if !ok {
-		return api.NewInternalError(nil, "Unable to parse userId")
+		return api.NewInternalError(nil, "Service error")
 	}
 	user, err := h.authService.Profile(ctx, userId.(uint64))
 	if err != nil {

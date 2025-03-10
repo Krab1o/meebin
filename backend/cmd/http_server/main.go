@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/Krab1o/meebin/internal/api"
@@ -8,10 +9,12 @@ import (
 	"github.com/Krab1o/meebin/internal/config"
 	"github.com/Krab1o/meebin/internal/config/env"
 	"github.com/Krab1o/meebin/internal/middleware"
+	repoRole "github.com/Krab1o/meebin/internal/repository/role"
 	repoSession "github.com/Krab1o/meebin/internal/repository/session"
 	repoUser "github.com/Krab1o/meebin/internal/repository/user"
 	servAuth "github.com/Krab1o/meebin/internal/service/auth"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
@@ -21,7 +24,6 @@ const (
 // TODO: replace error messages with strings
 func main() {
 	s := gin.Default()
-
 	err := config.Load(path)
 	if err != nil {
 		log.Fatal(err)
@@ -29,33 +31,47 @@ func main() {
 
 	httpConfig, err := env.NewHTTPConfig()
 	if err != nil {
-		log.Fatal("Failed to read httpConfig")
+		log.Fatal("Failed to setup httpConfig")
 	}
 	postgresConfig, err := env.NewPGConfig()
 	if err != nil {
-		log.Fatal("Failed to read pgConfig")
+		log.Fatal("Failed to setup pgConfig")
 	}
 	jwtConfig, err := env.NewJWTConfig()
 	if err != nil {
-		log.Println(err)
-		log.Fatal("Failed to read jwtConfig")
+		log.Fatal("Failed to setup jwtConfig")
 	}
 
 	//TODO: remove DB init to DI container
-	pool := postgresInit(postgresConfig.DSN())
+	ctx := context.Background()
+	pool, err := pgxpool.New(ctx, postgresConfig.DSN())
+	if err != nil {
+		log.Fatalf("Failed to connect to DB: %v", err)
+	}
+	defer pool.Close()
+
+	err = pool.Ping(ctx)
+	if err != nil {
+		log.Fatalf("DB is not reachable, %v", err)
+	}
 
 	//TODO: move validator init to DI container
-	validator := validatorInit()
+	//TODO: inverse dependencies somehow
+	validate, err := validatorInit(s)
+	if err != nil {
+		// log.Fatal("Failed to setup validator")
+	}
 
 	userRepository := repoUser.NewRepository(pool)
 	sessionRepository := repoSession.NewRepository(pool)
-
+	roleRepository := repoRole.NewRepository(pool)
 	authService := servAuth.NewService(
 		userRepository,
 		sessionRepository,
+		roleRepository,
 		jwtConfig,
 	)
-	authHandler := apiAuth.NewHandler(validator, authService)
+	authHandler := apiAuth.NewHandler(validate, authService)
 
 	apiGroup := s.Group("/api")
 	{

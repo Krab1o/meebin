@@ -1,14 +1,12 @@
 package converter
 
 import (
-	"github.com/Krab1o/meebin/internal/struct/dto"
-	smodel "github.com/Krab1o/meebin/internal/struct/s_model"
+	"github.com/Krab1o/meebin/internal/model"
+	"github.com/Krab1o/meebin/internal/model/dto"
+	smodel "github.com/Krab1o/meebin/internal/model/s_model"
 )
 
-// TODO: possibility of shallow copying. Check for errors and search for better
-// solution in case of an error
-
-func NewUserDTOToService(newUser *dto.RequestCreateUser) *smodel.User {
+func RequestUserDTOToService(newUser *dto.RequestCreateUser) *smodel.User {
 	creds := CredsDTOToService(newUser.Creds)
 	data := DataDTOToService(newUser.Data)
 	return &smodel.User{
@@ -21,12 +19,25 @@ func UserDTOToService(user *dto.ResponseProfileUser) *smodel.User {
 	creds := CredsDTOToService(user.Creds)
 	data := DataDTOToService(user.Data)
 	stats := StatsDTOToService(user.Stats)
+	roles := RolesDTOToService(user.Roles)
 	return &smodel.User{
 		Id:    user.Id,
+		Roles: roles,
 		Creds: creds,
 		Data:  data,
 		Stats: stats,
 	}
+}
+
+func RolesDTOToService(roles []model.Role) []model.Role {
+	if roles == nil {
+		return nil
+	}
+
+	copiedRoles := make([]model.Role, len(roles))
+	copy(copiedRoles, roles)
+
+	return copiedRoles
 }
 
 func CredsDTOToService(creds *dto.Creds) *smodel.Creds {
@@ -56,5 +67,8 @@ func StatsDTOToService(stats *dto.Stats) *smodel.Stats {
 }
 
 func ResponseTokensServiceToDTO(tokens *smodel.Tokens) *dto.ReponseTokens {
-	return (*dto.ReponseTokens)(tokens)
+	return &dto.ReponseTokens{
+		AccessToken:  tokens.AccessToken,
+		RefreshToken: tokens.RefreshToken,
+	}
 }

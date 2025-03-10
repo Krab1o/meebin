@@ -1,6 +1,10 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"github.com/Krab1o/meebin/internal/model"
+)
 
 type RequestCreateUser struct {
 	Creds *Creds        `json:"creds"        binding:"required"`
@@ -9,7 +13,7 @@ type RequestCreateUser struct {
 
 type ResponseProfileUser struct {
 	Id    uint64        `json:"id"`
-	Role  string        `json:"role"`
+	Roles []model.Role  `json:"roles"`
 	Creds *Creds        `json:"creds"`
 	Data  *PersonalData `json:"personalData"`
 	Stats *Stats        `json:"stats,omitempty"`

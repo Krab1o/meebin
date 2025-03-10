@@ -1,8 +1,8 @@
-package session
+package user
 
 import (
 	"context"
-	"log"
+	"errors"
 
 	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	"github.com/Krab1o/meebin/internal/repository"
@@ -10,43 +10,45 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) FindSession(
+func (r *repo) GetUserCredsByEmail(
 	ctx context.Context,
 	tx pgx.Tx,
-	sessionID uint64,
-) (*rmodel.Session, error) {
-	query, args, err := squirrel.Select(
-		repository.SessionIdColumn,
-		repository.SessionIdUserColumn,
-		repository.SessionExpirationTimeColumn,
-	).
+	email string,
+) (*rmodel.User, error) {
+	query, args, err := squirrel.
+		Select(
+			repository.UserIdColumn,
+			repository.UserUsernameColumn,
+			repository.UserEmailColumn,
+			repository.UserPasswordColumn,
+		).
 		PlaceholderFormat(squirrel.Dollar).
-		From(repository.SessionTableName).
-		Where(squirrel.Eq{repository.SessionIdColumn: sessionID}).
+		From(repository.UserTableName).
+		Where(squirrel.Eq{repository.UserEmailColumn: email}).
 		ToSql()
-	log.Println(query)
 	if err != nil {
 		return nil, repository.NewInternalError(err)
 	}
-
 	var row pgx.Row
 	if tx != nil {
 		row = tx.QueryRow(ctx, query, args...)
 	} else {
 		row = r.db.QueryRow(ctx, query, args...)
 	}
-
-	repoSession := &rmodel.Session{}
+	user := &rmodel.User{
+		Creds: &rmodel.Creds{},
+	}
 	err = row.Scan(
-		&repoSession.SessionId,
-		&repoSession.UserId,
-		&repoSession.ExpirationTime,
+		&user.Id,
+		&user.Creds.Username,
+		&user.Creds.Email,
+		&user.Creds.HashedPassword,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, repository.NewNotFoundError(err)
 		}
 		return nil, repository.NewInternalError(err)
 	}
-	return repoSession, nil
+	return user, nil
 }

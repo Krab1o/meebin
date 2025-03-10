@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/Krab1o/meebin/internal/repository"
@@ -9,7 +10,6 @@ import (
 
 type ErrorType int
 
-// TODO: think of removing bare errors from custom types
 type Error struct {
 	Type    ErrorType
 	Err     error
@@ -18,6 +18,7 @@ type Error struct {
 
 const (
 	Semantic ErrorType = iota
+	Duplicate
 	NotFound
 	Unauthorized
 	Internal
@@ -27,6 +28,8 @@ func (e ErrorType) String() string {
 	switch e {
 	case Semantic:
 		return "Semantic Error"
+	case Duplicate:
+		return "Duplicate item"
 	case NotFound:
 		return "Not found"
 	case Unauthorized:
@@ -39,7 +42,11 @@ func (e ErrorType) String() string {
 }
 
 func (e Error) Error() string {
-	return e.Err.Error()
+	return fmt.Sprintf("Service error: %s", e.Message)
+}
+
+func (e Error) Unwrap() error {
+	return e.Err
 }
 
 func newError(errType ErrorType, err error, messages ...string) *Error {
@@ -73,11 +80,16 @@ func NewUnauthorizedError(err error, messages ...string) *Error {
 func NewInternalError(err error, messages ...string) *Error {
 	return newError(Internal, err, messages...)
 }
+func NewDuplicateError(err error, messages ...string) *Error {
+	return newError(Duplicate, err, messages...)
+}
 
 func defaultAction(dbError *repository.Error) *Error {
 	switch dbError.Type {
 	case repository.NotFound:
 		return NewNotFoundError(dbError)
+	case repository.Duplicate:
+		return NewDuplicateError(dbError)
 	default:
 		return NewInternalError(dbError)
 	}

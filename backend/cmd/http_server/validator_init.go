@@ -1,10 +1,12 @@
 package main
 
 import (
-	"log"
+	"errors"
 	"unicode"
 
-	"github.com/go-playground/validator"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 )
 
 func hasUppercase(fl validator.FieldLevel) bool {
@@ -36,19 +38,23 @@ func hasDigit(fl validator.FieldLevel) bool {
 	return false
 }
 
-func validatorInit() *validator.Validate {
-	v := validator.New()
-	err := v.RegisterValidation("uppercase", hasUppercase)
-	if err != nil {
-		log.Fatal("Failed to setup validator")
+func validatorInit(s *gin.Engine) (*validator.Validate, error) {
+	v, ok := binding.Validator.Engine().(*validator.Validate)
+	if ok {
+		err := v.RegisterValidation("uppercase", hasUppercase)
+		if err != nil {
+			return nil, err
+		}
+		err = v.RegisterValidation("lowercase", hasLowercase)
+		if err != nil {
+			return nil, err
+		}
+		err = v.RegisterValidation("digit", hasDigit)
+		if err != nil {
+			return nil, err
+		}
+
+		return v, nil
 	}
-	err = v.RegisterValidation("lowercase", hasLowercase)
-	if err != nil {
-		log.Fatal("Failed to setup validator")
-	}
-	err = v.RegisterValidation("digit", hasDigit)
-	if err != nil {
-		log.Fatal("Failed to setup validator")
-	}
-	return v
+	return nil, errors.New("Failed to get gin validator")
 }

@@ -32,10 +32,17 @@ func (s *authService) Refresh(ctx context.Context, refreshToken string) (string,
 	if err != nil {
 		return "", service.ErrorDBToService(err, nil)
 	}
+	roles, err := s.roleRepo.GetUserRolesById(ctx, nil, repoSession.UserId)
+	if err != nil {
+		return "", service.ErrorDBToService(err, nil)
+	}
 	timeNow := time.Now()
 	accessToken, err := helper.GenerateAccessToken(
-		repoSession.UserId,
-		repoSession.SessionId,
+		shared.CustomAccessFields{
+			UserID:    repoSession.UserId,
+			SessionID: repoSession.SessionId,
+			Roles:     roles,
+		},
 		timeNow,
 		s.jwtConf.Secret(),
 		s.jwtConf.AccessTimeout(),

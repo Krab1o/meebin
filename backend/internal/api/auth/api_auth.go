@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/Krab1o/meebin/internal/service"
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 type handler struct {

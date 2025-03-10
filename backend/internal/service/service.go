@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	smodel "github.com/Krab1o/meebin/internal/struct/s_model"
+	smodel "github.com/Krab1o/meebin/internal/model/s_model"
 )
 
 type EventService interface {

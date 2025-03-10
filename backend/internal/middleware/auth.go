@@ -32,7 +32,6 @@ func JWTMiddleware(jwtSecret []byte) api.Handler {
 			claims,
 			shared.ParseFunction(jwtSecret),
 		)
-		//TODO: check different types of errors, add messages
 		if err != nil {
 			return api.NewUnauthorizedError(err, "Unexpected singning method")
 		}
@@ -41,6 +40,7 @@ func JWTMiddleware(jwtSecret []byte) api.Handler {
 		}
 		c.Set(shared.UserIDJsonName, claims.UserID)
 		c.Set(shared.SessionIDJsonName, claims.SessionID)
+		c.Set(shared.RolesJsonName, claims.Roles)
 		return nil
 	}
 }

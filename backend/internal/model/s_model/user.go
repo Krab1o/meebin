@@ -1,13 +1,18 @@
-package rmodel
+package smodel
 
-import "time"
+import (
+	"time"
+
+	"github.com/Krab1o/meebin/internal/model"
+)
 
 type User struct {
 	Id       uint64
+	Roles    []model.Role
 	Creds    *Creds
 	Data     *PersonalData
 	Stats    *Stats
-	Sessions *Session
+	Sessions *Tokens
 }
 
 type Creds struct {
@@ -30,8 +35,7 @@ type Stats struct {
 	Rating       float64
 }
 
-type Session struct {
-	SessionId      uint64
-	UserId         uint64
-	ExpirationTime time.Time
+type Tokens struct {
+	AccessToken  string
+	RefreshToken string
 }
