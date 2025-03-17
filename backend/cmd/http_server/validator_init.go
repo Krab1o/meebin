@@ -4,7 +4,6 @@ import (
 	"errors"
 	"unicode"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 )
@@ -38,23 +37,23 @@ func hasDigit(fl validator.FieldLevel) bool {
 	return false
 }
 
-func validatorInit(s *gin.Engine) (*validator.Validate, error) {
+func validatorInit() error {
 	v, ok := binding.Validator.Engine().(*validator.Validate)
 	if ok {
 		err := v.RegisterValidation("uppercase", hasUppercase)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		err = v.RegisterValidation("lowercase", hasLowercase)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		err = v.RegisterValidation("digit", hasDigit)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		return v, nil
+		return nil
 	}
-	return nil, errors.New("Failed to get gin validator")
+	return errors.New("Failed to get gin validator")
 }

@@ -24,6 +24,8 @@ import (
 // in handler error should be asserted as service error and then dependent on
 // its code it should be processed in each handler corresponding its requirements
 
+// TODO: remove status codes from all error
+// TODO: switch to errors.Is
 type Error struct {
 	StatusCode int   `json:"-"`
 	Message    any   `json:"message"`

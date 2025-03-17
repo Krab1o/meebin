@@ -1,9 +1,16 @@
 package user
 
-import "github.com/Krab1o/meebin/internal/service"
+import (
+	"github.com/Krab1o/meebin/internal/repository"
+	"github.com/Krab1o/meebin/internal/service"
+)
 
-type userService struct{}
+type serv struct {
+	userRepo repository.UserRepository
+}
 
-func NewService() service.UserService {
-	return &userService{}
+func NewService(userRepository repository.UserRepository) service.UserService {
+	return &serv{
+		userRepo: userRepository,
+	}
 }

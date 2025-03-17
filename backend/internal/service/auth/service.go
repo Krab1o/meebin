@@ -6,7 +6,7 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-type authService struct {
+type serv struct {
 	userRepo    repository.UserRepository
 	sessionRepo repository.UserSessionRepository
 	roleRepo    repository.RoleRepository
@@ -19,7 +19,7 @@ func NewService(
 	roleRepository repository.RoleRepository,
 	jwtConfig config.JWTConfig,
 ) service.AuthService {
-	return &authService{
+	return &serv{
 		userRepo:    userRepository,
 		sessionRepo: sessionRepository,
 		roleRepo:    roleRepository,

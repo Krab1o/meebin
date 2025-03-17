@@ -1,4 +1,4 @@
-package converter
+package user
 
 import (
 	"github.com/Krab1o/meebin/internal/model"
@@ -32,6 +32,9 @@ func RolesServiceToRepo(roles []model.Role) []model.Role {
 }
 
 func StatsServiceToRepo(stats *smodel.Stats) *rmodel.Stats {
+	if stats == nil {
+		return nil
+	}
 	return &rmodel.Stats{
 		UtilizeCount: stats.UtilizeCount,
 		ReportCount:  stats.ReportCount,
@@ -40,6 +43,9 @@ func StatsServiceToRepo(stats *smodel.Stats) *rmodel.Stats {
 }
 
 func PersonalDataServiceToRepo(data *smodel.PersonalData) *rmodel.PersonalData {
+	if data == nil {
+		return nil
+	}
 	return &rmodel.PersonalData{
 		GivenName:  data.GivenName,
 		Surname:    data.Surname,
@@ -50,6 +56,9 @@ func PersonalDataServiceToRepo(data *smodel.PersonalData) *rmodel.PersonalData {
 }
 
 func CredsServiceToRepo(creds *smodel.Creds) *rmodel.Creds {
+	if creds == nil {
+		return nil
+	}
 	return &rmodel.Creds{
 		Username:       creds.Username,
 		Email:          creds.Email,

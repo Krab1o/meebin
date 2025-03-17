@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/Krab1o/meebin/internal/service"
@@ -14,7 +15,7 @@ import (
 // if yes -> generate access token, return
 // if no  -> error
 
-func (s *authService) Refresh(ctx context.Context, refreshToken string) (string, error) {
+func (s *serv) Refresh(ctx context.Context, refreshToken string) (string, error) {
 	//TODO: move to one place (refactor)
 	claims := &shared.RefreshClaims{}
 	token, err := jwt.ParseWithClaims(
@@ -36,6 +37,8 @@ func (s *authService) Refresh(ctx context.Context, refreshToken string) (string,
 	if err != nil {
 		return "", service.ErrorDBToService(err, nil)
 	}
+	log.Println(claims.CustomRefreshFields)
+	log.Println(roles)
 	timeNow := time.Now()
 	accessToken, err := helper.GenerateAccessToken(
 		shared.CustomAccessFields{

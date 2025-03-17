@@ -2,19 +2,31 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Krab1o/meebin/internal/model"
 	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	"github.com/jackc/pgx/v5"
 )
 
+func Col(table, column string) string {
+	return fmt.Sprintf("%s.%s", table, column)
+}
+
 type UserRepository interface {
 	AddUser(ctx context.Context, tx pgx.Tx, user *rmodel.User, roleId uint64) (uint64, error)
-	GetUserCredsByEmail(ctx context.Context, tx pgx.Tx, email string) (*rmodel.User, error)
-	// GetById(id int64) (*user.User, error)
-	// List() ([]user.User, error)
-	// Update(id int64) error
-	// Delete(id int64) error
+	GetCredsByEmail(ctx context.Context, tx pgx.Tx, email string) (*rmodel.User, error)
+	GetById(ctx context.Context, tx pgx.Tx, id uint64) (*rmodel.User, error)
+	DeleteById(ctx context.Context, tx pgx.Tx, id uint64) error
+	List(ctx context.Context, tx pgx.Tx) ([]rmodel.User, error)
+	UpdateStats(ctx context.Context, tx pgx.Tx, userId uint64, stats *rmodel.Stats) error
+	UpdateCreds(ctx context.Context, tx pgx.Tx, userId uint64, creds *rmodel.Creds) error
+	UpdatePersonalData(
+		ctx context.Context,
+		tx pgx.Tx,
+		userId uint64,
+		data *rmodel.PersonalData,
+	) error
 }
 type UserSessionRepository interface {
 	AddSession(context.Context, pgx.Tx, *rmodel.Session) (uint64, error)

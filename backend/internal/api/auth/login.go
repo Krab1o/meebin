@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/Krab1o/meebin/internal/api"
-	"github.com/Krab1o/meebin/internal/api/auth/converter"
+	convToken "github.com/Krab1o/meebin/internal/converter/api/token"
+	convUser "github.com/Krab1o/meebin/internal/converter/api/user"
 	"github.com/Krab1o/meebin/internal/model/dto"
 	"github.com/gin-gonic/gin"
 )
@@ -17,12 +18,12 @@ func (h *handler) Login(c *gin.Context) error {
 	if err != nil {
 		return api.NewBadRequestError(err, api.ParseValidationErrors(err))
 	}
-	serviceCreds := converter.CredsDTOToService(userCreds)
+	serviceCreds := convUser.CredsDTOToService(userCreds)
 	tokens, err := h.authService.Login(ctx, serviceCreds)
 	if err != nil {
 		return api.ErrorServiceToAPI(err, nil)
 	}
-	dtoTokens := converter.ResponseTokensServiceToDTO(tokens)
+	dtoTokens := convToken.TokensServiceToDTO(tokens)
 	c.JSON(http.StatusOK, dtoTokens)
 	return nil
 }

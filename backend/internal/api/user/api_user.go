@@ -5,9 +5,11 @@ import (
 )
 
 type handler struct {
-	service service.UserService
+	userService service.UserService
 }
 
-func NewAPI(us service.UserService) *handler {
-	return &handler{service: us}
+func NewHandler(us service.UserService) *handler {
+	return &handler{
+		userService: us,
+	}
 }

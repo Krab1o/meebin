@@ -1,4 +1,4 @@
-package converter
+package user
 
 import (
 	"github.com/Krab1o/meebin/internal/model"
@@ -6,26 +6,17 @@ import (
 	smodel "github.com/Krab1o/meebin/internal/model/s_model"
 )
 
-func RequestUserDTOToService(newUser *dto.RequestCreateUser) *smodel.User {
-	creds := CredsDTOToService(newUser.Creds)
-	data := DataDTOToService(newUser.Data)
-	return &smodel.User{
-		Creds: creds,
-		Data:  data,
-	}
-}
-
-func UserDTOToService(user *dto.ResponseProfileUser) *smodel.User {
-	creds := CredsDTOToService(user.Creds)
-	data := DataDTOToService(user.Data)
-	stats := StatsDTOToService(user.Stats)
-	roles := RolesDTOToService(user.Roles)
+func UserDTOToService(user *dto.User) *smodel.User {
+	dtoCreds := CredsDTOToService(user.Creds)
+	dtoData := DataDTOToService(user.Data)
+	dtoStats := StatsDTOToService(user.Stats)
+	dtoRoles := RolesDTOToService(user.Roles)
 	return &smodel.User{
 		Id:    user.Id,
-		Roles: roles,
-		Creds: creds,
-		Data:  data,
-		Stats: stats,
+		Roles: dtoRoles,
+		Creds: dtoCreds,
+		Data:  dtoData,
+		Stats: dtoStats,
 	}
 }
 
@@ -41,6 +32,9 @@ func RolesDTOToService(roles []model.Role) []model.Role {
 }
 
 func CredsDTOToService(creds *dto.Creds) *smodel.Creds {
+	if creds == nil {
+		return nil
+	}
 	return &smodel.Creds{
 		Username: creds.Username,
 		Email:    creds.Email,
@@ -49,6 +43,9 @@ func CredsDTOToService(creds *dto.Creds) *smodel.Creds {
 }
 
 func DataDTOToService(data *dto.PersonalData) *smodel.PersonalData {
+	if data == nil {
+		return nil
+	}
 	return &smodel.PersonalData{
 		GivenName:  data.GivenName,
 		Surname:    data.Surname,
@@ -59,16 +56,12 @@ func DataDTOToService(data *dto.PersonalData) *smodel.PersonalData {
 }
 
 func StatsDTOToService(stats *dto.Stats) *smodel.Stats {
+	if stats == nil {
+		return nil
+	}
 	return &smodel.Stats{
 		UtilizeCount: stats.UtilizeCount,
 		ReportCount:  stats.ReportCount,
 		Rating:       stats.Rating,
-	}
-}
-
-func ResponseTokensServiceToDTO(tokens *smodel.Tokens) *dto.ReponseTokens {
-	return &dto.ReponseTokens{
-		AccessToken:  tokens.AccessToken,
-		RefreshToken: tokens.RefreshToken,
 	}
 }

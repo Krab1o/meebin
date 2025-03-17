@@ -14,8 +14,8 @@ import (
 
 // TODO: fix not checking password
 // TODO: remove needing username
-func (s *authService) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, error) {
-	repoUser, err := s.userRepo.GetUserCredsByEmail(ctx, nil, creds.Email)
+func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, error) {
+	repoUser, err := s.userRepo.GetCredsByEmail(ctx, nil, creds.Email)
 	if err != nil {
 		return nil, service.ErrorDBToService(err, nil)
 	}

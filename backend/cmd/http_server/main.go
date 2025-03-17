@@ -6,6 +6,7 @@ import (
 
 	"github.com/Krab1o/meebin/internal/api"
 	apiAuth "github.com/Krab1o/meebin/internal/api/auth"
+	apiUser "github.com/Krab1o/meebin/internal/api/user"
 	"github.com/Krab1o/meebin/internal/config"
 	"github.com/Krab1o/meebin/internal/config/env"
 	"github.com/Krab1o/meebin/internal/middleware"
@@ -13,6 +14,7 @@ import (
 	repoSession "github.com/Krab1o/meebin/internal/repository/session"
 	repoUser "github.com/Krab1o/meebin/internal/repository/user"
 	servAuth "github.com/Krab1o/meebin/internal/service/auth"
+	servUser "github.com/Krab1o/meebin/internal/service/user"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -57,7 +59,7 @@ func main() {
 
 	//TODO: move validator init to DI container
 	//TODO: inverse dependencies somehow
-	validate, err := validatorInit(s)
+	err = validatorInit()
 	if err != nil {
 		// log.Fatal("Failed to setup validator")
 	}
@@ -71,8 +73,12 @@ func main() {
 		roleRepository,
 		jwtConfig,
 	)
-	authHandler := apiAuth.NewHandler(validate, authService)
+	userService := servUser.NewService(userRepository)
 
+	authHandler := apiAuth.NewHandler(authService)
+	userHandler := apiUser.NewHandler(userService)
+
+	//TODO: add admin role to endpoints
 	apiGroup := s.Group("/api")
 	{
 		authGroup := apiGroup.Group("/auth")
@@ -92,29 +98,47 @@ func main() {
 				"/refresh",
 				api.MakeHandler(authHandler.Refresh),
 			)
-			// Выход
+			// Логаут
 			authGroup.POST(
 				"/logout",
 				api.MakeHandler(middleware.JWTMiddleware(jwtConfig.Secret())),
 				api.MakeHandler(authHandler.Logout),
 			)
-			// Пользователь
-			authGroup.GET(
-				"/profile",
+		}
+		userGroup := apiGroup.Group("/users")
+		{
+			// Получить список пользователей
+			userGroup.GET(
+				"",
 				api.MakeHandler(middleware.JWTMiddleware(jwtConfig.Secret())),
-				api.MakeHandler(authHandler.Profile),
+				api.MakeHandler(userHandler.ListUser),
+			)
+			// Получить пользователя по ID
+			userGroup.GET(
+				"/:id",
+				api.MakeHandler(middleware.JWTMiddleware(jwtConfig.Secret())),
+				api.MakeHandler(userHandler.GetUser),
+			)
+			// Обновить данные пользователя
+			userGroup.PATCH(
+				"/:id",
+				api.MakeHandler(middleware.JWTMiddleware(jwtConfig.Secret())),
+				api.MakeHandler(userHandler.UpdateUser),
+			)
+			// Удалить пользователя
+			userGroup.DELETE(
+				"/:id",
+				api.MakeHandler(middleware.JWTMiddleware(jwtConfig.Secret())),
+				api.MakeHandler(userHandler.DeleteUser),
 			)
 		}
+		events := apiGroup.Group("/events")
+		{
+			// Получить все события
+			events.GET("", nil)
+		}
 	}
-	// users := api.Group("/users")
-	// usersHandler := user.NewHandler()
-	// users.GET("", usersHandler.ListUser)
-	// users.GET("/:id", usersHandler.GetUser)
-	// users.POST("", usersHandler.CreateUser)
-	// users.PATCH("/:id", usersHandler.UpdateUser)
-	// users.DELETE("/:id", usersHandler.DeleteUser)
 
-	// events := api.Group("/events")
 	// eventsHandler := event.NewHandler()
 	// events.GET("", eventsHandler.ListEvents)
 	// events.GET("/:id", eventsHandler.GetEvent)

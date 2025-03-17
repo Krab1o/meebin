@@ -32,10 +32,7 @@ func JWTMiddleware(jwtSecret []byte) api.Handler {
 			claims,
 			shared.ParseFunction(jwtSecret),
 		)
-		if err != nil {
-			return api.NewUnauthorizedError(err, "Unexpected singning method")
-		}
-		if !token.Valid {
+		if err != nil || !token.Valid {
 			return api.NewUnauthorizedError(nil, "Invalid token")
 		}
 		c.Set(shared.UserIDJsonName, claims.UserID)

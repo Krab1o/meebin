@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) GetUserCredsByEmail(
+func (r *repo) GetCredsByEmail(
 	ctx context.Context,
 	tx pgx.Tx,
 	email string,

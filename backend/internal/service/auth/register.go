@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
+	converter "github.com/Krab1o/meebin/internal/converter/service/user"
 	"github.com/Krab1o/meebin/internal/model"
 	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	smodel "github.com/Krab1o/meebin/internal/model/s_model"
 	"github.com/Krab1o/meebin/internal/repository"
 	"github.com/Krab1o/meebin/internal/service"
-	"github.com/Krab1o/meebin/internal/service/auth/converter"
 	authHelper "github.com/Krab1o/meebin/internal/service/auth/helper"
 	"github.com/Krab1o/meebin/internal/shared"
 	"golang.org/x/crypto/bcrypt"
@@ -24,7 +24,7 @@ func registrationRole(email string) []model.Role {
 }
 
 // TODO: add error messages
-func (s *authService) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens, error) {
+func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens, error) {
 	hashedBytes, err := bcrypt.GenerateFromPassword(
 		[]byte(user.Creds.Password),
 		bcrypt.DefaultCost,

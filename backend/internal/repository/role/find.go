@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Krab1o/meebin/internal/model"
-	"github.com/Krab1o/meebin/internal/repository"
-	"github.com/Masterminds/squirrel"
+	rep "github.com/Krab1o/meebin/internal/repository"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -15,22 +15,20 @@ func (r *repo) GetUserRolesById(
 	tx pgx.Tx,
 	userId uint64,
 ) ([]model.Role, error) {
-	query, args, err := squirrel.Select(
-		repository.RoleTitleColumn,
+	query, args, err := sq.Select(
+		rep.RoleTitleColumn,
 	).
-		PlaceholderFormat(squirrel.Dollar).
-		From(repository.UserRoleTableName).
-		LeftJoin(fmt.Sprintf("%s ON %s.%s = %s.%s",
-			repository.RoleTableName,
-			repository.RoleTableName,
-			repository.RoleIdColumn,
-			repository.UserRoleTableName,
-			repository.UserRoleIdColumn,
+		PlaceholderFormat(sq.Dollar).
+		From(rep.UserRoleTableName).
+		LeftJoin(fmt.Sprintf("%s ON %s = %s",
+			rep.RoleTableName,
+			rep.Col(rep.UserRoleTableName, rep.UserRoleIdRoleColumn),
+			rep.Col(rep.RoleTableName, rep.RoleIdColumn),
 		),
-		).
+		).Where(sq.Eq{rep.Col(rep.UserRoleTableName, rep.UserRoleIdUserColumn): userId}).
 		ToSql()
 	if err != nil {
-		return nil, repository.NewInternalError(err)
+		return nil, rep.NewInternalError(err)
 	}
 	var rows pgx.Rows
 	if tx != nil {
@@ -39,7 +37,7 @@ func (r *repo) GetUserRolesById(
 		rows, err = r.db.Query(ctx, query, args...)
 	}
 	if err != nil {
-		return nil, repository.NewInternalError(err)
+		return nil, rep.NewInternalError(err)
 	}
 
 	var roles []model.Role
@@ -47,7 +45,7 @@ func (r *repo) GetUserRolesById(
 	for rows.Next() {
 		err = rows.Scan(&role)
 		if err != nil {
-			return nil, repository.NewInternalError(err)
+			return nil, rep.NewInternalError(err)
 		}
 		roles = append(roles, role)
 	}
@@ -57,15 +55,15 @@ func (r *repo) GetUserRolesById(
 
 // TODO: make multiple role support
 func (r *repo) GetRolesByTitle(ctx context.Context, tx pgx.Tx, role []model.Role) (uint64, error) {
-	query, args, err := squirrel.Select(
-		repository.RoleIdColumn,
+	query, args, err := sq.Select(
+		rep.RoleIdColumn,
 	).
-		PlaceholderFormat(squirrel.Dollar).
-		From(repository.RoleTableName).
-		Where(squirrel.Eq{repository.RoleTitleColumn: role}).
+		PlaceholderFormat(sq.Dollar).
+		From(rep.RoleTableName).
+		Where(sq.Eq{rep.RoleTitleColumn: role}).
 		ToSql()
 	if err != nil {
-		return 0, repository.NewInternalError(err)
+		return 0, rep.NewInternalError(err)
 	}
 	var row pgx.Row
 	if tx != nil {
@@ -78,9 +76,9 @@ func (r *repo) GetRolesByTitle(ctx context.Context, tx pgx.Tx, role []model.Role
 	err = row.Scan(&roleId)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return 0, repository.NewNotFoundError(err)
+			return 0, rep.NewNotFoundError(err)
 		}
-		return 0, repository.NewInternalError(err)
+		return 0, rep.NewInternalError(err)
 	}
 	return roleId, nil
 }

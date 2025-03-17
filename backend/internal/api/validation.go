@@ -17,13 +17,12 @@ const (
 	defaultMessage   = "Invalid value"
 )
 
-func ParseValidationErrors(err error) map[string]string {
+func ParseValidationErrors(err error) any {
+	errorMap := make(map[string]string)
 	errs, ok := err.(validator.ValidationErrors)
 	if !ok {
-		return nil
+		return "Wrong JSON syntax"
 	}
-
-	errorMap := make(map[string]string)
 	for _, err := range errs {
 		field := err.Field()
 		tag := err.Tag()
@@ -41,9 +40,9 @@ func ParseValidationErrors(err error) map[string]string {
 		case "uppercase":
 			errorMap[field] = fmt.Sprintf(uppercaseMessage)
 		case "lowercase":
-			errorMap[field] = fmt.Sprintf(uppercaseMessage)
+			errorMap[field] = fmt.Sprintf(lowercaseMessage)
 		case "digit":
-			errorMap[field] = fmt.Sprintf(uppercaseMessage)
+			errorMap[field] = fmt.Sprintf(digitMessage)
 		default:
 			errorMap[field] = fmt.Sprintf(defaultMessage)
 		}
@@ -51,36 +50,36 @@ func ParseValidationErrors(err error) map[string]string {
 	return errorMap
 }
 
-func ValidateStruct(validate validator.Validate, data interface{}) map[string]string {
-	errs := validate.Struct(data)
-	if errs == nil {
-		return nil
-	}
+// func ValidateStruct(validate validator.Validate, data interface{}) map[string]string {
+// 	errs := validate.Struct(data)
+// 	if errs == nil {
+// 		return nil
+// 	}
 
-	errorMap := make(map[string]string)
-	for _, err := range errs.(validator.ValidationErrors) {
-		field := err.Field()
-		tag := err.Tag()
-		param := err.Param()
+// 	errorMap := make(map[string]string)
+// 	for _, err := range errs.(validator.ValidationErrors) {
+// 		field := err.Field()
+// 		tag := err.Tag()
+// 		param := err.Param()
 
-		switch tag {
-		case "min":
-			errorMap[field] = fmt.Sprintf(minMessage, field, param)
-		case "max":
-			errorMap[field] = fmt.Sprintf(maxMessage, field, param)
-		case "required":
-			errorMap[field] = fmt.Sprintf(requiredMessage, field)
-		case "email":
-			errorMap[field] = fmt.Sprintf(emailMessage)
-		case "uppercase":
-			errorMap[field] = fmt.Sprintf(uppercaseMessage)
-		case "lowercase":
-			errorMap[field] = fmt.Sprintf(uppercaseMessage)
-		case "digit":
-			errorMap[field] = fmt.Sprintf(uppercaseMessage)
-		default:
-			errorMap[field] = fmt.Sprintf(defaultMessage)
-		}
-	}
-	return errorMap
-}
+// 		switch tag {
+// 		case "min":
+// 			errorMap[field] = fmt.Sprintf(minMessage, field, param)
+// 		case "max":
+// 			errorMap[field] = fmt.Sprintf(maxMessage, field, param)
+// 		case "required":
+// 			errorMap[field] = fmt.Sprintf(requiredMessage, field)
+// 		case "email":
+// 			errorMap[field] = fmt.Sprintf(emailMessage)
+// 		case "uppercase":
+// 			errorMap[field] = fmt.Sprintf(uppercaseMessage)
+// 		case "lowercase":
+// 			errorMap[field] = fmt.Sprintf(uppercaseMessage)
+// 		case "digit":
+// 			errorMap[field] = fmt.Sprintf(uppercaseMessage)
+// 		default:
+// 			errorMap[field] = fmt.Sprintf(defaultMessage)
+// 		}
+// 	}
+// 	return errorMap
+// }
