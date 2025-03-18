@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
@@ -43,7 +44,7 @@ func (r *repo) FindSession(
 		&repoSession.ExpirationTime,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, repository.NewNotFoundError(err)
 		}
 		return nil, repository.NewInternalError(err)

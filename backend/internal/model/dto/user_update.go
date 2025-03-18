@@ -1,36 +1,27 @@
 package dto
 
-import (
-	"time"
+import "time"
 
-	"github.com/Krab1o/meebin/internal/model"
-)
-
-type User struct {
-	Id    uint64        `json:"id,omitempty"`
-	Roles []model.Role  `json:"roles,omitempty"`
-	Creds *Creds        `json:"creds"`
-	Data  *PersonalData `json:"personalData"`
-	Stats *Stats        `json:"stats"`
+// @Description Entity which will be updated
+type UpdatedUser struct {
+	Id    uint64               `json:"id,omitempty" example:"42"`
+	Creds *UpdatedCreds        `json:"creds"`
+	Data  *UpdatedPersonalData `json:"personalData"`
 }
 
-type Creds struct {
-	Username string `json:"username"           binding:"omitempty,min=3,max=20"`
-	Email    string `json:"email"              binding:"omitempty,email"`
-	Password string `json:"password,omitempty" binding:"omitempty,min=8,digit,uppercase,lowercase"`
+// @Description Credentials which will be updated
+type UpdatedCreds struct {
+	Username string `json:"username"           example:"user123"             binding:"omitempty,min=3,max=20"`
+	Email    string `json:"email"              example:"user123@example.com" binding:"omitempty,email"                           format:"email"`
+	Password string `json:"password,omitempty" example:"Password123"         binding:"omitempty,min=8,digit,uppercase,lowercase" format:"password"`
 }
 
-type PersonalData struct {
-	GivenName  string    `json:"givenName"`
-	Surname    string    `json:"surname"`
-	Patronymic string    `json:"patronymic"`
-	City       string    `json:"city"`
-	Birthdate  time.Time `json:"birthDate"`
-}
-
-// TODO: add validation for fields
-type Stats struct {
-	UtilizeCount uint64  `json:"utilizeCount"`
-	ReportCount  uint64  `json:"reportCount"`
-	Rating       float64 `json:"rating"`
+// @Description Personal data which will be updated
+type UpdatedPersonalData struct {
+	GivenName  string `json:"givenName"  example:"Ivan"`
+	Surname    string `json:"surname"    example:"Ivanov"`
+	Patronymic string `json:"patronymic" example:"Ivanovich"`
+	City       string `json:"city"       example:"Vladivostok"`
+	// This field accepts default time format from RFC (DD-MM-YYYY, just pick default time library)
+	Birthdate time.Time `json:"birthDate"                        format:"date"`
 }

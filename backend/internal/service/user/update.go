@@ -11,11 +11,18 @@ import (
 
 func doUpdate(user *smodel.User) bool {
 	return user.Creds != nil && *user.Creds != smodel.Creds{} ||
-		user.Data != nil && *user.Data != smodel.PersonalData{} ||
-		user.Stats != nil && *user.Stats != smodel.Stats{}
+		user.Data != nil && *user.Data != smodel.PersonalData{}
 }
 
-func (s *serv) Update(ctx context.Context, user *smodel.User) (*smodel.User, error) {
+// TODO: construct map with repository column name
+func (s *serv) Update(
+	ctx context.Context,
+	user *smodel.User,
+	updatedUserId uint64,
+) (*smodel.User, error) {
+	if user.Id != updatedUserId {
+		return nil, service.NewForbiddenError(nil)
+	}
 	startUpdate := doUpdate(user)
 	if user.Creds != nil && user.Creds != (&smodel.Creds{}) {
 		if user.Creds.Password != "" {
@@ -29,37 +36,30 @@ func (s *serv) Update(ctx context.Context, user *smodel.User) (*smodel.User, err
 			user.Creds.Password = string(hashedBytes)
 		}
 	}
-	// log.Println(startUpdate)
-	if startUpdate {
-		repoUser := convUser.UserServiceToRepo(user)
-		var err error
-		if user.Creds != nil {
-			err = s.userRepo.UpdateCreds(ctx, nil, user.Id, repoUser.Creds)
-			if err != nil {
-				return nil, service.ErrorDBToService(err, nil)
-			}
-		}
-		if user.Data != nil {
-			err = s.userRepo.UpdatePersonalData(ctx, nil, user.Id, repoUser.Data)
-			if err != nil {
-				return nil, service.ErrorDBToService(err, nil)
-			}
-		}
-		if user.Stats != nil {
-			err = s.userRepo.UpdateStats(ctx, nil, user.Id, repoUser.Stats)
-			if err != nil {
-				return nil, service.ErrorDBToService(err, nil)
-			}
-		}
 
-		newRepoUser, err := s.userRepo.GetById(ctx, nil, user.Id)
-		if err != nil {
-			return nil, service.ErrorDBToService(err, nil)
-		}
-		newUser := convUser.UserRepoToService(newRepoUser)
-		return newUser, nil
-	} else {
-		return nil, service.NewSemanticError(nil, "Unable to process entity")
+	if !startUpdate {
+		return nil, service.NewNoUpdateError(nil)
 	}
 
+	repoUser := convUser.UserServiceToRepo(user)
+	var err error
+	if user.Creds != nil {
+		err = s.userRepo.UpdateCreds(ctx, nil, user.Id, repoUser.Creds)
+		if err != nil {
+			return nil, service.ErrorDBToService(err)
+		}
+	}
+	if user.Data != nil {
+		err = s.userRepo.UpdatePersonalData(ctx, nil, user.Id, repoUser.Data)
+		if err != nil {
+			return nil, service.ErrorDBToService(err)
+		}
+	}
+
+	newRepoUser, err := s.userRepo.GetById(ctx, nil, user.Id)
+	if err != nil {
+		return nil, service.ErrorDBToService(err)
+	}
+	newUser := convUser.UserRepoToService(newRepoUser)
+	return newUser, nil
 }

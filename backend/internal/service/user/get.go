@@ -11,7 +11,7 @@ import (
 func (s *serv) GetUser(ctx context.Context, userId uint64) (*smodel.User, error) {
 	repoUser, err := s.userRepo.GetById(ctx, nil, userId)
 	if err != nil {
-		return nil, service.ErrorDBToService(err, nil)
+		return nil, service.ErrorDBToService(err)
 	}
 	user := converter.UserRepoToService(repoUser)
 	return user, nil

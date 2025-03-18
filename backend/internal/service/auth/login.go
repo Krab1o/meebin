@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"log"
 	"time"
 
 	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
@@ -12,19 +11,18 @@ import (
 	"github.com/Krab1o/meebin/internal/shared"
 )
 
-// TODO: fix not checking password
 // TODO: remove needing username
 func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, error) {
 	repoUser, err := s.userRepo.GetCredsByEmail(ctx, nil, creds.Email)
 	if err != nil {
-		return nil, service.ErrorDBToService(err, nil)
+		return nil, service.ErrorDBToService(err)
 	}
 	ok := helper.VerifyPassword(
 		repoUser.Creds.HashedPassword,
 		creds.Password,
 	)
 	if !ok {
-		return nil, service.NewUnauthorizedError(err, "Wrong password")
+		return nil, service.NewUnauthorizedError(err)
 	}
 
 	timeNow := time.Now()
@@ -35,7 +33,7 @@ func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, 
 	}
 	sessionId, err := s.sessionRepo.AddSession(ctx, nil, repoSession)
 	if err != nil {
-		return nil, service.ErrorDBToService(err, nil)
+		return nil, service.ErrorDBToService(err)
 	}
 
 	refreshToken, err := helper.GenerateRefreshToken(
@@ -52,10 +50,9 @@ func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, 
 
 	roles, err := s.roleRepo.GetUserRolesById(ctx, nil, repoUser.Id)
 	if err != nil {
-		return nil, service.ErrorDBToService(err, nil)
+		return nil, service.ErrorDBToService(err)
 	}
-	log.Println(roles)
-	//TODO: add roles
+
 	accessToken, err := helper.GenerateAccessToken(
 		shared.CustomAccessFields{
 			UserID:    repoUser.Id,

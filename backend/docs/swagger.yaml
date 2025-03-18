@@ -1,0 +1,528 @@
+basePath: /api
+consumes:
+- application/json
+definitions:
+  api.Error:
+    properties:
+      message: {}
+    type: object
+  dto.AccessToken:
+    properties:
+      accessToken:
+        description: Should be a JWT access-token
+        type: string
+    required:
+    - accessToken
+    type: object
+  dto.BaseUser:
+    description: BaseUser-part of a list-of-users requests
+    properties:
+      creds:
+        $ref: '#/definitions/dto.Creds'
+      id:
+        example: 42
+        type: integer
+      personalData:
+        $ref: '#/definitions/dto.PersonalData'
+      roles:
+        description: Roles' array
+        items:
+          type: string
+        type: array
+      stats:
+        $ref: '#/definitions/dto.Stats'
+    type: object
+  dto.Creds:
+    description: BaseUser credentials
+    properties:
+      email:
+        example: user123@example.com
+        format: email
+        type: string
+      password:
+        example: Password123
+        format: password
+        minLength: 8
+        type: string
+      username:
+        example: user123
+        maxLength: 20
+        minLength: 3
+        type: string
+    type: object
+  dto.NewCreds:
+    description: New user's credentials
+    properties:
+      email:
+        example: user123@example.com
+        format: email
+        type: string
+      password:
+        example: Password123
+        format: password
+        minLength: 8
+        type: string
+      username:
+        example: user123
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  dto.NewPersonalData:
+    description: New user's personal data
+    properties:
+      birthDate:
+        description: This field accepts default time format from RFC (DD-MM-YYYY,
+          just pick default time library)
+        format: date-time
+        type: string
+      city:
+        example: Vladivostok
+        type: string
+      givenName:
+        example: Ivan
+        type: string
+      patronymic:
+        example: Ivanovich
+        type: string
+      surname:
+        example: Ivanov
+        type: string
+    required:
+    - birthDate
+    - city
+    - givenName
+    - patronymic
+    - surname
+    type: object
+  dto.NewUser:
+    description: New registrating user structure
+    properties:
+      creds:
+        $ref: '#/definitions/dto.NewCreds'
+      personalData:
+        $ref: '#/definitions/dto.NewPersonalData'
+    required:
+    - creds
+    - personalData
+    type: object
+  dto.PersonalData:
+    description: BaseUser personal data
+    properties:
+      birthDate:
+        format: date-time
+        type: string
+      city:
+        example: Vladivostok
+        type: string
+      givenName:
+        example: Ivan
+        type: string
+      patronymic:
+        example: Ivanovich
+        type: string
+      surname:
+        example: Ivanov
+        type: string
+    type: object
+  dto.RefreshToken:
+    properties:
+      refreshToken:
+        description: Should be a JWT refresh-token
+        type: string
+    required:
+    - refreshToken
+    type: object
+  dto.ResponseTokens:
+    properties:
+      accessToken:
+        description: Should be a JWT access-token
+        type: string
+      refreshToken:
+        description: Should be a JWT refresh-token
+        type: string
+    required:
+    - accessToken
+    - refreshToken
+    type: object
+  dto.Stats:
+    description: BaseUser statistics
+    properties:
+      rating:
+        type: number
+      reportCount:
+        type: integer
+      utilizeCount:
+        type: integer
+    type: object
+  dto.UpdatedCreds:
+    description: Credentials which will be updated
+    properties:
+      email:
+        example: user123@example.com
+        format: email
+        type: string
+      password:
+        example: Password123
+        format: password
+        minLength: 8
+        type: string
+      username:
+        example: user123
+        maxLength: 20
+        minLength: 3
+        type: string
+    type: object
+  dto.UpdatedPersonalData:
+    description: Personal data which will be updated
+    properties:
+      birthDate:
+        description: This field accepts default time format from RFC (DD-MM-YYYY,
+          just pick default time library)
+        format: date
+        type: string
+      city:
+        example: Vladivostok
+        type: string
+      givenName:
+        example: Ivan
+        type: string
+      patronymic:
+        example: Ivanovich
+        type: string
+      surname:
+        example: Ivanov
+        type: string
+    type: object
+  dto.UpdatedUser:
+    description: Entity which will be updated
+    properties:
+      creds:
+        $ref: '#/definitions/dto.UpdatedCreds'
+      id:
+        example: 42
+        type: integer
+      personalData:
+        $ref: '#/definitions/dto.UpdatedPersonalData'
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Krab1o
+    url: https://t.me/krab1o
+  description: API for Meebin application
+  title: Meebin
+  version: "0.1"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Creates new pair of refresh-access tokens based on your credentials
+      parameters:
+      - description: Login info
+        in: body
+        name: UserCreds
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Creds'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseTokens'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      summary: Login
+      tags:
+      - Auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Disables refresh token so you won't able to use it in /auth/refresh
+        method
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Logout
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Returns new access token based on your refresh token
+      parameters:
+      - description: User's Refresh Token
+        in: body
+        name: RefreshToken
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AccessToken'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      summary: Refresh
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user in service
+      parameters:
+      - description: New User Info
+        in: body
+        name: UserData
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ResponseTokens'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      summary: Registration
+      tags:
+      - Auth
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Returns an array of users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.BaseUser'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Listing users
+      tags:
+      - User
+  /users/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Deletes user
+      tags:
+      - User
+    get:
+      consumes:
+      - application/json
+      description: Returns user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BaseUser'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Get user by ID
+      tags:
+      - User
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Updates user's fields specified in the body.
+        Redundant fields ignored.
+        If the field not specified, it is not updated
+      parameters:
+      - description: Updated user ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: Updated user fields
+        in: body
+        name: UpdatedEntity
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatedUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdatedUser'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Update user
+      tags:
+      - User
+produces:
+- application/json
+schemes:
+- http
+securityDefinitions:
+  jwtToken:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
+tags:
+- description: Everything linked with authorization and JWT-token control
+  name: Auth
+- description: User control API
+  name: User
+- description: Event control API
+  name: Event

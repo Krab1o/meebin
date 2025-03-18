@@ -24,18 +24,18 @@ func (s *serv) Refresh(ctx context.Context, refreshToken string) (string, error)
 		shared.ParseFunction(s.jwtConf.Secret()),
 	)
 	if err != nil {
-		return "", service.NewUnauthorizedError(err, "Unable to parse token")
+		return "", service.NewUnauthorizedError(err)
 	}
 	if !token.Valid {
-		return "", service.NewUnauthorizedError(nil, "Invalid token")
+		return "", service.NewUnauthorizedError(nil)
 	}
 	repoSession, err := s.sessionRepo.FindSession(ctx, nil, claims.SessionID)
 	if err != nil {
-		return "", service.ErrorDBToService(err, nil)
+		return "", service.ErrorDBToService(err)
 	}
 	roles, err := s.roleRepo.GetUserRolesById(ctx, nil, repoSession.UserId)
 	if err != nil {
-		return "", service.ErrorDBToService(err, nil)
+		return "", service.ErrorDBToService(err)
 	}
 	log.Println(claims.CustomRefreshFields)
 	log.Println(roles)

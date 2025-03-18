@@ -32,7 +32,6 @@ func (r *repo) UpdateCreds(
 	}
 	builder = builder.Where(sq.Eq{rep.UserIdColumn: userId})
 	query, args, err := builder.ToSql()
-	log.Println(query)
 	if err != nil {
 		return rep.NewInternalError(err)
 	}
@@ -98,7 +97,6 @@ func (r *repo) UpdatePersonalData(
 ) error {
 	builder := sq.Update(rep.DataTableName).
 		PlaceholderFormat(sq.Dollar)
-	log.Println(data)
 	if data.GivenName != "" {
 		builder = builder.Set(rep.DataGivenNameColumn, data.GivenName)
 	}

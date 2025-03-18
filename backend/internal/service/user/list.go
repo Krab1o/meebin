@@ -11,7 +11,7 @@ import (
 func (s *serv) ListUser(ctx context.Context) ([]smodel.User, error) {
 	repoUsers, err := s.userRepo.List(ctx, nil)
 	if err != nil {
-		return nil, service.ErrorDBToService(err, nil)
+		return nil, service.ErrorDBToService(err)
 	}
 	users := make([]smodel.User, len(repoUsers))
 	for i, repoUser := range repoUsers {

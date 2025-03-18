@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -28,10 +29,11 @@ func logError(err error) {
 func MakeHandler(h Handler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if err := h(c); err != nil {
+			log.Println(err)
 			c.Abort()
 			var apiError *Error
 			if errors.As(err, &apiError) {
-				logError(apiError)
+				// logError(apiError)
 				c.JSON(apiError.StatusCode, apiError)
 				return
 			}

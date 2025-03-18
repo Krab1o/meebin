@@ -1,11 +1,8 @@
 package api
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
-
-	"github.com/Krab1o/meebin/internal/service"
 )
 
 // this are comments to make error work clearer
@@ -26,6 +23,9 @@ import (
 
 // TODO: remove status codes from all error
 // TODO: switch to errors.Is
+
+const defaultInternalErrorMsg = "Internal Error"
+
 type Error struct {
 	StatusCode int   `json:"-"`
 	Message    any   `json:"message"`
@@ -33,7 +33,7 @@ type Error struct {
 }
 
 func (e Error) Error() string {
-	return fmt.Sprintf("API error: %s", e.Message)
+	return fmt.Sprintf("[API] %s\n%s", e.Message, e.Err)
 }
 
 func (e Error) Unwrap() error {
@@ -48,50 +48,24 @@ func newError(statusCode int, err error, message any) *Error {
 	}
 }
 
+func NewInternalError(err error, message ...any) *Error {
+	if len(message) == 0 {
+		message[0] = defaultInternalErrorMsg
+	}
+	return newError(http.StatusInternalServerError, err, message[0])
+}
 func NewNotFoundError(err error, message any) *Error {
 	return newError(http.StatusNotFound, err, message)
 }
 func NewUnauthorizedError(err error, message any) *Error {
 	return newError(http.StatusUnauthorized, err, message)
 }
-func NewInternalError(err error, message any) *Error {
-	return newError(http.StatusInternalServerError, err, message)
-}
 func NewBadRequestError(err error, message any) *Error {
 	return newError(http.StatusBadRequest, err, message)
 }
 func NewDuplicateError(err error, message any) *Error {
-	return newError(http.StatusUnprocessableEntity, err, message)
+	return newError(http.StatusConflict, err, message)
 }
-
-func defaultAction(serviceError *service.Error) *Error {
-	switch serviceError.Type {
-	case service.NotFound:
-		return NewNotFoundError(serviceError, serviceError.Message)
-	case service.Semantic:
-		return NewBadRequestError(serviceError, serviceError.Message)
-	case service.Unauthorized:
-		return NewUnauthorizedError(serviceError, serviceError.Message)
-	case service.Duplicate:
-		return NewDuplicateError(serviceError, serviceError.Message)
-	default:
-		return NewInternalError(serviceError, serviceError.Message)
-	}
-}
-
-// Returns API error depending on type of service error and sets proper message
-// for it
-func ErrorServiceToAPI(
-	err error,
-	customAction func(*service.Error) *Error,
-) *Error {
-	var serviceError *service.Error
-	if errors.As(err, &serviceError) {
-		if customAction != nil {
-			return customAction(serviceError)
-		} else {
-			return defaultAction(serviceError)
-		}
-	}
-	return NewInternalError(err, "Internal Server Error")
+func NewForbiddenError(err error, message any) *Error {
+	return newError(http.StatusForbidden, err, message)
 }

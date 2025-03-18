@@ -17,7 +17,7 @@ type UserService interface {
 	ListUser(ctx context.Context) ([]smodel.User, error)
 	GetUser(ctx context.Context, userId uint64) (*smodel.User, error)
 	Delete(ctx context.Context, userId uint64) error
-	Update(ctx context.Context, user *smodel.User) (*smodel.User, error)
+	Update(ctx context.Context, user *smodel.User, updatedUserId uint64) (*smodel.User, error)
 }
 
 type EventService interface {

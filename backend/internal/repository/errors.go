@@ -1,60 +1,27 @@
 package repository
 
-import "fmt"
-
-type ErrorType int
-
-type Error struct {
-	Type    ErrorType
-	Err     error
-	Message string
-}
+import (
+	"errors"
+	"fmt"
+)
 
 // SQL error codes
 const (
 	SQLCodeDuplicate = "23505"
 )
 
-const (
-	NotFound ErrorType = iota
-	Internal
-	Duplicate
+var (
+	ErrNotFound  = errors.New("[DB] Item not found\n[SOURCE]%w")
+	ErrInternal  = errors.New("[DB] Internal error\n[SOURCE]%w")
+	ErrDuplicate = errors.New("[DB] Item already exists\n[SOURCE]%w")
 )
 
-func (e ErrorType) String() string {
-	switch e {
-	case NotFound:
-		return "Not found"
-	case Internal:
-		return "Internal Error"
-	case Duplicate:
-		return "Duplicate Item"
-	default:
-		return "Unknown Error"
-	}
+func NewNotFoundError(err error) error {
+	return fmt.Errorf(ErrNotFound.Error(), err)
 }
-
-func (e Error) Error() string {
-	return fmt.Sprintf("DB error: %s", e.Err.Error())
+func NewInternalError(err error) error {
+	return fmt.Errorf(ErrNotFound.Error(), err)
 }
-
-func (e Error) Unwrap() error {
-	return nil
-}
-
-func newError(errType ErrorType, err error) *Error {
-	return &Error{
-		Type: errType,
-		Err:  err,
-	}
-}
-
-func NewNotFoundError(err error) *Error {
-	return newError(NotFound, err)
-}
-func NewInternalError(err error) *Error {
-	return newError(Internal, err)
-}
-func NewDuplicateError(err error) *Error {
-	return newError(Duplicate, err)
+func NewDuplicateError(err error) error {
+	return fmt.Errorf(ErrDuplicate.Error(), err)
 }

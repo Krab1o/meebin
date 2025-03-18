@@ -17,6 +17,7 @@ const (
 	defaultMessage   = "Invalid value"
 )
 
+// TODO: custom map can implement error interface
 func ParseValidationErrors(err error) any {
 	errorMap := make(map[string]string)
 	errs, ok := err.(validator.ValidationErrors)

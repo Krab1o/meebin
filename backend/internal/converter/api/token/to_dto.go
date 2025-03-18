@@ -5,8 +5,8 @@ import (
 	smodel "github.com/Krab1o/meebin/internal/model/s_model"
 )
 
-func TokensServiceToDTO(tokens *smodel.Tokens) *dto.ReponseTokens {
-	return &dto.ReponseTokens{
+func TokensServiceToDTO(tokens *smodel.Tokens) *dto.ResponseTokens {
+	return &dto.ResponseTokens{
 		AccessToken:  tokens.AccessToken,
 		RefreshToken: tokens.RefreshToken,
 	}

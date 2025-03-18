@@ -8,7 +8,6 @@ import (
 	"github.com/Krab1o/meebin/internal/model"
 	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	smodel "github.com/Krab1o/meebin/internal/model/s_model"
-	"github.com/Krab1o/meebin/internal/repository"
 	"github.com/Krab1o/meebin/internal/service"
 	authHelper "github.com/Krab1o/meebin/internal/service/auth/helper"
 	"github.com/Krab1o/meebin/internal/shared"
@@ -47,20 +46,12 @@ func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens,
 	// TODO: add multiple roles
 	roleId, err := s.roleRepo.GetRolesByTitle(ctx, nil, user.Roles)
 	if err != nil {
-		return nil, service.ErrorDBToService(err, nil)
+		return nil, service.ErrorDBToService(err)
 	}
 	// TODO: add transaction
 	userId, err := s.userRepo.AddUser(ctx, nil, repoUser, roleId)
 	if err != nil {
-		return nil, service.ErrorDBToService(err, func(err *repository.Error) *service.Error {
-			//TODO: think how to return either nickname or email or both occupied
-			switch err.Type {
-			case repository.Duplicate:
-				return service.NewDuplicateError(err, "User already exists")
-			default:
-				return service.NewInternalError(err, "Internal Error")
-			}
-		})
+		return nil, service.ErrorDBToService(err)
 	}
 
 	// Creating database row with session
@@ -72,7 +63,7 @@ func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens,
 	}
 	sessionId, err := s.sessionRepo.AddSession(ctx, nil, repoSession)
 	if err != nil {
-		return nil, service.ErrorDBToService(err, nil)
+		return nil, service.ErrorDBToService(err)
 	}
 
 	// Write database data to refresh token

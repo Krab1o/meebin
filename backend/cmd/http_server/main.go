@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/Krab1o/meebin/docs"
 	"github.com/Krab1o/meebin/internal/api"
 	apiAuth "github.com/Krab1o/meebin/internal/api/auth"
 	apiUser "github.com/Krab1o/meebin/internal/api/user"
@@ -17,11 +18,38 @@ import (
 	servUser "github.com/Krab1o/meebin/internal/service/user"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	swaggerfiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 const (
 	path = ".env"
 )
+
+//	@title			Meebin
+//	@version		0.1
+//	@description	API for Meebin application
+//	@contact.name	Krab1o
+//	@contact.url	https://t.me/krab1o
+
+//	@securityDefinitions.apikey	jwtToken
+//	@in							header
+//	@name						Authorization
+
+//	@host		localhost:8080
+//	@BasePath	/api
+//	@accept		json
+//	@produce	json
+//	@schemes	http
+
+//	@tag.name			Auth
+//	@tag.description	Everything linked with authorization and JWT-token control
+
+//	@tag.name			User
+//	@tag.description	User control API
+
+//	@tag.name			Event
+//	@tag.description	Event control API
 
 // TODO: replace error messages with strings
 func main() {
@@ -78,7 +106,12 @@ func main() {
 	authHandler := apiAuth.NewHandler(authService)
 	userHandler := apiUser.NewHandler(userService)
 
+	docs.SwaggerInfo.BasePath = "/api"
 	//TODO: add admin role to endpoints
+	docsGroup := s.Group("/docs")
+	{
+		docsGroup.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	}
 	apiGroup := s.Group("/api")
 	{
 		authGroup := apiGroup.Group("/auth")

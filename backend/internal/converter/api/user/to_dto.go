@@ -1,34 +1,23 @@
 package user
 
 import (
-	"github.com/Krab1o/meebin/internal/model"
+	"github.com/Krab1o/meebin/internal/converter/api"
 	"github.com/Krab1o/meebin/internal/model/dto"
 	smodel "github.com/Krab1o/meebin/internal/model/s_model"
 )
 
-// TODO: add role to user
-func UserServiceToDTO(user *smodel.User) *dto.User {
+func UserServiceToDTO(user *smodel.User) *dto.BaseUser {
 	dtoCreds := CredsServiceToDTO(user.Creds)
 	dtoData := DataServiceToDTO(user.Data)
 	dtoStats := StatsServiceToDTO(user.Stats)
-	dtoRoles := RolesServiceToDTO(user.Roles)
-	return &dto.User{
+	dtoRoles := api.ConvertRoles(user.Roles)
+	return &dto.BaseUser{
 		Id:    user.Id,
 		Creds: dtoCreds,
 		Data:  dtoData,
 		Stats: dtoStats,
 		Roles: dtoRoles,
 	}
-}
-
-func RolesServiceToDTO(roles []model.Role) []model.Role {
-	if roles == nil {
-		return nil
-	}
-	copiedRoles := make([]model.Role, len(roles))
-	copy(copiedRoles, roles)
-
-	return copiedRoles
 }
 
 func CredsServiceToDTO(creds *smodel.Creds) *dto.Creds {
