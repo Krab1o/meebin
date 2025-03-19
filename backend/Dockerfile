@@ -1,4 +1,4 @@
-FROM golang:1.23.6-alpine AS builder
+FROM golang:1.24.1-alpine AS builder
 
 COPY . /github.com/Krab1o/meebin/src
 WORKDIR /github.com/Krab1o/meebin/src

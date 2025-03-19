@@ -1,4 +1,4 @@
-package session
+package user
 
 import (
 	"github.com/Krab1o/meebin/internal/repository"
@@ -9,6 +9,6 @@ type repo struct {
 	db *pgxpool.Pool
 }
 
-func NewRepository(db *pgxpool.Pool) repository.SessionRepository {
+func NewRepository(db *pgxpool.Pool) repository.EventRepository {
 	return &repo{db: db}
 }

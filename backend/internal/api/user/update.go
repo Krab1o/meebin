@@ -31,7 +31,7 @@ import (
 // @Failure		404		{object}	api.Error
 // @Failure		500		{object}	api.Error
 // @Router			/users/{user_id} [patch]
-func (h *handler) UpdateUser(c *gin.Context) error {
+func (h *Handler) UpdateUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	userIdUpdating, ok := c.Get(shared.UserIDJsonName)
 	if !ok {

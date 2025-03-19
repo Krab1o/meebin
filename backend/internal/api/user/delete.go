@@ -24,7 +24,7 @@ import (
 // @Failure		404	{object}	api.Error
 // @Failure		500	{object}	api.Error
 // @Router			/users/{user_id} [delete]
-func (h *handler) DeleteUser(c *gin.Context) error {
+func (h *Handler) DeleteUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	id, ok := c.Get(shared.UserIDJsonName)
 	if !ok {

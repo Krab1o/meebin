@@ -4,10 +4,10 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-type handler struct {
+type Handler struct {
 	eventService service.EventService
 }
 
-func NewHandler(es service.EventService) *handler {
-	return &handler{eventService: es}
+func NewHandler(es service.EventService) *Handler {
+	return &Handler{eventService: es}
 }

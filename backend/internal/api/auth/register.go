@@ -17,19 +17,19 @@ const (
 	invalidCredentialsMessage = "Invalid credentials"
 )
 
-//	@Tags			Auth
-//	@Summary		Registration
-//	@Schemes		http
-//	@Description	Registers a new user in service
-//	@Accept			json
-//	@Produce		json
-//	@Param			UserData	body		dto.NewUser	true	"New User Info"
-//	@Success		201			{object}	dto.ResponseTokens
-//	@Failure		400			{object}	api.Error
-//	@Failure		409			{object}	api.Error
-//	@Failure		500			{object}	api.Error
-//	@Router			/auth/register [post]
-func (h *handler) Register(c *gin.Context) error {
+// @Tags			Auth
+// @Summary		Registration
+// @Schemes		http
+// @Description	Registers a new user in service
+// @Accept			json
+// @Produce		json
+// @Param			UserData	body		dto.NewUser	true	"New User Info"
+// @Success		201			{object}	dto.ResponseTokens
+// @Failure		400			{object}	api.Error
+// @Failure		409			{object}	api.Error
+// @Failure		500			{object}	api.Error
+// @Router			/auth/register [post]
+func (h *Handler) Register(c *gin.Context) error {
 	ctx := c.Request.Context()
 	newUser := &dto.NewUser{}
 	err := c.ShouldBindJSON(newUser)

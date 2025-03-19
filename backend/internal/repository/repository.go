@@ -28,7 +28,7 @@ type UserRepository interface {
 		data *rmodel.PersonalData,
 	) error
 }
-type UserSessionRepository interface {
+type SessionRepository interface {
 	AddSession(context.Context, pgx.Tx, *rmodel.Session) (uint64, error)
 	DeleteSession(context.Context, pgx.Tx, uint64) error
 	FindSession(context.Context, pgx.Tx, uint64) (*rmodel.Session, error)

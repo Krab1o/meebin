@@ -9,20 +9,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//	@Tags			Auth
-//	@Summary		Refresh
-//	@Schemes		http
-//	@Description	Returns new access token based on your refresh token
-//	@Accept			json
-//	@Produce		json
-//	@Param			RefreshToken	body		dto.RefreshToken	true	"User's Refresh Token"
-//	@Success		200				{object}	dto.AccessToken
-//	@Failure		400				{object}	api.Error
-//	@Failure		401				{object}	api.Error
-//	@Failure		404				{object}	api.Error
-//	@Failure		500				{object}	api.Error
-//	@Router			/auth/refresh [post]
-func (h *handler) Refresh(c *gin.Context) error {
+// @Tags			Auth
+// @Summary		Refresh
+// @Schemes		http
+// @Description	Returns new access token based on your refresh token
+// @Accept			json
+// @Produce		json
+// @Param			RefreshToken	body		dto.RefreshToken	true	"User's Refresh Token"
+// @Success		200				{object}	dto.AccessToken
+// @Failure		400				{object}	api.Error
+// @Failure		401				{object}	api.Error
+// @Failure		404				{object}	api.Error
+// @Failure		500				{object}	api.Error
+// @Router			/auth/refresh [post]
+func (h *Handler) Refresh(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := &dto.RefreshToken{}
 	err := c.ShouldBindJSON(token)

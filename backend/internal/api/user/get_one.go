@@ -11,21 +11,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//	@Tags			User
-//	@Summary		Get user by ID
-//	@Schemes		http
-//	@Description	Returns user by ID
-//	@Accept			json
-//	@Produce		json
-//	@Security		jwtToken
-//	@Param			user_id	path		int	true	"User ID"
-//	@Success		200		{object}	dto.BaseUser
-//	@Failure		400		{object}	api.Error
-//	@Failure		401		{object}	api.Error
-//	@Failure		404		{object}	api.Error
-//	@Failure		500		{object}	api.Error
-//	@Router			/users/{user_id} [get]
-func (h *handler) GetUser(c *gin.Context) error {
+// @Tags			User
+// @Summary		Get user by ID
+// @Schemes		http
+// @Description	Returns user by ID
+// @Accept			json
+// @Produce		json
+// @Security		jwtToken
+// @Param			user_id	path		int	true	"User ID"
+// @Success		200		{object}	dto.BaseUser
+// @Failure		400		{object}	api.Error
+// @Failure		401		{object}	api.Error
+// @Failure		404		{object}	api.Error
+// @Failure		500		{object}	api.Error
+// @Router			/users/{user_id} [get]
+func (h *Handler) GetUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	idUnparsed := c.Param(api.ParamId)
 	userId, err := strconv.Atoi(idUnparsed)

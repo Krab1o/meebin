@@ -9,18 +9,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//	@Tags			User
-//	@Summary		Listing users
-//	@Schemes		http
-//	@Description	Returns an array of users
-//	@Accept			json
-//	@Produce		json
-//	@Security		jwtToken
-//	@Success		200	{array}		dto.BaseUser
-//	@Failure		401	{object}	api.Error
-//	@Failure		500	{object}	api.Error
-//	@Router			/users [get]
-func (h *handler) ListUser(c *gin.Context) error {
+// @Tags			User
+// @Summary		Listing users
+// @Schemes		http
+// @Description	Returns an array of users
+// @Accept			json
+// @Produce		json
+// @Security		jwtToken
+// @Success		200	{array}		dto.BaseUser
+// @Failure		401	{object}	api.Error
+// @Failure		500	{object}	api.Error
+// @Router			/users [get]
+func (h *Handler) ListUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	users, err := h.userService.ListUser(ctx)
 	if err != nil {

@@ -4,12 +4,12 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-type handler struct {
+type Handler struct {
 	userService service.UserService
 }
 
-func NewHandler(us service.UserService) *handler {
-	return &handler{
+func NewHandler(us service.UserService) *Handler {
+	return &Handler{
 		userService: us,
 	}
 }

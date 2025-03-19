@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"errors"
@@ -37,7 +37,7 @@ func hasDigit(fl validator.FieldLevel) bool {
 	return false
 }
 
-func validatorInit() error {
+func ValidatorInit() error {
 	v, ok := binding.Validator.Engine().(*validator.Validate)
 	if ok {
 		err := v.RegisterValidation("uppercase", hasUppercase)

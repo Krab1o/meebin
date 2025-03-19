@@ -8,19 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//	@Tags			Auth
-//	@Summary		Logout
-//	@Schemes		http
-//	@Description	Disables refresh token so you won't able to use it in /auth/refresh method
-//	@Accept			json
-//	@Produce		json
-//	@Security		jwtToken
-//	@Success		200
-//	@Failure		400	{object}	api.Error
-//	@Failure		401	{object}	api.Error
-//	@Failure		500	{object}	api.Error
-//	@Router			/auth/logout [post]
-func (h *handler) Logout(c *gin.Context) error {
+// @Tags			Auth
+// @Summary		Logout
+// @Schemes		http
+// @Description	Disables refresh token so you won't able to use it in /auth/refresh method
+// @Accept			json
+// @Produce		json
+// @Security		jwtToken
+// @Success		200
+// @Failure		400	{object}	api.Error
+// @Failure		401	{object}	api.Error
+// @Failure		500	{object}	api.Error
+// @Router			/auth/logout [post]
+func (h *Handler) Logout(c *gin.Context) error {
 	ctx := c.Request.Context()
 	sessionId, ok := c.Get(shared.SessionIDJsonName)
 	if !ok {

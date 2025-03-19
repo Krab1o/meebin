@@ -8,14 +8,14 @@ import (
 
 type serv struct {
 	userRepo    repository.UserRepository
-	sessionRepo repository.UserSessionRepository
+	sessionRepo repository.SessionRepository
 	roleRepo    repository.RoleRepository
 	jwtConf     config.JWTConfig
 }
 
 func NewService(
 	userRepository repository.UserRepository,
-	sessionRepository repository.UserSessionRepository,
+	sessionRepository repository.SessionRepository,
 	roleRepository repository.RoleRepository,
 	jwtConfig config.JWTConfig,
 ) service.AuthService {
