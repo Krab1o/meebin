@@ -9,7 +9,7 @@ import (
 )
 
 func (s *serv) ListUser(ctx context.Context) ([]smodel.User, error) {
-	repoUsers, err := s.userRepo.List(ctx, nil)
+	repoUsers, err := s.userRepo.List(ctx)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}

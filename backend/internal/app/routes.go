@@ -98,6 +98,11 @@ func (a *App) SetupRoutes(ctx context.Context) {
 		{
 			// Получить все события
 			events.GET("", nil)
+			// events.GET("", eventsHandler.ListEvents)
+			// events.GET("/:id", eventsHandler.GetEvent)
+			// events.POST("", eventsHandler.CreateEvent)
+			// events.PATCH("/:id", eventsHandler.UpdateEvent)
+			// events.DELETE("/:id", eventsHandler.DeleteEvent)
 		}
 	}
 }

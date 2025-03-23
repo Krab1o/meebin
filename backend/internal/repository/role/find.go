@@ -12,7 +12,6 @@ import (
 
 func (r *repo) GetUserRolesById(
 	ctx context.Context,
-	tx pgx.Tx,
 	userId uint64,
 ) ([]model.Role, error) {
 	query, args, err := sq.Select(
@@ -30,12 +29,8 @@ func (r *repo) GetUserRolesById(
 	if err != nil {
 		return nil, rep.NewInternalError(err)
 	}
-	var rows pgx.Rows
-	if tx != nil {
-		rows, err = tx.Query(ctx, query, args...)
-	} else {
-		rows, err = r.db.Query(ctx, query, args...)
-	}
+
+	rows, err := r.db.DB().QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, rep.NewInternalError(err)
 	}
@@ -54,7 +49,7 @@ func (r *repo) GetUserRolesById(
 }
 
 // TODO: make multiple role support
-func (r *repo) GetRolesByTitle(ctx context.Context, tx pgx.Tx, role []model.Role) (uint64, error) {
+func (r *repo) GetRolesByTitle(ctx context.Context, role []model.Role) (uint64, error) {
 	query, args, err := sq.Select(
 		rep.RoleIdColumn,
 	).
@@ -65,12 +60,7 @@ func (r *repo) GetRolesByTitle(ctx context.Context, tx pgx.Tx, role []model.Role
 	if err != nil {
 		return 0, rep.NewInternalError(err)
 	}
-	var row pgx.Row
-	if tx != nil {
-		row = tx.QueryRow(ctx, query, args...)
-	} else {
-		row = r.db.QueryRow(ctx, query, args...)
-	}
+	row := r.db.DB().QueryRowContext(ctx, query, args...)
 
 	var roleId uint64
 	err = row.Scan(&roleId)

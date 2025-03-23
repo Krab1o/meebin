@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) List(ctx context.Context, tx pgx.Tx) ([]rmodel.User, error) {
+func (r *repo) List(ctx context.Context) ([]rmodel.User, error) {
 	query, args, err := sq.Select(
 		rep.Col(rep.UserTableName, rep.UserEmailColumn),
 		rep.Col(rep.UserTableName, rep.UserUsernameColumn),
@@ -43,11 +43,8 @@ func (r *repo) List(ctx context.Context, tx pgx.Tx) ([]rmodel.User, error) {
 	}
 
 	var rows pgx.Rows
-	if tx != nil {
-		rows, err = tx.Query(ctx, query, args...)
-	} else {
-		rows, err = r.db.Query(ctx, query, args...)
-	}
+	rows, err = r.db.DB().QueryContext(ctx, query, args...)
+
 	if err != nil {
 		return nil, rep.NewInternalError(err)
 	}

@@ -8,7 +8,6 @@ import (
 	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	"github.com/Krab1o/meebin/internal/repository"
 	"github.com/Masterminds/squirrel"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
@@ -16,7 +15,6 @@ import (
 // TODO: add multiple role support
 func (r *repo) AddUser(
 	ctx context.Context,
-	tx pgx.Tx,
 	user *rmodel.User,
 	roleId uint64,
 ) (uint64, error) {
@@ -40,12 +38,7 @@ func (r *repo) AddUser(
 
 	// TODO: Refactor with transaction manager or add query interface
 	// Check how should transaction manager be used and how it works
-	var row pgx.Row
-	if tx != nil {
-		row = tx.QueryRow(ctx, userTableQuery, userTableArgs...)
-	} else {
-		row = r.db.QueryRow(ctx, userTableQuery, userTableArgs...)
-	}
+	row := r.db.DB().QueryRowContext(ctx, userTableQuery, userTableArgs...)
 
 	var userId uint64
 	err = row.Scan(&userId)
@@ -82,11 +75,8 @@ func (r *repo) AddUser(
 		return 0, repository.NewInternalError(err)
 	}
 
-	if tx != nil {
-		_, err = tx.Exec(ctx, dataTableQuery, dataTableArgs...)
-	} else {
-		_, err = r.db.Exec(ctx, dataTableQuery, dataTableArgs...)
-	}
+	_, err = r.db.DB().ExecContext(ctx, dataTableQuery, dataTableArgs...)
+
 	if err != nil {
 		return 0, repository.NewInternalError(err)
 	}
@@ -109,11 +99,8 @@ func (r *repo) AddUser(
 		return 0, repository.NewInternalError(err)
 	}
 
-	if tx != nil {
-		_, err = tx.Exec(ctx, statsTableQuery, statsTableArgs...)
-	} else {
-		_, err = r.db.Exec(ctx, statsTableQuery, statsTableArgs...)
-	}
+	_, err = r.db.DB().ExecContext(ctx, statsTableQuery, statsTableArgs...)
+
 	if err != nil {
 		return 0, repository.NewInternalError(err)
 	}
@@ -130,11 +117,9 @@ func (r *repo) AddUser(
 	if err != nil {
 		return 0, repository.NewInternalError(err)
 	}
-	if tx != nil {
-		_, err = tx.Exec(ctx, userRoleQuery, userRoleArgs...)
-	} else {
-		_, err = r.db.Exec(ctx, userRoleQuery, userRoleArgs...)
-	}
+
+	_, err = r.db.DB().ExecContext(ctx, userRoleQuery, userRoleArgs...)
+
 	if err != nil {
 		return 0, repository.NewInternalError(err)
 	}

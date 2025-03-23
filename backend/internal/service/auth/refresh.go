@@ -21,7 +21,7 @@ func (s *serv) Refresh(ctx context.Context, refreshToken string) (string, error)
 	token, err := jwt.ParseWithClaims(
 		refreshToken,
 		claims,
-		shared.ParseFunction(s.jwtConf.Secret()),
+		shared.ParseFunction(s.jwtConfig.Secret()),
 	)
 	if err != nil {
 		return "", service.NewUnauthorizedError(err)
@@ -29,11 +29,11 @@ func (s *serv) Refresh(ctx context.Context, refreshToken string) (string, error)
 	if !token.Valid {
 		return "", service.NewUnauthorizedError(nil)
 	}
-	repoSession, err := s.sessionRepo.FindSession(ctx, nil, claims.SessionID)
+	repoSession, err := s.sessionRepository.FindSession(ctx, claims.SessionID)
 	if err != nil {
 		return "", service.ErrorDBToService(err)
 	}
-	roles, err := s.roleRepo.GetUserRolesById(ctx, nil, repoSession.UserId)
+	roles, err := s.roleRepository.GetUserRolesById(ctx, repoSession.UserId)
 	if err != nil {
 		return "", service.ErrorDBToService(err)
 	}
@@ -47,8 +47,8 @@ func (s *serv) Refresh(ctx context.Context, refreshToken string) (string, error)
 			Roles:     roles,
 		},
 		timeNow,
-		s.jwtConf.Secret(),
-		s.jwtConf.AccessTimeout(),
+		s.jwtConfig.Secret(),
+		s.jwtConfig.AccessTimeout(),
 	)
 	if err != nil {
 		return "", service.NewInternalError(err)

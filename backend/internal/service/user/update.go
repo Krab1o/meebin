@@ -4,6 +4,7 @@ import (
 	"context"
 
 	convUser "github.com/Krab1o/meebin/internal/converter/service/user"
+	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	smodel "github.com/Krab1o/meebin/internal/model/s_model"
 	"github.com/Krab1o/meebin/internal/service"
 	"golang.org/x/crypto/bcrypt"
@@ -41,25 +42,33 @@ func (s *serv) Update(
 		return nil, service.NewNoUpdateError(nil)
 	}
 
-	repoUser := convUser.UserServiceToRepo(user)
-	var err error
-	if user.Creds != nil {
-		err = s.userRepo.UpdateCreds(ctx, nil, user.Id, repoUser.Creds)
-		if err != nil {
-			return nil, service.ErrorDBToService(err)
-		}
-	}
-	if user.Data != nil {
-		err = s.userRepo.UpdatePersonalData(ctx, nil, user.Id, repoUser.Data)
-		if err != nil {
-			return nil, service.ErrorDBToService(err)
-		}
-	}
+	var newRepoUser *rmodel.User
+	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
+		repoUser := convUser.UserServiceToRepo(user)
+		var err error
 
-	newRepoUser, err := s.userRepo.GetById(ctx, nil, user.Id)
+		if user.Creds != nil {
+			err = s.userRepository.UpdateCreds(ctx, user.Id, repoUser.Creds)
+			if err != nil {
+				return service.ErrorDBToService(err)
+			}
+		}
+		if user.Data != nil {
+			err = s.userRepository.UpdatePersonalData(ctx, user.Id, repoUser.Data)
+			if err != nil {
+				return service.ErrorDBToService(err)
+			}
+		}
+		newRepoUser, err = s.userRepository.GetById(ctx, user.Id)
+		if err != nil {
+			return service.ErrorDBToService(err)
+		}
+
+		return nil
+	})
 	if err != nil {
-		return nil, service.ErrorDBToService(err)
+		return nil, err
 	}
 	newUser := convUser.UserRepoToService(newRepoUser)
-	return newUser, nil
+	return newUser, err
 }

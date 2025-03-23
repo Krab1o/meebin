@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) DeleteById(ctx context.Context, tx pgx.Tx, userId uint64) error {
+func (r *repo) DeleteById(ctx context.Context, userId uint64) error {
 	query, args, err := squirrel.Delete(repository.UserTableName).
 		PlaceholderFormat(squirrel.Dollar).
 		Where(squirrel.Eq{repository.UserIdColumn: userId}).
@@ -18,11 +18,8 @@ func (r *repo) DeleteById(ctx context.Context, tx pgx.Tx, userId uint64) error {
 		return repository.NewInternalError(err)
 	}
 
-	if tx != nil {
-		_, err = tx.Exec(ctx, query, args...)
-	} else {
-		_, err = r.db.Exec(ctx, query, args...)
-	}
+	_, err = r.db.DB().ExecContext(ctx, query, args...)
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return repository.NewNotFoundError(err)

@@ -13,7 +13,7 @@ import (
 
 // TODO: remove needing username
 func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, error) {
-	repoUser, err := s.userRepo.GetCredsByEmail(ctx, nil, creds.Email)
+	repoUser, err := s.userRepository.GetCredsByEmail(ctx, creds.Email)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}
@@ -26,12 +26,12 @@ func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, 
 	}
 
 	timeNow := time.Now()
-	refreshExpirationTime := timeNow.Add(time.Duration(s.jwtConf.RefreshTimeout()) * time.Hour)
+	refreshExpirationTime := timeNow.Add(time.Duration(s.jwtConfig.RefreshTimeout()) * time.Hour)
 	repoSession := &rmodel.Session{
 		UserId:         repoUser.Id,
 		ExpirationTime: refreshExpirationTime,
 	}
-	sessionId, err := s.sessionRepo.AddSession(ctx, nil, repoSession)
+	sessionId, err := s.sessionRepository.AddSession(ctx, repoSession)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}
@@ -42,13 +42,13 @@ func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, 
 		},
 		refreshExpirationTime,
 		time.Now(),
-		s.jwtConf.Secret(),
+		s.jwtConfig.Secret(),
 	)
 	if err != nil {
 		return nil, service.NewInternalError(err)
 	}
 
-	roles, err := s.roleRepo.GetUserRolesById(ctx, nil, repoUser.Id)
+	roles, err := s.roleRepository.GetUserRolesById(ctx, repoUser.Id)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}
@@ -60,8 +60,8 @@ func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, 
 			Roles:     roles,
 		},
 		timeNow,
-		s.jwtConf.Secret(),
-		s.jwtConf.AccessTimeout(),
+		s.jwtConfig.Secret(),
+		s.jwtConfig.AccessTimeout(),
 	)
 	if err != nil {
 		return nil, service.NewInternalError(err)

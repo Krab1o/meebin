@@ -13,7 +13,6 @@ import (
 
 func (r *repo) FindSession(
 	ctx context.Context,
-	tx pgx.Tx,
 	sessionID uint64,
 ) (*rmodel.Session, error) {
 	query, args, err := squirrel.Select(
@@ -30,12 +29,7 @@ func (r *repo) FindSession(
 		return nil, repository.NewInternalError(err)
 	}
 
-	var row pgx.Row
-	if tx != nil {
-		row = tx.QueryRow(ctx, query, args...)
-	} else {
-		row = r.db.QueryRow(ctx, query, args...)
-	}
+	row := r.db.DB().QueryRowContext(ctx, query, args...)
 
 	repoSession := &rmodel.Session{}
 	err = row.Scan(

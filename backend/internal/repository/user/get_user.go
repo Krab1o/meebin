@@ -13,7 +13,7 @@ import (
 
 // TODO: move function to rep layer
 
-func (r *repo) GetById(ctx context.Context, tx pgx.Tx, userId uint64) (*rmodel.User, error) {
+func (r *repo) GetById(ctx context.Context, userId uint64) (*rmodel.User, error) {
 	query, args, err := sq.Select(
 		rep.Col(rep.UserTableName, rep.UserEmailColumn),
 		rep.Col(rep.UserTableName, rep.UserUsernameColumn),
@@ -46,12 +46,7 @@ func (r *repo) GetById(ctx context.Context, tx pgx.Tx, userId uint64) (*rmodel.U
 		return nil, rep.NewInternalError(err)
 	}
 
-	var row pgx.Row
-	if tx != nil {
-		row = tx.QueryRow(ctx, query, args...)
-	} else {
-		row = r.db.QueryRow(ctx, query, args...)
-	}
+	row := r.db.DB().QueryRowContext(ctx, query, args...)
 
 	user := &rmodel.User{
 		Creds: &rmodel.Creds{},

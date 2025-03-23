@@ -7,7 +7,7 @@ import (
 )
 
 func (s *serv) Delete(ctx context.Context, userId uint64) error {
-	err := s.userRepo.DeleteById(ctx, nil, userId)
+	err := s.userRepository.DeleteById(ctx, userId)
 	if err != nil {
 		return service.ErrorDBToService(err)
 	}

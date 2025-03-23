@@ -7,12 +7,10 @@ import (
 	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
 	rep "github.com/Krab1o/meebin/internal/repository"
 	sq "github.com/Masterminds/squirrel"
-	"github.com/jackc/pgx/v5"
 )
 
 func (r *repo) UpdateCreds(
 	ctx context.Context,
-	tx pgx.Tx,
 	userId uint64,
 	creds *rmodel.Creds,
 ) error {
@@ -36,11 +34,8 @@ func (r *repo) UpdateCreds(
 		return rep.NewInternalError(err)
 	}
 
-	if tx != nil {
-		_, err = tx.Exec(ctx, query, args...)
-	} else {
-		_, err = r.db.Exec(ctx, query, args...)
-	}
+	_, err = r.db.DB().ExecContext(ctx, query, args...)
+
 	if err != nil {
 		return rep.NewInternalError(err)
 	}
@@ -50,7 +45,6 @@ func (r *repo) UpdateCreds(
 
 func (r *repo) UpdateStats(
 	ctx context.Context,
-	tx pgx.Tx,
 	userId uint64,
 	stats *rmodel.Stats,
 ) error {
@@ -77,11 +71,8 @@ func (r *repo) UpdateStats(
 		return rep.NewInternalError(err)
 	}
 
-	if tx != nil {
-		_, err = tx.Exec(ctx, query, args...)
-	} else {
-		_, err = r.db.Exec(ctx, query, args...)
-	}
+	_, err = r.db.DB().ExecContext(ctx, query, args...)
+
 	if err != nil {
 		return rep.NewInternalError(err)
 	}
@@ -91,7 +82,6 @@ func (r *repo) UpdateStats(
 // TODO: refactor to passing map[string]string of values
 func (r *repo) UpdatePersonalData(
 	ctx context.Context,
-	tx pgx.Tx,
 	userId uint64,
 	data *rmodel.PersonalData,
 ) error {
@@ -119,11 +109,8 @@ func (r *repo) UpdatePersonalData(
 		return rep.NewInternalError(err)
 	}
 
-	if tx != nil {
-		_, err = tx.Exec(ctx, query, args...)
-	} else {
-		_, err = r.db.Exec(ctx, query, args...)
-	}
+	_, err = r.db.DB().ExecContext(ctx, query, args...)
+
 	if err != nil {
 		return rep.NewInternalError(err)
 	}

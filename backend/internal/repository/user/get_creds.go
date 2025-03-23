@@ -12,7 +12,6 @@ import (
 
 func (r *repo) GetCredsByEmail(
 	ctx context.Context,
-	tx pgx.Tx,
 	email string,
 ) (*rmodel.User, error) {
 	query, args, err := squirrel.
@@ -29,12 +28,9 @@ func (r *repo) GetCredsByEmail(
 	if err != nil {
 		return nil, repository.NewInternalError(err)
 	}
-	var row pgx.Row
-	if tx != nil {
-		row = tx.QueryRow(ctx, query, args...)
-	} else {
-		row = r.db.QueryRow(ctx, query, args...)
-	}
+
+	row := r.db.DB().QueryRowContext(ctx, query, args...)
+
 	user := &rmodel.User{
 		Creds: &rmodel.Creds{},
 	}
