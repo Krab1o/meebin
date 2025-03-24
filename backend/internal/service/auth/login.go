@@ -31,7 +31,7 @@ func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, 
 		UserId:         repoUser.Id,
 		ExpirationTime: refreshExpirationTime,
 	}
-	sessionId, err := s.sessionRepository.AddSession(ctx, repoSession)
+	sessionId, err := s.sessionRepository.Add(ctx, repoSession)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}
@@ -48,7 +48,7 @@ func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, 
 		return nil, service.NewInternalError(err)
 	}
 
-	roles, err := s.roleRepository.GetUserRolesById(ctx, repoUser.Id)
+	roles, err := s.roleRepository.ListUserRolesById(ctx, repoUser.Id)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}

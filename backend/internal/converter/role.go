@@ -1,4 +1,4 @@
-package api
+package converter
 
 import "github.com/Krab1o/meebin/internal/model"
 

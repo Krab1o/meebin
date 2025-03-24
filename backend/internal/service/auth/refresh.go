@@ -29,11 +29,11 @@ func (s *serv) Refresh(ctx context.Context, refreshToken string) (string, error)
 	if !token.Valid {
 		return "", service.NewUnauthorizedError(nil)
 	}
-	repoSession, err := s.sessionRepository.FindSession(ctx, claims.SessionID)
+	repoSession, err := s.sessionRepository.FindById(ctx, claims.SessionID)
 	if err != nil {
 		return "", service.ErrorDBToService(err)
 	}
-	roles, err := s.roleRepository.GetUserRolesById(ctx, repoSession.UserId)
+	roles, err := s.roleRepository.ListUserRolesById(ctx, repoSession.UserId)
 	if err != nil {
 		return "", service.ErrorDBToService(err)
 	}

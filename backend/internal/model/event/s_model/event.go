@@ -7,18 +7,18 @@ import (
 )
 
 type Event struct {
-	Id         uint64
-	CallerId   uint64
-	UtilizerId uint64
-	Status     model.EventStatus
-	Data       *EventData
+	Id     uint64
+	Status model.EventStatus
+	Data   *EventData
 }
 
 type EventData struct {
-	EventId     uint64
-	Latitude    float64
-	Longtitude  float64
-	Title       string
-	TimeCalled  time.Time
-	TimeCleaned time.Time
+	Latitude     float64
+	Longtitude   float64
+	Title        string
+	Description  string
+	CallerId     uint64
+	UtilizatorId uint64
+	TimeCalled   time.Time
+	TimeUtilized time.Time
 }

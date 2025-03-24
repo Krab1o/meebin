@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) GetUserRolesById(
+func (r *repo) ListUserRolesById(
 	ctx context.Context,
 	userId uint64,
 ) ([]model.Role, error) {
@@ -49,7 +49,7 @@ func (r *repo) GetUserRolesById(
 }
 
 // TODO: make multiple role support
-func (r *repo) GetRolesByTitle(ctx context.Context, role []model.Role) (uint64, error) {
+func (r *repo) ListByTitles(ctx context.Context, role []model.Role) (uint64, error) {
 	query, args, err := sq.Select(
 		rep.RoleIdColumn,
 	).

@@ -12,7 +12,7 @@ import (
 )
 
 func (r *repo) addEvent(ctx context.Context, newEvent *rmodel.Event) (uint64, error) {
-	query, args, err := sq.Insert(rep.EventDataTableName).
+	query, args, err := sq.Insert(rep.EventTableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(
 			rep.EventStatusColumn,
@@ -60,7 +60,7 @@ func (r *repo) addEventData(ctx context.Context, newEventData *rmodel.EventData)
 		newEventData.Title,
 		newEventData.Description,
 		newEventData.TimeCalled,
-		newEventData.TimeCleaned,
+		newEventData.TimeUtilized,
 	).ToSql()
 	if err != nil {
 		return rep.NewInternalError(err)

@@ -38,11 +38,11 @@ const (
 	UserRoleIdUserColumn = "id_user"
 	UserRoleIdRoleColumn = "id_role"
 
-	EventTableName          = "event_"
-	EventIdColumn           = "id"
-	EventCallerIdColumn     = "caller_id"
-	EventUtilizatorIdColumn = "utilizator_id"
-	EventStatusColumn       = "status"
+	EventTableName              = "event_"
+	EventIdColumn               = "id"
+	EventDataCallerIdColumn     = "caller_id"
+	EventDataUtilizatorIdColumn = "utilizator_id"
+	EventStatusColumn           = "status"
 
 	EventStatusTableName   = "event_status_"
 	EventStatusIdColumn    = "id"

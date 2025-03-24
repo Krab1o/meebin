@@ -14,7 +14,7 @@ import (
 // TODO: cache roles to avoid queries
 // TODO: add multiple role support
 // TODO: refactor splitting to function
-func (r *repo) AddUser(
+func (r *repo) Add(
 	ctx context.Context,
 	user *rmodel.User,
 	roleId uint64,

@@ -14,7 +14,7 @@ func Col(table, column string) string {
 }
 
 type UserRepository interface {
-	AddUser(ctx context.Context, user *rmodelUser.User, roleId uint64) (uint64, error)
+	Add(ctx context.Context, user *rmodelUser.User, roleId uint64) (uint64, error)
 	GetCredsByEmail(ctx context.Context, email string) (*rmodelUser.User, error)
 	GetById(ctx context.Context, userId uint64) (*rmodelUser.User, error)
 	DeleteById(ctx context.Context, userId uint64) error
@@ -28,14 +28,14 @@ type UserRepository interface {
 	) error
 }
 type SessionRepository interface {
-	AddSession(ctx context.Context, session *rmodelUser.Session) (uint64, error)
-	DeleteSession(ctx context.Context, sessionId uint64) error
-	FindSession(ctx context.Context, sessionId uint64) (*rmodelUser.Session, error)
+	Add(ctx context.Context, session *rmodelUser.Session) (uint64, error)
+	DeleteById(ctx context.Context, sessionId uint64) error
+	FindById(ctx context.Context, sessionId uint64) (*rmodelUser.Session, error)
 }
 
 type RoleRepository interface {
-	GetRolesByTitle(ctx context.Context, roles []model.Role) (uint64, error)
-	GetUserRolesById(ctx context.Context, userId uint64) ([]model.Role, error)
+	ListByTitles(ctx context.Context, roles []model.Role) (uint64, error)
+	ListUserRolesById(ctx context.Context, userId uint64) ([]model.Role, error)
 }
 
 // type UserDataRepository interface {
@@ -51,5 +51,5 @@ type EventRepository interface {
 	UpdateEvent(ctx context.Context, eventId uint64, event *rmodelEvent.Event) error
 	UpdateEventData(ctx context.Context, eventId uint64, eventData *rmodelEvent.EventData) error
 	// Update(ctx context.Context, id uint64) (*rmodelEvent.Event, error)
-	Delete(ctx context.Context, id uint64) error
+	DeleteById(ctx context.Context, id uint64) error
 }

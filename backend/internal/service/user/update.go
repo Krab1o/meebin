@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	convUser "github.com/Krab1o/meebin/internal/converter/service/user"
+	converter "github.com/Krab1o/meebin/internal/converter/service/user"
 	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
 	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 	"github.com/Krab1o/meebin/internal/service"
@@ -44,7 +44,7 @@ func (s *serv) Update(
 
 	var newRepoUser *rmodel.User
 	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
-		repoUser := convUser.UserServiceToRepo(user)
+		repoUser := converter.UserServiceToRepo(user)
 		var err error
 
 		if user.Creds != nil {
@@ -69,6 +69,6 @@ func (s *serv) Update(
 	if err != nil {
 		return nil, err
 	}
-	newUser := convUser.UserRepoToService(newRepoUser)
+	newUser := converter.UserRepoToService(newRepoUser)
 	return newUser, err
 }

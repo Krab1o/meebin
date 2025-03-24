@@ -16,12 +16,6 @@ func (r *repo) UpdateEvent(
 ) error {
 	builder := sq.Update(rep.EventTableName).
 		PlaceholderFormat(sq.Dollar)
-	if event.CallerId != 0 {
-		builder = builder.Set(rep.EventCallerIdColumn, event.CallerId)
-	}
-	if event.UtilizatorId != 0 {
-		builder = builder.Set(rep.EventUtilizatorIdColumn, event.UtilizatorId)
-	}
 	if event.Status != 0 {
 		builder = builder.Set(rep.EventStatusColumn, event.Status)
 	}
@@ -38,6 +32,7 @@ func (r *repo) UpdateEvent(
 	return nil
 }
 
+// TODO: think how to refactor
 func (r *repo) UpdateEventData(
 	ctx context.Context,
 	eventId uint64,
@@ -46,10 +41,10 @@ func (r *repo) UpdateEventData(
 	builder := sq.Update(rep.EventTableName).
 		PlaceholderFormat(sq.Dollar)
 	if eventData.Latitude != 0.0 {
-		builder = builder.Set(rep.EventCallerIdColumn, eventData.Latitude)
+		builder = builder.Set(rep.EventDataCallerIdColumn, eventData.Latitude)
 	}
 	if eventData.Longtitude != 0.0 {
-		builder = builder.Set(rep.EventUtilizatorIdColumn, eventData.Longtitude)
+		builder = builder.Set(rep.EventDataUtilizatorIdColumn, eventData.Longtitude)
 	}
 	if eventData.Title != "" {
 		builder = builder.Set(rep.EventDataTitleColumn, eventData.Title)
@@ -57,11 +52,17 @@ func (r *repo) UpdateEventData(
 	if eventData.Description != "" {
 		builder = builder.Set(rep.EventDataDescriptionColumn, eventData.Description)
 	}
+	if eventData.CallerId != 0 {
+		builder = builder.Set(rep.EventDataCallerIdColumn, eventData.CallerId)
+	}
+	if eventData.UtilizatorId != 0 {
+		builder = builder.Set(rep.EventDataUtilizatorIdColumn, eventData.UtilizatorId)
+	}
 	if time.Time.IsZero(eventData.TimeCalled) {
 		builder = builder.Set(rep.EventDataTimeCalledColumn, eventData.TimeCalled)
 	}
-	if time.Time.IsZero(eventData.TimeCleaned) {
-		builder = builder.Set(rep.EventDataTimeCleanedColumn, eventData.TimeCleaned)
+	if time.Time.IsZero(eventData.TimeUtilized) {
+		builder = builder.Set(rep.EventDataTimeCleanedColumn, eventData.TimeUtilized)
 	}
 
 	query, args, err := builder.ToSql()

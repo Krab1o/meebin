@@ -6,7 +6,7 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-type eventService struct {
+type serv struct {
 	eventRepository repository.EventRepository
 	txManager       db.TxManager
 }
@@ -15,7 +15,7 @@ func NewService(
 	eventRepository repository.EventRepository,
 	txManager db.TxManager,
 ) service.EventService {
-	return &eventService{
+	return &serv{
 		eventRepository: eventRepository,
 		txManager:       txManager,
 	}

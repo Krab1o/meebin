@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/Krab1o/meebin/internal/converter/api"
+	"github.com/Krab1o/meebin/internal/converter"
 	"github.com/Krab1o/meebin/internal/model/user/dto"
 	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 )
@@ -10,7 +10,7 @@ func UserDTOToService(user *dto.BaseUser) *smodel.User {
 	dtoCreds := CredsDTOToService(user.Creds)
 	dtoData := DataDTOToService(user.Data)
 	dtoStats := StatsDTOToService(user.Stats)
-	dtoRoles := api.ConvertRoles(user.Roles)
+	dtoRoles := converter.ConvertRoles(user.Roles)
 	return &smodel.User{
 		Id:    user.Id,
 		Roles: dtoRoles,

@@ -13,9 +13,9 @@ import (
 func (r *repo) List(ctx context.Context) ([]rmodel.Event, error) {
 	query, args, err := sq.Select(
 		rep.Col(rep.EventTableName, rep.EventIdColumn),
-		rep.Col(rep.EventTableName, rep.EventCallerIdColumn),
-		rep.Col(rep.EventTableName, rep.EventUtilizatorIdColumn),
 
+		rep.Col(rep.EventTableName, rep.EventDataCallerIdColumn),
+		rep.Col(rep.EventTableName, rep.EventDataUtilizatorIdColumn),
 		rep.Col(rep.EventDataTableName, rep.EventDataLatitudeColumn),
 		rep.Col(rep.EventDataTableName, rep.EventDataLongtitudeColumn),
 		rep.Col(rep.EventDataTableName, rep.EventDataTitleColumn),
@@ -59,15 +59,15 @@ func (r *repo) List(ctx context.Context) ([]rmodel.Event, error) {
 		}
 		err = rows.Scan(
 			&event.Id,
-			&event.CallerId,
-			&event.UtilizatorId,
 
+			&event.Data.CallerId,
+			&event.Data.UtilizatorId,
 			&event.Data.Latitude,
 			&event.Data.Longtitude,
 			&event.Data.Title,
 			&event.Data.Description,
 			&event.Data.TimeCalled,
-			&event.Data.TimeCleaned,
+			&event.Data.TimeUtilized,
 
 			&event.Status,
 		)

@@ -55,7 +55,7 @@ func (h *Handler) UpdateUser(c *gin.Context) error {
 	}
 	serviceUser := convUser.UpdatedUserDTOToService(user)
 
-	newUser, err := h.userService.Update(ctx, serviceUser, uint64(userIdToUpdate))
+	newUser, err := h.userService.Update(ctx, uint64(userIdToUpdate), serviceUser)
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrNoUpdate):
