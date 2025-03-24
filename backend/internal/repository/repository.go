@@ -48,6 +48,8 @@ type EventRepository interface {
 	Add(ctx context.Context, newEvent *rmodelEvent.Event) (uint64, error)
 	GetById(ctx context.Context, eventId uint64) (*rmodelEvent.Event, error)
 	List(ctx context.Context) ([]rmodelEvent.Event, error)
-	Update(ctx context.Context, id uint64) (*rmodelEvent.Event, error)
+	UpdateEvent(ctx context.Context, eventId uint64, event *rmodelEvent.Event) error
+	UpdateEventData(ctx context.Context, eventId uint64, eventData *rmodelEvent.EventData) error
+	// Update(ctx context.Context, id uint64) (*rmodelEvent.Event, error)
 	Delete(ctx context.Context, id uint64) error
 }

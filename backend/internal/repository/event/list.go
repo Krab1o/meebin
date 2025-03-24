@@ -50,17 +50,17 @@ func (r *repo) List(ctx context.Context) ([]rmodel.Event, error) {
 	}
 
 	list := []rmodel.Event{}
-	var user *rmodel.Event
+	var event *rmodel.Event
 
 	//TODO: check how event status will be parsed
 	for rows.Next() {
-		event := &rmodel.Event{
+		event = &rmodel.Event{
 			Data: &rmodel.EventData{},
 		}
 		err = rows.Scan(
 			&event.Id,
 			&event.CallerId,
-			&event.UtilizerId,
+			&event.UtilizatorId,
 
 			&event.Data.Latitude,
 			&event.Data.Longtitude,
@@ -74,7 +74,7 @@ func (r *repo) List(ctx context.Context) ([]rmodel.Event, error) {
 		if err != nil {
 			return nil, rep.NewInternalError(err)
 		}
-		list = append(list, *user)
+		list = append(list, *event)
 	}
 	return list, nil
 }

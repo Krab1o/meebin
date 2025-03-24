@@ -49,7 +49,7 @@ func (r *repo) UpdateStats(
 ) error {
 	builder := sq.Update(rep.StatsTableName).
 		PlaceholderFormat(sq.Dollar)
-	if stats.UtilizeCount != 0.0 {
+	if stats.UtilizeCount != 0 {
 		builder = builder.Set(
 			rep.StatsUtilizeCounterColumn,
 			stats.UtilizeCount,
@@ -61,7 +61,7 @@ func (r *repo) UpdateStats(
 			stats.ReportCount,
 		)
 	}
-	if stats.Rating != 0 {
+	if stats.Rating != 0.0 {
 		builder = builder.Set(rep.StatsRatingColumn, stats.Rating)
 	}
 	builder = builder.Where(sq.Eq{rep.UserIdColumn: userId})

@@ -83,5 +83,6 @@ func (r *repo) Add(ctx context.Context, newEvent *rmodel.Event) (uint64, error) 
 	if err != nil {
 		return 0, err
 	}
+
 	return eventId, nil
 }

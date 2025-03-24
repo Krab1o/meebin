@@ -7,11 +7,11 @@ import (
 )
 
 type Event struct {
-	Id         uint64
-	CallerId   uint64
-	UtilizerId uint64
-	Status     model.EventStatus
-	Data       *EventData
+	Id           uint64
+	CallerId     uint64
+	UtilizatorId uint64
+	Status       model.EventStatus
+	Data         *EventData
 }
 
 type EventData struct {

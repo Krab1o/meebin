@@ -6,7 +6,7 @@ import (
 
 	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
 	rep "github.com/Krab1o/meebin/internal/repository"
-	"github.com/Masterminds/squirrel"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -14,16 +14,16 @@ func (r *repo) GetCredsByEmail(
 	ctx context.Context,
 	email string,
 ) (*rmodel.User, error) {
-	query, args, err := squirrel.
+	query, args, err := sq.
 		Select(
 			rep.UserIdColumn,
 			rep.UserUsernameColumn,
 			rep.UserEmailColumn,
 			rep.UserPasswordColumn,
 		).
-		PlaceholderFormat(squirrel.Dollar).
+		PlaceholderFormat(sq.Dollar).
 		From(rep.UserTableName).
-		Where(squirrel.Eq{rep.UserEmailColumn: email}).
+		Where(sq.Eq{rep.UserEmailColumn: email}).
 		ToSql()
 	if err != nil {
 		return nil, rep.NewInternalError(err)

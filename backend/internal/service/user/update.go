@@ -18,10 +18,10 @@ func doUpdate(user *smodel.User) bool {
 // TODO: construct map with repository column name
 func (s *serv) Update(
 	ctx context.Context,
+	userId uint64,
 	user *smodel.User,
-	updatedUserId uint64,
 ) (*smodel.User, error) {
-	if user.Id != updatedUserId {
+	if user.Id != userId {
 		return nil, service.NewForbiddenError(nil)
 	}
 	startUpdate := doUpdate(user)

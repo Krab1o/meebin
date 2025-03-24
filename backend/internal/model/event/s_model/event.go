@@ -1,4 +1,4 @@
-package rmodel
+package smodel
 
 import (
 	"time"

@@ -54,7 +54,7 @@ func (r *repo) GetById(ctx context.Context, eventId uint64) (*rmodel.Event, erro
 	err = row.Scan(
 		&event.Id,
 		&event.CallerId,
-		&event.UtilizerId,
+		&event.UtilizatorId,
 
 		&event.Data.Latitude,
 		&event.Data.Longtitude,

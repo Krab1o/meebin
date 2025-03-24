@@ -4,8 +4,8 @@ type EventStatus uint64
 
 // Correlates with event_status_ id from sql table
 const (
-	StatusOnModeration EventStatus = iota + 1
-	StatusOpened
-	StatusOnConfiramation
-	StatusClosed
+	StatusOnModeration    EventStatus = 1
+	StatusOpened                      = 2
+	StatusOnConfiramation             = 3
+	StatusClosed                      = 4
 )
