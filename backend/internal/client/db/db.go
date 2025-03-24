@@ -26,14 +26,6 @@ type SQLExecer interface {
 	QueryExecer
 }
 
-type Transactor interface {
-	BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error)
-}
-
-type TxManager interface {
-	ReadCommitted(ctx context.Context, f Handler) error
-}
-
 // type ScanExecer interface {
 // }
 

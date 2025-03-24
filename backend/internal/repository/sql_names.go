@@ -1,45 +1,59 @@
 package repository
 
+// TODO: refactor column names
 const (
-	UserTableName = "user_"
-
+	UserTableName      = "user_"
 	UserIdColumn       = "id"
 	UserUsernameColumn = "username"
 	UserEmailColumn    = "email"
 	UserPasswordColumn = "password"
 
-	StatsTableName = "stats_"
-
+	StatsTableName            = "stats_"
 	StatsIdColumn             = "id"
 	StatsIdUserColumn         = "id_user"
 	StatsUtilizeCounterColumn = "utilize_counter"
 	StatsReportCounterColumn  = "report_counter"
 	StatsRatingColumn         = "rating"
 
-	DataTableName = "personal_data_"
+	UserDataTableName        = "personal_data_"
+	UserDataIdColumn         = "id"
+	UserDataIdUserColumn     = "id_user"
+	UserDataGivenNameColumn  = "given_name"
+	UserDataSurnameColumn    = "surname"
+	UserDataPatronymicColumn = "patronymic"
+	UserDataCityColumn       = "city"
+	UserDataBirthDateColumn  = "birthdate"
 
-	DataIdColumn         = "id"
-	DataIdUserColumn     = "id_user"
-	DataGivenNameColumn  = "given_name"
-	DataSurnameColumn    = "surname"
-	DataPatronymicColumn = "patronymic"
-	DataCityColumn       = "city"
-	DataBirthDateColumn  = "birthdate"
-
-	SessionTableName = "session_"
-
+	SessionTableName            = "session_"
 	SessionIdColumn             = "id_session"
 	SessionIdUserColumn         = "id_user"
 	SessionExpirationTimeColumn = "expiration_time"
 
-	RoleTableName = "role_"
-
+	RoleTableName   = "role_"
 	RoleIdColumn    = "id"
 	RoleTitleColumn = "title"
 
-	UserRoleTableName = "user_role_"
-
+	UserRoleTableName    = "user_role_"
 	UserRoleIdColumn     = "id"
 	UserRoleIdUserColumn = "id_user"
 	UserRoleIdRoleColumn = "id_role"
+
+	EventTableName          = "event_"
+	EventIdColumn           = "id"
+	EventCallerIdColumn     = "caller_id"
+	EventUtilizatorIdColumn = "utilizator_id"
+	EventStatusColumn       = "status"
+
+	EventStatusTableName   = "event_status_"
+	EventStatusIdColumn    = "id"
+	EventStatusTitleColumn = "title"
+
+	EventDataTableName         = "event_data"
+	EventDataEventIdColumn     = "event_id"
+	EventDataLatitudeColumn    = "latitude"
+	EventDataLongtitudeColumn  = "longtitude"
+	EventDataTitleColumn       = "title"
+	EventDataDescriptionColumn = "description"
+	EventDataTimeCalledColumn  = "time_called"
+	EventDataTimeCleanedColumn = "time_cleaned"
 )

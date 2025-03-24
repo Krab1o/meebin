@@ -5,8 +5,8 @@ import (
 	"errors"
 	"log"
 
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
-	"github.com/Krab1o/meebin/internal/repository"
+	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
+	rep "github.com/Krab1o/meebin/internal/repository"
 	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 )
@@ -16,17 +16,17 @@ func (r *repo) FindSession(
 	sessionID uint64,
 ) (*rmodel.Session, error) {
 	query, args, err := squirrel.Select(
-		repository.SessionIdColumn,
-		repository.SessionIdUserColumn,
-		repository.SessionExpirationTimeColumn,
+		rep.SessionIdColumn,
+		rep.SessionIdUserColumn,
+		rep.SessionExpirationTimeColumn,
 	).
 		PlaceholderFormat(squirrel.Dollar).
-		From(repository.SessionTableName).
-		Where(squirrel.Eq{repository.SessionIdColumn: sessionID}).
+		From(rep.SessionTableName).
+		Where(squirrel.Eq{rep.SessionIdColumn: sessionID}).
 		ToSql()
 	log.Println(query)
 	if err != nil {
-		return nil, repository.NewInternalError(err)
+		return nil, rep.NewInternalError(err)
 	}
 
 	row := r.db.DB().QueryRowContext(ctx, query, args...)
@@ -39,9 +39,9 @@ func (r *repo) FindSession(
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, repository.NewNotFoundError(err)
+			return nil, rep.NewNotFoundError(err)
 		}
-		return nil, repository.NewInternalError(err)
+		return nil, rep.NewInternalError(err)
 	}
 	return repoSession, nil
 }

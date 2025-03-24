@@ -8,7 +8,7 @@ import (
 	"github.com/Krab1o/meebin/internal/api"
 	convUser "github.com/Krab1o/meebin/internal/converter/api/new_user"
 	convToken "github.com/Krab1o/meebin/internal/converter/api/token"
-	"github.com/Krab1o/meebin/internal/model/dto"
+	"github.com/Krab1o/meebin/internal/model/user/dto"
 	"github.com/Krab1o/meebin/internal/service"
 	"github.com/gin-gonic/gin"
 )

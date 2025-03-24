@@ -2,8 +2,8 @@ package user
 
 import (
 	"github.com/Krab1o/meebin/internal/model"
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
-	smodel "github.com/Krab1o/meebin/internal/model/s_model"
+	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
+	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 )
 
 func UserRepoToService(user *rmodel.User) *smodel.User {

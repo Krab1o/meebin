@@ -1,18 +1,18 @@
-package user
+package event
 
 import (
 	"context"
 	"errors"
 
 	rep "github.com/Krab1o/meebin/internal/repository"
-	"github.com/Masterminds/squirrel"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) DeleteById(ctx context.Context, userId uint64) error {
-	query, args, err := squirrel.Delete(rep.UserTableName).
-		PlaceholderFormat(squirrel.Dollar).
-		Where(squirrel.Eq{rep.UserIdColumn: userId}).
+func (r *repo) Delete(ctx context.Context, eventId uint64) error {
+	query, args, err := sq.Delete(rep.EventTableName).
+		PlaceholderFormat(sq.Dollar).
+		Where(sq.Eq{rep.EventIdColumn: eventId}).
 		ToSql()
 	if err != nil {
 		return rep.NewInternalError(err)

@@ -5,7 +5,7 @@ import (
 
 	"github.com/Krab1o/meebin/internal/api"
 	convUser "github.com/Krab1o/meebin/internal/converter/api/user"
-	"github.com/Krab1o/meebin/internal/model/dto"
+	"github.com/Krab1o/meebin/internal/model/user/dto"
 	"github.com/gin-gonic/gin"
 )
 

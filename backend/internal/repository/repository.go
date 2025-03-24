@@ -5,7 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Krab1o/meebin/internal/model"
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
+	rmodelEvent "github.com/Krab1o/meebin/internal/model/event/r_model"
+	rmodelUser "github.com/Krab1o/meebin/internal/model/user/r_model"
 )
 
 func Col(table, column string) string {
@@ -13,23 +14,23 @@ func Col(table, column string) string {
 }
 
 type UserRepository interface {
-	AddUser(ctx context.Context, user *rmodel.User, roleId uint64) (uint64, error)
-	GetCredsByEmail(ctx context.Context, email string) (*rmodel.User, error)
-	GetById(ctx context.Context, userId uint64) (*rmodel.User, error)
+	AddUser(ctx context.Context, user *rmodelUser.User, roleId uint64) (uint64, error)
+	GetCredsByEmail(ctx context.Context, email string) (*rmodelUser.User, error)
+	GetById(ctx context.Context, userId uint64) (*rmodelUser.User, error)
 	DeleteById(ctx context.Context, userId uint64) error
-	List(ctx context.Context) ([]rmodel.User, error)
-	UpdateStats(ctx context.Context, userId uint64, stats *rmodel.Stats) error
-	UpdateCreds(ctx context.Context, userId uint64, creds *rmodel.Creds) error
+	List(ctx context.Context) ([]rmodelUser.User, error)
+	UpdateStats(ctx context.Context, userId uint64, stats *rmodelUser.Stats) error
+	UpdateCreds(ctx context.Context, userId uint64, creds *rmodelUser.Creds) error
 	UpdatePersonalData(
 		ctx context.Context,
 		userId uint64,
-		data *rmodel.PersonalData,
+		data *rmodelUser.PersonalData,
 	) error
 }
 type SessionRepository interface {
-	AddSession(ctx context.Context, session *rmodel.Session) (uint64, error)
+	AddSession(ctx context.Context, session *rmodelUser.Session) (uint64, error)
 	DeleteSession(ctx context.Context, sessionId uint64) error
-	FindSession(ctx context.Context, sessionId uint64) (*rmodel.Session, error)
+	FindSession(ctx context.Context, sessionId uint64) (*rmodelUser.Session, error)
 }
 
 type RoleRepository interface {
@@ -42,10 +43,11 @@ type RoleRepository interface {
 // type UserStatsRepository interface {
 // }
 
+// TODO: think of possible renamings in model's folder
 type EventRepository interface {
-	// Add(*event.Event) (int64, error)
-	// GetById(id int64) (*event.Event, error)
-	// List() ([]event.Event, error)
-	// Update(id int64) error
-	// Delete(id int64) error
+	Add(ctx context.Context, newEvent *rmodelEvent.Event) (uint64, error)
+	GetById(ctx context.Context, eventId uint64) (*rmodelEvent.Event, error)
+	List(ctx context.Context) ([]rmodelEvent.Event, error)
+	Update(ctx context.Context, id uint64) (*rmodelEvent.Event, error)
+	Delete(ctx context.Context, id uint64) error
 }

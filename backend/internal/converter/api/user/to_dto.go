@@ -2,8 +2,8 @@ package user
 
 import (
 	"github.com/Krab1o/meebin/internal/converter/api"
-	"github.com/Krab1o/meebin/internal/model/dto"
-	smodel "github.com/Krab1o/meebin/internal/model/s_model"
+	"github.com/Krab1o/meebin/internal/model/user/dto"
+	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 )
 
 func UserServiceToDTO(user *smodel.User) *dto.BaseUser {

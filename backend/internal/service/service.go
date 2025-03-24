@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	smodel "github.com/Krab1o/meebin/internal/model/s_model"
+	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 )
 
 type AuthService interface {

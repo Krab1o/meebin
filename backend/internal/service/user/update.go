@@ -4,8 +4,8 @@ import (
 	"context"
 
 	convUser "github.com/Krab1o/meebin/internal/converter/service/user"
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
-	smodel "github.com/Krab1o/meebin/internal/model/s_model"
+	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
+	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 	"github.com/Krab1o/meebin/internal/service"
 	"golang.org/x/crypto/bcrypt"
 )

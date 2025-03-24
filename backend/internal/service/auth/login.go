@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
-	smodel "github.com/Krab1o/meebin/internal/model/s_model"
+	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
+	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 	"github.com/Krab1o/meebin/internal/service"
 	"github.com/Krab1o/meebin/internal/service/auth/helper"
 	"github.com/Krab1o/meebin/internal/shared"

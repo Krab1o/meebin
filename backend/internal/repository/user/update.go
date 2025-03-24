@@ -2,9 +2,8 @@ package user
 
 import (
 	"context"
-	"log"
 
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
+	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
 	rep "github.com/Krab1o/meebin/internal/repository"
 	sq "github.com/Masterminds/squirrel"
 )
@@ -39,7 +38,7 @@ func (r *repo) UpdateCreds(
 	if err != nil {
 		return rep.NewInternalError(err)
 	}
-	log.Println("finished")
+
 	return nil
 }
 
@@ -85,22 +84,22 @@ func (r *repo) UpdatePersonalData(
 	userId uint64,
 	data *rmodel.PersonalData,
 ) error {
-	builder := sq.Update(rep.DataTableName).
+	builder := sq.Update(rep.UserDataTableName).
 		PlaceholderFormat(sq.Dollar)
 	if data.GivenName != "" {
-		builder = builder.Set(rep.DataGivenNameColumn, data.GivenName)
+		builder = builder.Set(rep.UserDataGivenNameColumn, data.GivenName)
 	}
 	if data.Surname != "" {
-		builder = builder.Set(rep.DataSurnameColumn, data.Surname)
+		builder = builder.Set(rep.UserDataSurnameColumn, data.Surname)
 	}
 	if data.Patronymic != "" {
-		builder = builder.Set(rep.DataPatronymicColumn, data.Patronymic)
+		builder = builder.Set(rep.UserDataPatronymicColumn, data.Patronymic)
 	}
 	if data.City != "" {
-		builder = builder.Set(rep.DataCityColumn, data.City)
+		builder = builder.Set(rep.UserDataCityColumn, data.City)
 	}
 	if data.Birthdate.IsZero() {
-		builder = builder.Set(rep.DataBirthDateColumn, data.Birthdate)
+		builder = builder.Set(rep.UserDataBirthDateColumn, data.Birthdate)
 	}
 
 	builder = builder.Where(sq.Eq{rep.UserIdColumn: userId})

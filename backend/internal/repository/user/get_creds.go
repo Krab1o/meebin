@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
-	"github.com/Krab1o/meebin/internal/repository"
+	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
+	rep "github.com/Krab1o/meebin/internal/repository"
 	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 )
@@ -16,17 +16,17 @@ func (r *repo) GetCredsByEmail(
 ) (*rmodel.User, error) {
 	query, args, err := squirrel.
 		Select(
-			repository.UserIdColumn,
-			repository.UserUsernameColumn,
-			repository.UserEmailColumn,
-			repository.UserPasswordColumn,
+			rep.UserIdColumn,
+			rep.UserUsernameColumn,
+			rep.UserEmailColumn,
+			rep.UserPasswordColumn,
 		).
 		PlaceholderFormat(squirrel.Dollar).
-		From(repository.UserTableName).
-		Where(squirrel.Eq{repository.UserEmailColumn: email}).
+		From(rep.UserTableName).
+		Where(squirrel.Eq{rep.UserEmailColumn: email}).
 		ToSql()
 	if err != nil {
-		return nil, repository.NewInternalError(err)
+		return nil, rep.NewInternalError(err)
 	}
 
 	row := r.db.DB().QueryRowContext(ctx, query, args...)
@@ -42,9 +42,9 @@ func (r *repo) GetCredsByEmail(
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, repository.NewNotFoundError(err)
+			return nil, rep.NewNotFoundError(err)
 		}
-		return nil, repository.NewInternalError(err)
+		return nil, rep.NewInternalError(err)
 	}
 	return user, nil
 }
