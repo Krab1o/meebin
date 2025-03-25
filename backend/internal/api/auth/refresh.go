@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Krab1o/meebin/internal/api"
-	"github.com/Krab1o/meebin/internal/model/user/dto"
+	"github.com/Krab1o/meebin/internal/model/token/dto"
 	"github.com/Krab1o/meebin/internal/service"
 	"github.com/gin-gonic/gin"
 )

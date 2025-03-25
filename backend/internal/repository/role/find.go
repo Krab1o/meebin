@@ -49,7 +49,7 @@ func (r *repo) ListUserRolesById(
 }
 
 // TODO: make multiple role support
-func (r *repo) ListByTitles(ctx context.Context, role []model.Role) (uint64, error) {
+func (r *repo) ListRolesByTitles(ctx context.Context, role []model.Role) (uint64, error) {
 	query, args, err := sq.Select(
 		rep.RoleIdColumn,
 	).

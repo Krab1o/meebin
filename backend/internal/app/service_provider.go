@@ -109,7 +109,6 @@ func (s *serviceProvider) TxManager(ctx context.Context) db.TxManager {
 	return s.txManager
 }
 
-// TODO: refactor all dependencies with new TxManager and DBClient
 func (s *serviceProvider) UserRepository(ctx context.Context) repository.UserRepository {
 	if s.userRepo == nil {
 		s.userRepo = repoUser.NewRepository(s.DBClient(ctx))

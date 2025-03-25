@@ -15,13 +15,12 @@ func doUpdate(user *smodel.User) bool {
 		user.Data != nil && *user.Data != smodel.PersonalData{}
 }
 
-// TODO: construct map with repository column name
 func (s *serv) Update(
 	ctx context.Context,
-	userId uint64,
+	updaterId uint64,
 	user *smodel.User,
 ) (*smodel.User, error) {
-	if user.Id != userId {
+	if updaterId != user.Id {
 		return nil, service.NewForbiddenError(nil)
 	}
 	startUpdate := doUpdate(user)
@@ -42,7 +41,7 @@ func (s *serv) Update(
 		return nil, service.NewNoUpdateError(nil)
 	}
 
-	var newRepoUser *rmodel.User
+	var updatedRepoUser *rmodel.User
 	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		repoUser := converter.UserServiceToRepo(user)
 		var err error
@@ -59,7 +58,7 @@ func (s *serv) Update(
 				return service.ErrorDBToService(err)
 			}
 		}
-		newRepoUser, err = s.userRepository.GetById(ctx, user.Id)
+		updatedRepoUser, err = s.userRepository.GetUserById(ctx, user.Id)
 		if err != nil {
 			return service.ErrorDBToService(err)
 		}
@@ -69,6 +68,6 @@ func (s *serv) Update(
 	if err != nil {
 		return nil, err
 	}
-	newUser := converter.UserRepoToService(newRepoUser)
-	return newUser, err
+	updatedUser := converter.UserRepoToService(updatedRepoUser)
+	return updatedUser, err
 }

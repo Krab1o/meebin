@@ -2,12 +2,11 @@ package auth
 
 import (
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/Krab1o/meebin/internal/api"
-	convUser "github.com/Krab1o/meebin/internal/converter/api/new_user"
 	convToken "github.com/Krab1o/meebin/internal/converter/api/token"
+	convUser "github.com/Krab1o/meebin/internal/converter/api/user/register"
 	"github.com/Krab1o/meebin/internal/model/user/dto"
 	"github.com/Krab1o/meebin/internal/service"
 	"github.com/gin-gonic/gin"
@@ -31,10 +30,9 @@ const (
 // @Router			/auth/register [post]
 func (h *Handler) Register(c *gin.Context) error {
 	ctx := c.Request.Context()
-	newUser := &dto.NewUser{}
+	newUser := &dto.RegisterUser{}
 	err := c.ShouldBindJSON(newUser)
 	if err != nil {
-		log.Println(err)
 		return api.NewBadRequestError(err, api.ParseValidationErrors(err))
 	}
 

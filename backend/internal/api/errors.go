@@ -26,6 +26,8 @@ import (
 
 const defaultInternalErrorMsg = "Internal Error"
 
+// TODO: split into two error types with embedded basic error and its methods.
+// Kind of inheritance with different message field
 type Error struct {
 	StatusCode int   `json:"-"`
 	Message    any   `json:"message"`

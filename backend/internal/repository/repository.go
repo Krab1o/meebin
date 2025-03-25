@@ -14,10 +14,10 @@ func Col(table, column string) string {
 }
 
 type UserRepository interface {
-	Add(ctx context.Context, user *rmodelUser.User, roleId uint64) (uint64, error)
+	AddUser(ctx context.Context, user *rmodelUser.User, roleId uint64) (uint64, error)
 	GetCredsByEmail(ctx context.Context, email string) (*rmodelUser.User, error)
-	GetById(ctx context.Context, userId uint64) (*rmodelUser.User, error)
-	DeleteById(ctx context.Context, userId uint64) error
+	GetUserById(ctx context.Context, userId uint64) (*rmodelUser.User, error)
+	DeleteUserById(ctx context.Context, userId uint64) error
 	List(ctx context.Context) ([]rmodelUser.User, error)
 	UpdateStats(ctx context.Context, userId uint64, stats *rmodelUser.Stats) error
 	UpdateCreds(ctx context.Context, userId uint64, creds *rmodelUser.Creds) error
@@ -28,13 +28,13 @@ type UserRepository interface {
 	) error
 }
 type SessionRepository interface {
-	Add(ctx context.Context, session *rmodelUser.Session) (uint64, error)
-	DeleteById(ctx context.Context, sessionId uint64) error
-	FindById(ctx context.Context, sessionId uint64) (*rmodelUser.Session, error)
+	AddSession(ctx context.Context, session *rmodelUser.Session) (uint64, error)
+	DeleteSessionById(ctx context.Context, sessionId uint64) error
+	FindSessionById(ctx context.Context, sessionId uint64) (*rmodelUser.Session, error)
 }
 
 type RoleRepository interface {
-	ListByTitles(ctx context.Context, roles []model.Role) (uint64, error)
+	ListRolesByTitles(ctx context.Context, roles []model.Role) (uint64, error)
 	ListUserRolesById(ctx context.Context, userId uint64) ([]model.Role, error)
 }
 
@@ -45,11 +45,12 @@ type RoleRepository interface {
 
 // TODO: think of possible renamings in model's folder
 type EventRepository interface {
-	Add(ctx context.Context, newEvent *rmodelEvent.Event) (uint64, error)
-	GetById(ctx context.Context, eventId uint64) (*rmodelEvent.Event, error)
+	AddEvent(ctx context.Context, newEvent *rmodelEvent.Event) (uint64, error)
+	GetEventById(ctx context.Context, eventId uint64) (*rmodelEvent.Event, error)
+	GetCallerIdById(ctx context.Context, eventId uint64) (uint64, error)
 	List(ctx context.Context) ([]rmodelEvent.Event, error)
 	UpdateEvent(ctx context.Context, eventId uint64, event *rmodelEvent.Event) error
 	UpdateEventData(ctx context.Context, eventId uint64, eventData *rmodelEvent.EventData) error
 	// Update(ctx context.Context, id uint64) (*rmodelEvent.Event, error)
-	DeleteById(ctx context.Context, id uint64) error
+	DeleteEventById(ctx context.Context, id uint64) error
 }

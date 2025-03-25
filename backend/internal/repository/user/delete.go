@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) DeleteById(ctx context.Context, userId uint64) error {
+func (r *repo) DeleteUserById(ctx context.Context, userId uint64) error {
 	query, args, err := sq.Delete(rep.UserTableName).
 		PlaceholderFormat(sq.Dollar).
 		Where(sq.Eq{rep.UserIdColumn: userId}).

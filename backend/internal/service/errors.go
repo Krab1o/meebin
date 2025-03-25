@@ -37,7 +37,6 @@ func NewNoUpdateError(err error) error {
 
 func ErrorDBToService(
 	err error,
-	// customAction func(*repository.Error) *Error,
 ) error {
 	switch {
 	case errors.Is(err, rep.ErrNotFound):

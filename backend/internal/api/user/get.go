@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/Krab1o/meebin/internal/api"
-	convUser "github.com/Krab1o/meebin/internal/converter/api/user"
+	convUser "github.com/Krab1o/meebin/internal/converter/api/user/base"
 	"github.com/Krab1o/meebin/internal/service"
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +25,7 @@ import (
 // @Failure		404		{object}	api.Error
 // @Failure		500		{object}	api.Error
 // @Router			/users/{user_id} [get]
-func (h *Handler) GetUser(c *gin.Context) error {
+func (h *Handler) Get(c *gin.Context) error {
 	ctx := c.Request.Context()
 	idUnparsed := c.Param(api.ParamId)
 	userId, err := strconv.Atoi(idUnparsed)
@@ -35,7 +35,7 @@ func (h *Handler) GetUser(c *gin.Context) error {
 	if userId < 0 {
 		return api.NewBadRequestError(nil, "Wrong id value")
 	}
-	user, err := h.userService.GetUser(ctx, uint64(userId))
+	user, err := h.userService.Get(ctx, uint64(userId))
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrNotFound):

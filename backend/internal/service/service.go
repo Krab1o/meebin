@@ -15,20 +15,24 @@ type AuthService interface {
 }
 
 type UserService interface {
-	ListUser(ctx context.Context) ([]smodelUser.User, error)
-	GetUser(ctx context.Context, userId uint64) (*smodelUser.User, error)
-	Delete(ctx context.Context, userId uint64) error
+	List(ctx context.Context) ([]smodelUser.User, error)
+	Get(ctx context.Context, userId uint64) (*smodelUser.User, error)
+	Delete(ctx context.Context, deleterId uint64, userId uint64) error
 	Update(
 		ctx context.Context,
-		userId uint64,
+		updaterId uint64,
 		user *smodelUser.User,
 	) (*smodelUser.User, error)
 }
 
 type EventService interface {
-	ListEvent(ctx context.Context) ([]smodelEvent.Event, error)
-	GetEvent(ctx context.Context, eventId uint64) (*smodelEvent.Event, error)
-	Delete(ctx context.Context, eventId uint64) error
-	Update(ctx context.Context, eventId uint64, event *smodelEvent.Event) error
+	List(ctx context.Context) ([]smodelEvent.Event, error)
+	Get(ctx context.Context, eventId uint64) (*smodelEvent.Event, error)
+	Delete(ctx context.Context, deleterId uint64, eventId uint64) error
+	Update(
+		ctx context.Context,
+		updaterId uint64,
+		event *smodelEvent.Event,
+	) (*smodelEvent.Event, error)
 	Create(ctx context.Context, event *smodelEvent.Event) (uint64, error)
 }

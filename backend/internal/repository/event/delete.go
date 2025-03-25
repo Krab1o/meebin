@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) DeleteById(ctx context.Context, eventId uint64) error {
+func (r *repo) DeleteEventById(ctx context.Context, eventId uint64) error {
 	query, args, err := sq.Delete(rep.EventTableName).
 		PlaceholderFormat(sq.Dollar).
 		Where(sq.Eq{rep.EventIdColumn: eventId}).

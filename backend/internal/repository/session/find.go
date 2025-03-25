@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *repo) FindById(
+func (r *repo) FindSessionById(
 	ctx context.Context,
 	sessionID uint64,
 ) (*rmodel.Session, error) {

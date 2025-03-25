@@ -11,9 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// TODO: move function to rep layer
-
-func (r *repo) GetById(ctx context.Context, userId uint64) (*rmodel.User, error) {
+func (r *repo) GetUserById(ctx context.Context, userId uint64) (*rmodel.User, error) {
 	query, args, err := sq.Select(
 		rep.Col(rep.UserTableName, rep.UserEmailColumn),
 		rep.Col(rep.UserTableName, rep.UserUsernameColumn),

@@ -1,11 +1,11 @@
-package newuser
+package register
 
 import (
 	"github.com/Krab1o/meebin/internal/model/user/dto"
 	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 )
 
-func NewUserDTOToService(newUser *dto.NewUser) *smodel.User {
+func NewUserDTOToService(newUser *dto.RegisterUser) *smodel.User {
 	dtoCreds := NewCredsDTOToService(newUser.Creds)
 	dtoData := NewDataDTOToService(newUser.Data)
 	return &smodel.User{
@@ -14,7 +14,7 @@ func NewUserDTOToService(newUser *dto.NewUser) *smodel.User {
 	}
 }
 
-func NewCredsDTOToService(newCreds *dto.NewCreds) *smodel.Creds {
+func NewCredsDTOToService(newCreds *dto.RegisterCreds) *smodel.Creds {
 	if newCreds == nil {
 		return nil
 	}
@@ -25,7 +25,7 @@ func NewCredsDTOToService(newCreds *dto.NewCreds) *smodel.Creds {
 	}
 }
 
-func NewDataDTOToService(newData *dto.NewPersonalData) *smodel.PersonalData {
+func NewDataDTOToService(newData *dto.RegisterPersonalData) *smodel.PersonalData {
 	if newData == nil {
 		return nil
 	}

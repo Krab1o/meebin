@@ -8,8 +8,8 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-func (s *serv) GetEvent(ctx context.Context, eventId uint64) (*smodel.Event, error) {
-	repoEvent, err := s.eventRepository.GetById(ctx, eventId)
+func (s *serv) Get(ctx context.Context, eventId uint64) (*smodel.Event, error) {
+	repoEvent, err := s.eventRepository.GetEventById(ctx, eventId)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}

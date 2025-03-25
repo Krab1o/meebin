@@ -11,14 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func (r *repo) addEvent(ctx context.Context, newEvent *rmodel.Event) (uint64, error) {
+func (r *repo) addEvent(ctx context.Context, event *rmodel.Event) (uint64, error) {
 	query, args, err := sq.Insert(rep.EventTableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(
 			rep.EventStatusColumn,
 		).
 		Values(
-			newEvent.Status,
+			event.Status,
 		).
 		Suffix(
 			fmt.Sprintf("RETURNING %s", rep.SessionIdColumn),
@@ -44,7 +44,7 @@ func (r *repo) addEvent(ctx context.Context, newEvent *rmodel.Event) (uint64, er
 	return eventId, nil
 }
 
-func (r *repo) addEventData(ctx context.Context, newEventData *rmodel.EventData) error {
+func (r *repo) addEventData(ctx context.Context, eventData *rmodel.EventData) error {
 	query, args, err := sq.Insert(rep.EventDataTableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(
@@ -53,14 +53,14 @@ func (r *repo) addEventData(ctx context.Context, newEventData *rmodel.EventData)
 			rep.EventDataTitleColumn,
 			rep.EventDataDescriptionColumn,
 			rep.EventDataTimeCalledColumn,
-			rep.EventDataTimeCleanedColumn,
+			rep.EventDataTimeUtilizedColumn,
 		).Values(
-		newEventData.Latitude,
-		newEventData.Longtitude,
-		newEventData.Title,
-		newEventData.Description,
-		newEventData.TimeCalled,
-		newEventData.TimeUtilized,
+		eventData.Latitude,
+		eventData.Longtitude,
+		eventData.Title,
+		eventData.Description,
+		eventData.TimeCalled,
+		eventData.TimeUtilized,
 	).ToSql()
 	if err != nil {
 		return rep.NewInternalError(err)
@@ -74,12 +74,12 @@ func (r *repo) addEventData(ctx context.Context, newEventData *rmodel.EventData)
 }
 
 // TODO: decide how to check for nil (and if I need to check at all)
-func (r *repo) Add(ctx context.Context, newEvent *rmodel.Event) (uint64, error) {
-	eventId, err := r.addEvent(ctx, newEvent)
+func (r *repo) AddEvent(ctx context.Context, event *rmodel.Event) (uint64, error) {
+	eventId, err := r.addEvent(ctx, event)
 	if err != nil {
 		return 0, err
 	}
-	err = r.addEventData(ctx, newEvent.Data)
+	err = r.addEventData(ctx, event.Data)
 	if err != nil {
 		return 0, err
 	}

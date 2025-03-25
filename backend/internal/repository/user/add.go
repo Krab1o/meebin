@@ -12,9 +12,9 @@ import (
 )
 
 // TODO: cache roles to avoid queries
-// TODO: add multiple role support
+// TODO: add multiple role support, add multiple roles id
 // TODO: refactor splitting to function
-func (r *repo) Add(
+func (r *repo) AddUser(
 	ctx context.Context,
 	user *rmodel.User,
 	roleId uint64,

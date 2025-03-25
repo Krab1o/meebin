@@ -8,7 +8,7 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-func (s *serv) ListUser(ctx context.Context) ([]smodel.User, error) {
+func (s *serv) List(ctx context.Context) ([]smodel.User, error) {
 	repoUsers, err := s.userRepository.List(ctx)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)

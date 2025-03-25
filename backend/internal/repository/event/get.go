@@ -11,8 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// TODO: to do select query
-func (r *repo) GetById(ctx context.Context, eventId uint64) (*rmodel.Event, error) {
+func (r *repo) GetEventById(ctx context.Context, eventId uint64) (*rmodel.Event, error) {
 	query, args, err := sq.Select(
 		rep.Col(rep.EventTableName, rep.EventIdColumn),
 
@@ -23,7 +22,7 @@ func (r *repo) GetById(ctx context.Context, eventId uint64) (*rmodel.Event, erro
 		rep.Col(rep.EventDataTableName, rep.EventDataTitleColumn),
 		rep.Col(rep.EventDataTableName, rep.EventDataDescriptionColumn),
 		rep.Col(rep.EventDataTableName, rep.EventDataTimeCalledColumn),
-		rep.Col(rep.EventDataTableName, rep.EventDataTimeCleanedColumn),
+		rep.Col(rep.EventDataTableName, rep.EventDataTimeUtilizedColumn),
 
 		rep.Col(rep.EventStatusTableName, rep.EventStatusTitleColumn),
 	).
@@ -74,4 +73,26 @@ func (r *repo) GetById(ctx context.Context, eventId uint64) (*rmodel.Event, erro
 	}
 
 	return event, nil
+}
+
+func (r *repo) GetCallerIdById(ctx context.Context, eventId uint64) (uint64, error) {
+	query, args, err := sq.Select(rep.Col(rep.EventDataTableName, rep.EventDataCallerIdColumn)).
+		PlaceholderFormat(sq.Dollar).
+		From(rep.EventDataTableName).
+		Where(sq.Eq{rep.Col(rep.EventDataTableName, rep.EventDataEventIdColumn): eventId}).
+		ToSql()
+	if err != nil {
+		return 0, rep.NewInternalError(err)
+	}
+
+	var callerId uint64
+	err = r.db.DB().QueryRowContext(ctx, query, args...).Scan(&callerId)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return 0, rep.NewNotFoundError(err)
+		}
+		return 0, rep.NewInternalError(err)
+	}
+
+	return callerId, nil
 }

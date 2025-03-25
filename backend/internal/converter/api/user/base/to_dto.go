@@ -1,4 +1,4 @@
-package user
+package base
 
 import (
 	"github.com/Krab1o/meebin/internal/converter"
@@ -6,49 +6,48 @@ import (
 	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 )
 
-func UserDTOToService(user *dto.BaseUser) *smodel.User {
-	dtoCreds := CredsDTOToService(user.Creds)
-	dtoData := DataDTOToService(user.Data)
-	dtoStats := StatsDTOToService(user.Stats)
+func UserServiceToDTO(user *smodel.User) *dto.BaseUser {
+	dtoCreds := CredsServiceToDTO(user.Creds)
+	dtoData := DataServiceToDTO(user.Data)
+	dtoStats := StatsServiceToDTO(user.Stats)
 	dtoRoles := converter.ConvertRoles(user.Roles)
-	return &smodel.User{
+	return &dto.BaseUser{
 		Id:    user.Id,
-		Roles: dtoRoles,
 		Creds: dtoCreds,
 		Data:  dtoData,
 		Stats: dtoStats,
+		Roles: dtoRoles,
 	}
 }
 
-func CredsDTOToService(creds *dto.Creds) *smodel.Creds {
+func CredsServiceToDTO(creds *smodel.Creds) *dto.BaseCreds {
 	if creds == nil {
 		return nil
 	}
-	return &smodel.Creds{
+	return &dto.BaseCreds{
 		Username: creds.Username,
 		Email:    creds.Email,
-		Password: creds.Password,
 	}
 }
 
-func DataDTOToService(data *dto.PersonalData) *smodel.PersonalData {
+func DataServiceToDTO(data *smodel.PersonalData) *dto.BasePersonalData {
 	if data == nil {
 		return nil
 	}
-	return &smodel.PersonalData{
+	return &dto.BasePersonalData{
 		GivenName:  data.GivenName,
 		Surname:    data.Surname,
 		Patronymic: data.Patronymic,
-		City:       data.City,
 		Birthdate:  data.Birthdate,
+		City:       data.City,
 	}
 }
 
-func StatsDTOToService(stats *dto.Stats) *smodel.Stats {
+func StatsServiceToDTO(stats *smodel.Stats) *dto.BaseStats {
 	if stats == nil {
 		return nil
 	}
-	return &smodel.Stats{
+	return &dto.BaseStats{
 		UtilizeCount: stats.UtilizeCount,
 		ReportCount:  stats.ReportCount,
 		Rating:       stats.Rating,

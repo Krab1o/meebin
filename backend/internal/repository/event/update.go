@@ -62,7 +62,7 @@ func (r *repo) UpdateEventData(
 		builder = builder.Set(rep.EventDataTimeCalledColumn, eventData.TimeCalled)
 	}
 	if time.Time.IsZero(eventData.TimeUtilized) {
-		builder = builder.Set(rep.EventDataTimeCleanedColumn, eventData.TimeUtilized)
+		builder = builder.Set(rep.EventDataTimeUtilizedColumn, eventData.TimeUtilized)
 	}
 
 	query, args, err := builder.ToSql()

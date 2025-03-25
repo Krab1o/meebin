@@ -9,7 +9,7 @@ import (
 	"github.com/Masterminds/squirrel"
 )
 
-func (r *repo) Add(ctx context.Context, session *rmodel.Session) (uint64, error) {
+func (r *repo) AddSession(ctx context.Context, session *rmodel.Session) (uint64, error) {
 	sessionTableQuery, sessionTableArgs, err := squirrel.
 		Insert(rep.SessionTableName).
 		PlaceholderFormat(squirrel.Dollar).

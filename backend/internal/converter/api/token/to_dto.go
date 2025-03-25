@@ -1,7 +1,7 @@
 package token
 
 import (
-	"github.com/Krab1o/meebin/internal/model/user/dto"
+	"github.com/Krab1o/meebin/internal/model/token/dto"
 	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 )
 

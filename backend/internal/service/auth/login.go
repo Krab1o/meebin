@@ -25,47 +25,58 @@ func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, 
 		return nil, service.NewUnauthorizedError(err)
 	}
 
-	timeNow := time.Now()
-	refreshExpirationTime := timeNow.Add(time.Duration(s.jwtConfig.RefreshTimeout()) * time.Hour)
-	repoSession := &rmodel.Session{
-		UserId:         repoUser.Id,
-		ExpirationTime: refreshExpirationTime,
-	}
-	sessionId, err := s.sessionRepository.Add(ctx, repoSession)
+	var refreshToken string
+	var accessToken string
+	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
+		timeNow := time.Now()
+		refreshExpirationTime := timeNow.Add(
+			time.Duration(s.jwtConfig.RefreshTimeout()) * time.Hour,
+		)
+		repoSession := &rmodel.Session{
+			UserId:         repoUser.Id,
+			ExpirationTime: refreshExpirationTime,
+		}
+		sessionId, err := s.sessionRepository.AddSession(ctx, repoSession)
+		if err != nil {
+			return service.ErrorDBToService(err)
+		}
+
+		refreshToken, err = helper.GenerateRefreshToken(
+			shared.CustomRefreshFields{
+				SessionID: sessionId,
+			},
+			refreshExpirationTime,
+			time.Now(),
+			s.jwtConfig.Secret(),
+		)
+		if err != nil {
+			return service.NewInternalError(err)
+		}
+
+		roles, err := s.roleRepository.ListUserRolesById(ctx, repoUser.Id)
+		if err != nil {
+			return service.ErrorDBToService(err)
+		}
+
+		accessToken, err = helper.GenerateAccessToken(
+			shared.CustomAccessFields{
+				UserID:    repoUser.Id,
+				SessionID: sessionId,
+				Roles:     roles,
+			},
+			timeNow,
+			s.jwtConfig.Secret(),
+			s.jwtConfig.AccessTimeout(),
+		)
+		if err != nil {
+			return service.NewInternalError(err)
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, service.ErrorDBToService(err)
+		return nil, err
 	}
 
-	refreshToken, err := helper.GenerateRefreshToken(
-		shared.CustomRefreshFields{
-			SessionID: sessionId,
-		},
-		refreshExpirationTime,
-		time.Now(),
-		s.jwtConfig.Secret(),
-	)
-	if err != nil {
-		return nil, service.NewInternalError(err)
-	}
-
-	roles, err := s.roleRepository.ListUserRolesById(ctx, repoUser.Id)
-	if err != nil {
-		return nil, service.ErrorDBToService(err)
-	}
-
-	accessToken, err := helper.GenerateAccessToken(
-		shared.CustomAccessFields{
-			UserID:    repoUser.Id,
-			SessionID: sessionId,
-			Roles:     roles,
-		},
-		timeNow,
-		s.jwtConfig.Secret(),
-		s.jwtConfig.AccessTimeout(),
-	)
-	if err != nil {
-		return nil, service.NewInternalError(err)
-	}
 	return &smodel.Tokens{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,

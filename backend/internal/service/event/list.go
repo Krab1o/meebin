@@ -8,7 +8,7 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-func (s *serv) ListEvent(ctx context.Context) ([]smodel.Event, error) {
+func (s *serv) List(ctx context.Context) ([]smodel.Event, error) {
 	repoEvents, err := s.eventRepository.List(ctx)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)

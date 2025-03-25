@@ -7,7 +7,7 @@ import (
 	"github.com/Masterminds/squirrel"
 )
 
-func (r *repo) DeleteById(ctx context.Context, sessionId uint64) error {
+func (r *repo) DeleteSessionById(ctx context.Context, sessionId uint64) error {
 	query, args, err := squirrel.Delete(rep.SessionTableName).
 		PlaceholderFormat(squirrel.Dollar).
 		Where(squirrel.Eq{rep.SessionIdColumn: sessionId}).

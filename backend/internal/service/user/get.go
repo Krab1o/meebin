@@ -8,8 +8,8 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-func (s *serv) GetUser(ctx context.Context, userId uint64) (*smodel.User, error) {
-	repoUser, err := s.userRepository.GetById(ctx, userId)
+func (s *serv) Get(ctx context.Context, userId uint64) (*smodel.User, error) {
+	repoUser, err := s.userRepository.GetUserById(ctx, userId)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}

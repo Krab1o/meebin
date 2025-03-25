@@ -21,7 +21,7 @@ func (r *repo) List(ctx context.Context) ([]rmodel.Event, error) {
 		rep.Col(rep.EventDataTableName, rep.EventDataTitleColumn),
 		rep.Col(rep.EventDataTableName, rep.EventDataDescriptionColumn),
 		rep.Col(rep.EventDataTableName, rep.EventDataTimeCalledColumn),
-		rep.Col(rep.EventDataTableName, rep.EventDataTimeCleanedColumn),
+		rep.Col(rep.EventDataTableName, rep.EventDataTimeUtilizedColumn),
 
 		rep.Col(rep.EventStatusTableName, rep.EventStatusTitleColumn),
 	).

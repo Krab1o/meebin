@@ -1,11 +1,11 @@
-package updateduser
+package update
 
 import (
 	"github.com/Krab1o/meebin/internal/model/user/dto"
 	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 )
 
-func UpdatedUserDTOToService(user *dto.UpdatedUser) *smodel.User {
+func UpdatedUserDTOToService(user *dto.UpdateUser) *smodel.User {
 	dtoCreds := UpdatedCredsDTOToService(user.Creds)
 	dtoData := UpdatedDataDTOToService(user.Data)
 	return &smodel.User{
@@ -15,7 +15,7 @@ func UpdatedUserDTOToService(user *dto.UpdatedUser) *smodel.User {
 	}
 }
 
-func UpdatedCredsDTOToService(creds *dto.UpdatedCreds) *smodel.Creds {
+func UpdatedCredsDTOToService(creds *dto.UpdateCreds) *smodel.Creds {
 	if creds == nil {
 		return nil
 	}
@@ -26,7 +26,7 @@ func UpdatedCredsDTOToService(creds *dto.UpdatedCreds) *smodel.Creds {
 	}
 }
 
-func UpdatedDataDTOToService(data *dto.UpdatedPersonalData) *smodel.PersonalData {
+func UpdatedDataDTOToService(data *dto.UpdatePersonalData) *smodel.PersonalData {
 	if data == nil {
 		return nil
 	}

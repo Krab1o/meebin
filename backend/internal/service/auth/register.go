@@ -44,14 +44,14 @@ func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens,
 	repoUser := converter.UserServiceToRepo(user)
 
 	// TODO: add multiple roles
-	roleId, err := s.roleRepository.ListByTitles(ctx, user.Roles)
+	roleId, err := s.roleRepository.ListRolesByTitles(ctx, user.Roles)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}
 
 	var userId uint64
 	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
-		userId, err = s.userRepository.Add(ctx, repoUser, roleId)
+		userId, err = s.userRepository.AddUser(ctx, repoUser, roleId)
 		if err != nil {
 			return service.ErrorDBToService(err)
 		}
@@ -68,7 +68,7 @@ func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens,
 		UserId:         userId,
 		ExpirationTime: refreshExpirationTime,
 	}
-	sessionId, err := s.sessionRepository.Add(ctx, repoSession)
+	sessionId, err := s.sessionRepository.AddSession(ctx, repoSession)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}

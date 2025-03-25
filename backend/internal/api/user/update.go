@@ -6,7 +6,8 @@ import (
 	"strconv"
 
 	"github.com/Krab1o/meebin/internal/api"
-	convUser "github.com/Krab1o/meebin/internal/converter/api/updated_user"
+	convBase "github.com/Krab1o/meebin/internal/converter/api/user/base"
+	convUpdate "github.com/Krab1o/meebin/internal/converter/api/user/update"
 	"github.com/Krab1o/meebin/internal/model/user/dto"
 	"github.com/Krab1o/meebin/internal/service"
 	"github.com/Krab1o/meebin/internal/shared"
@@ -31,9 +32,9 @@ import (
 // @Failure		404		{object}	api.Error
 // @Failure		500		{object}	api.Error
 // @Router			/users/{user_id} [patch]
-func (h *Handler) UpdateUser(c *gin.Context) error {
+func (h *Handler) Update(c *gin.Context) error {
 	ctx := c.Request.Context()
-	userIdUpdating, ok := c.Get(shared.UserIDJsonName)
+	updaterId, ok := c.Get(shared.UserIDJsonName)
 	if !ok {
 		return api.NewInternalError(nil, "Unable to parse userId")
 	}
@@ -46,16 +47,16 @@ func (h *Handler) UpdateUser(c *gin.Context) error {
 		return api.NewInternalError(nil, "Unable to convert query param")
 	}
 
-	user := &dto.UpdatedUser{
-		Id: userIdUpdating.(uint64),
+	user := &dto.UpdateUser{
+		Id: uint64(userIdToUpdate),
 	}
 	err = c.ShouldBindJSON(user)
 	if err != nil {
 		return api.NewBadRequestError(err, api.ParseValidationErrors(err))
 	}
-	serviceUser := convUser.UpdatedUserDTOToService(user)
+	serviceUser := convUpdate.UpdatedUserDTOToService(user)
 
-	newUser, err := h.userService.Update(ctx, uint64(userIdToUpdate), serviceUser)
+	updatedUser, err := h.userService.Update(ctx, updaterId.(uint64), serviceUser)
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrNoUpdate):
@@ -63,13 +64,13 @@ func (h *Handler) UpdateUser(c *gin.Context) error {
 		case errors.Is(err, service.ErrNotFound):
 			return api.NewNotFoundError(err, "User not found")
 		case errors.Is(err, service.ErrForbidden):
-			return api.NewForbiddenError(err, "Forbidden to update user")
+			return api.NewForbiddenError(err, "Update forbidden")
 		default:
 			return api.NewInternalError(err)
 		}
 	}
 
-	dtoUser := convUser.UpdatedUserServiceToDTO(newUser)
+	dtoUser := convBase.UserServiceToDTO(updatedUser)
 	c.JSON(http.StatusOK, dtoUser)
 	return nil
 }

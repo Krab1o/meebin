@@ -73,25 +73,25 @@ func (a *App) SetupRoutes(ctx context.Context) {
 			userGroup.GET(
 				"",
 				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.JWTConfig().Secret())),
-				api.MakeHandler(a.serviceProvider.UserHandler(ctx).ListUser),
+				api.MakeHandler(a.serviceProvider.UserHandler(ctx).List),
 			)
 			// Получить пользователя по ID
 			userGroup.GET(
 				"/:id",
 				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.JWTConfig().Secret())),
-				api.MakeHandler(a.serviceProvider.UserHandler(ctx).GetUser),
+				api.MakeHandler(a.serviceProvider.UserHandler(ctx).Get),
 			)
 			// Обновить данные пользователя
 			userGroup.PATCH(
 				"/:id",
 				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.JWTConfig().Secret())),
-				api.MakeHandler(a.serviceProvider.UserHandler(ctx).UpdateUser),
+				api.MakeHandler(a.serviceProvider.UserHandler(ctx).Update),
 			)
 			// Удалить пользователя
 			userGroup.DELETE(
 				"/:id",
 				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.JWTConfig().Secret())),
-				api.MakeHandler(a.serviceProvider.UserHandler(ctx).DeleteUser),
+				api.MakeHandler(a.serviceProvider.UserHandler(ctx).Delete),
 			)
 		}
 		events := apiGroup.Group("/events")
@@ -101,6 +101,8 @@ func (a *App) SetupRoutes(ctx context.Context) {
 			// events.GET("", eventsHandler.ListEvents)
 			// events.GET("/:id", eventsHandler.GetEvent)
 			// events.POST("", eventsHandler.CreateEvent)
+
+			// these to with admin
 			// events.PATCH("/:id", eventsHandler.UpdateEvent)
 			// events.DELETE("/:id", eventsHandler.DeleteEvent)
 		}
