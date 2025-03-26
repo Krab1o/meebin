@@ -12,7 +12,7 @@ import (
 func (r *repo) DeleteUserById(ctx context.Context, userId uint64) error {
 	query, args, err := sq.Delete(rep.UserTableName).
 		PlaceholderFormat(sq.Dollar).
-		Where(sq.Eq{rep.UserIdColumn: userId}).
+		Where(sq.Eq{rep.UserColumnId: userId}).
 		ToSql()
 	if err != nil {
 		return rep.NewInternalError(err)

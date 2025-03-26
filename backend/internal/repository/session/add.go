@@ -14,15 +14,15 @@ func (r *repo) AddSession(ctx context.Context, session *rmodel.Session) (uint64,
 		Insert(rep.SessionTableName).
 		PlaceholderFormat(squirrel.Dollar).
 		Columns(
-			rep.SessionIdUserColumn,
-			rep.SessionExpirationTimeColumn,
+			rep.SessionColumnIdUser,
+			rep.SessionColumnExpirationTime,
 		).
 		Values(
 			session.UserId,
 			session.ExpirationTime,
 		).
 		Suffix(
-			fmt.Sprintf("RETURNING %s", rep.SessionIdColumn),
+			fmt.Sprintf("RETURNING %s", rep.SessionColumnId),
 		).
 		ToSql()
 	if err != nil {

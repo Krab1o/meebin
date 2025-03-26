@@ -12,7 +12,7 @@ import (
 func (r *repo) DeleteEventById(ctx context.Context, eventId uint64) error {
 	query, args, err := sq.Delete(rep.EventTableName).
 		PlaceholderFormat(sq.Dollar).
-		Where(sq.Eq{rep.EventIdColumn: eventId}).
+		Where(sq.Eq{rep.EventColumnId: eventId}).
 		ToSql()
 	if err != nil {
 		return rep.NewInternalError(err)

@@ -15,13 +15,13 @@ func (r *repo) addEvent(ctx context.Context, event *rmodel.Event) (uint64, error
 	query, args, err := sq.Insert(rep.EventTableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(
-			rep.EventStatusColumn,
+			rep.EventColumnStatus,
 		).
 		Values(
 			event.Status,
 		).
 		Suffix(
-			fmt.Sprintf("RETURNING %s", rep.SessionIdColumn),
+			fmt.Sprintf("RETURNING %s", rep.SessionColumnId),
 		).
 		ToSql()
 	if err != nil {
@@ -48,12 +48,12 @@ func (r *repo) addEventData(ctx context.Context, eventData *rmodel.EventData) er
 	query, args, err := sq.Insert(rep.EventDataTableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(
-			rep.EventDataLatitudeColumn,
-			rep.EventDataLongtitudeColumn,
-			rep.EventDataTitleColumn,
-			rep.EventDataDescriptionColumn,
-			rep.EventDataTimeCalledColumn,
-			rep.EventDataTimeUtilizedColumn,
+			rep.EventDataColumnLatitude,
+			rep.EventDataColumnLongtitude,
+			rep.EventDataColumnTitle,
+			rep.EventDataColumnDescription,
+			rep.EventDataColumnTimeCalled,
+			rep.EventDataColumnTimeUtilized,
 		).Values(
 		eventData.Latitude,
 		eventData.Longtitude,
@@ -73,7 +73,6 @@ func (r *repo) addEventData(ctx context.Context, eventData *rmodel.EventData) er
 	return nil
 }
 
-// TODO: decide how to check for nil (and if I need to check at all)
 func (r *repo) AddEvent(ctx context.Context, event *rmodel.Event) (uint64, error) {
 	eventId, err := r.addEvent(ctx, event)
 	if err != nil {

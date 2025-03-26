@@ -38,12 +38,6 @@ type RoleRepository interface {
 	ListUserRolesById(ctx context.Context, userId uint64) ([]model.Role, error)
 }
 
-// type UserDataRepository interface {
-// }
-// type UserStatsRepository interface {
-// }
-
-// TODO: think of possible renamings in model's folder
 type EventRepository interface {
 	AddEvent(ctx context.Context, newEvent *rmodelEvent.Event) (uint64, error)
 	GetEventById(ctx context.Context, eventId uint64) (*rmodelEvent.Event, error)
@@ -51,6 +45,5 @@ type EventRepository interface {
 	List(ctx context.Context) ([]rmodelEvent.Event, error)
 	UpdateEvent(ctx context.Context, eventId uint64, event *rmodelEvent.Event) error
 	UpdateEventData(ctx context.Context, eventId uint64, eventData *rmodelEvent.EventData) error
-	// Update(ctx context.Context, id uint64) (*rmodelEvent.Event, error)
 	DeleteEventById(ctx context.Context, id uint64) error
 }

@@ -22,16 +22,16 @@ func (r *repo) AddUser(
 	userTableQuery, userTableArgs, err := sq.Insert(rep.UserTableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(
-			rep.UserUsernameColumn,
-			rep.UserEmailColumn,
-			rep.UserPasswordColumn,
+			rep.UserColumnUsername,
+			rep.UserColumnEmail,
+			rep.UserColumnPassword,
 		).
 		Values(
 			user.Creds.Username,
 			user.Creds.Email,
 			user.Creds.HashedPassword,
 		).
-		Suffix(fmt.Sprintf("RETURNING %s", rep.UserIdColumn)).
+		Suffix(fmt.Sprintf("RETURNING %s", rep.UserColumnId)).
 		ToSql()
 	if err != nil {
 		return 0, rep.NewInternalError(err)
@@ -55,12 +55,12 @@ func (r *repo) AddUser(
 	dataTableQuery, dataTableArgs, err := sq.Insert(rep.UserDataTableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(
-			rep.UserDataIdUserColumn,
-			rep.UserDataGivenNameColumn,
-			rep.UserDataSurnameColumn,
-			rep.UserDataPatronymicColumn,
-			rep.UserDataCityColumn,
-			rep.UserDataBirthDateColumn,
+			rep.UserDataColumnIdUser,
+			rep.UserDataColumnGivenName,
+			rep.UserDataColumnSurname,
+			rep.UserDataColumnPatronymic,
+			rep.UserDataColumnCity,
+			rep.UserDataColumnBirthDate,
 		).
 		Values(
 			userId,
@@ -83,10 +83,10 @@ func (r *repo) AddUser(
 	statsTableQuery, statsTableArgs, err := sq.Insert(rep.StatsTableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(
-			rep.StatsIdUserColumn,
-			rep.StatsUtilizeCounterColumn,
-			rep.StatsReportCounterColumn,
-			rep.StatsRatingColumn,
+			rep.StatsColumnIdUser,
+			rep.StatsColumnUtilizeCounter,
+			rep.StatsColumnReportCounter,
+			rep.StatsColumnRating,
 		).
 		Values(
 			userId,
@@ -107,8 +107,8 @@ func (r *repo) AddUser(
 	userRoleQuery, userRoleArgs, err := sq.Insert(rep.UserRoleTableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns(
-			rep.UserRoleIdRoleColumn,
-			rep.UserRoleIdUserColumn,
+			rep.UserRoleColumnIdRole,
+			rep.UserRoleColumnIdUser,
 		).Values(
 		roleId,
 		userId,

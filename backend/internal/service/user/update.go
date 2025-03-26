@@ -26,9 +26,9 @@ func (s *serv) Update(
 	if updaterId != user.Id {
 		return nil, service.NewForbiddenError(nil)
 	}
+
 	credsUpdate := doCredsUpdate(user)
 	dataUpdate := doDataUpdate(user)
-
 	if !credsUpdate && !dataUpdate {
 		return nil, service.NewNoUpdateError(nil)
 	}

@@ -11,7 +11,6 @@ import (
 	"github.com/Krab1o/meebin/internal/shared"
 )
 
-// TODO: remove needing username
 func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, error) {
 	repoUser, err := s.userRepository.GetCredsByEmail(ctx, creds.Email)
 	if err != nil {
@@ -25,7 +24,6 @@ func (s *serv) Login(ctx context.Context, creds *smodel.Creds) (*smodel.Tokens, 
 		return nil, service.NewUnauthorizedError(err)
 	}
 
-	//TODO: check refresh timeouts
 	var refreshToken string
 	var accessToken string
 	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {

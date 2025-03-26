@@ -15,16 +15,16 @@ func (r *repo) ListUserRolesById(
 	userId uint64,
 ) ([]model.Role, error) {
 	query, args, err := sq.Select(
-		rep.RoleTitleColumn,
+		rep.RoleColumnTitle,
 	).
 		PlaceholderFormat(sq.Dollar).
 		From(rep.UserRoleTableName).
 		LeftJoin(fmt.Sprintf("%s ON %s = %s",
 			rep.RoleTableName,
-			rep.Col(rep.UserRoleTableName, rep.UserRoleIdRoleColumn),
-			rep.Col(rep.RoleTableName, rep.RoleIdColumn),
+			rep.Col(rep.UserRoleTableName, rep.UserRoleColumnIdRole),
+			rep.Col(rep.RoleTableName, rep.RoleColumnId),
 		),
-		).Where(sq.Eq{rep.Col(rep.UserRoleTableName, rep.UserRoleIdUserColumn): userId}).
+		).Where(sq.Eq{rep.Col(rep.UserRoleTableName, rep.UserRoleColumnIdUser): userId}).
 		ToSql()
 	if err != nil {
 		return nil, rep.NewInternalError(err)
@@ -51,11 +51,11 @@ func (r *repo) ListUserRolesById(
 // TODO: make multiple role support
 func (r *repo) ListRolesByTitles(ctx context.Context, role []model.Role) (uint64, error) {
 	query, args, err := sq.Select(
-		rep.RoleIdColumn,
+		rep.RoleColumnId,
 	).
 		PlaceholderFormat(sq.Dollar).
 		From(rep.RoleTableName).
-		Where(sq.Eq{rep.RoleTitleColumn: role}).
+		Where(sq.Eq{rep.RoleColumnTitle: role}).
 		ToSql()
 	if err != nil {
 		return 0, rep.NewInternalError(err)

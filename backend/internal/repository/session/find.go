@@ -16,13 +16,13 @@ func (r *repo) FindSessionById(
 	sessionID uint64,
 ) (*rmodel.Session, error) {
 	query, args, err := squirrel.Select(
-		rep.SessionIdColumn,
-		rep.SessionIdUserColumn,
-		rep.SessionExpirationTimeColumn,
+		rep.SessionColumnId,
+		rep.SessionColumnIdUser,
+		rep.SessionColumnExpirationTime,
 	).
 		PlaceholderFormat(squirrel.Dollar).
 		From(rep.SessionTableName).
-		Where(squirrel.Eq{rep.SessionIdColumn: sessionID}).
+		Where(squirrel.Eq{rep.SessionColumnId: sessionID}).
 		ToSql()
 	log.Println(query)
 	if err != nil {

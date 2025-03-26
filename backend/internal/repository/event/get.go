@@ -13,32 +13,32 @@ import (
 
 func (r *repo) GetEventById(ctx context.Context, eventId uint64) (*rmodel.Event, error) {
 	query, args, err := sq.Select(
-		rep.Col(rep.EventTableName, rep.EventIdColumn),
+		rep.Col(rep.EventTableName, rep.EventColumnId),
 
-		rep.Col(rep.EventDataTableName, rep.EventDataCallerIdColumn),
-		rep.Col(rep.EventDataTableName, rep.EventDataUtilizatorIdColumn),
-		rep.Col(rep.EventDataTableName, rep.EventDataLatitudeColumn),
-		rep.Col(rep.EventDataTableName, rep.EventDataLongtitudeColumn),
-		rep.Col(rep.EventDataTableName, rep.EventDataTitleColumn),
-		rep.Col(rep.EventDataTableName, rep.EventDataDescriptionColumn),
-		rep.Col(rep.EventDataTableName, rep.EventDataTimeCalledColumn),
-		rep.Col(rep.EventDataTableName, rep.EventDataTimeUtilizedColumn),
+		rep.Col(rep.EventDataTableName, rep.EventDataColumnCallerId),
+		rep.Col(rep.EventDataTableName, rep.EventDataColumnUtilizatorId),
+		rep.Col(rep.EventDataTableName, rep.EventDataColumnLatitude),
+		rep.Col(rep.EventDataTableName, rep.EventDataColumnLongtitude),
+		rep.Col(rep.EventDataTableName, rep.EventDataColumnTitle),
+		rep.Col(rep.EventDataTableName, rep.EventDataColumnDescription),
+		rep.Col(rep.EventDataTableName, rep.EventDataColumnTimeCalled),
+		rep.Col(rep.EventDataTableName, rep.EventDataColumnTimeUtilized),
 
-		rep.Col(rep.EventStatusTableName, rep.EventStatusTitleColumn),
+		rep.Col(rep.EventStatusTableName, rep.EventStatusColumnTitle),
 	).
 		PlaceholderFormat(sq.Dollar).
 		From(rep.EventTableName).
 		LeftJoin(fmt.Sprintf("%s ON %s = %s",
 			rep.EventDataTableName,
-			rep.Col(rep.EventTableName, rep.EventIdColumn),
-			rep.Col(rep.EventDataTableName, rep.EventDataEventIdColumn),
+			rep.Col(rep.EventTableName, rep.EventColumnId),
+			rep.Col(rep.EventDataTableName, rep.EventDataColumnEventId),
 		)).
 		LeftJoin(fmt.Sprintf("%s ON %s = %s",
 			rep.EventStatusTableName,
-			rep.Col(rep.EventTableName, rep.EventIdColumn),
-			rep.Col(rep.EventStatusTableName, rep.EventStatusIdColumn),
+			rep.Col(rep.EventTableName, rep.EventColumnId),
+			rep.Col(rep.EventStatusTableName, rep.EventStatusColumnId),
 		)).
-		Where(sq.Eq{rep.Col(rep.EventTableName, rep.EventIdColumn): eventId}).
+		Where(sq.Eq{rep.Col(rep.EventTableName, rep.EventColumnId): eventId}).
 		ToSql()
 	if err != nil {
 		return nil, rep.NewInternalError(err)
@@ -76,10 +76,10 @@ func (r *repo) GetEventById(ctx context.Context, eventId uint64) (*rmodel.Event,
 }
 
 func (r *repo) GetCallerIdById(ctx context.Context, eventId uint64) (uint64, error) {
-	query, args, err := sq.Select(rep.Col(rep.EventDataTableName, rep.EventDataCallerIdColumn)).
+	query, args, err := sq.Select(rep.Col(rep.EventDataTableName, rep.EventDataColumnCallerId)).
 		PlaceholderFormat(sq.Dollar).
 		From(rep.EventDataTableName).
-		Where(sq.Eq{rep.Col(rep.EventDataTableName, rep.EventDataEventIdColumn): eventId}).
+		Where(sq.Eq{rep.Col(rep.EventDataTableName, rep.EventDataColumnEventId): eventId}).
 		ToSql()
 	if err != nil {
 		return 0, rep.NewInternalError(err)

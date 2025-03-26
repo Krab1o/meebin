@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/Krab1o/meebin/internal/service"
@@ -11,12 +10,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// TODO: check if session with current refresh token exists
 // if yes -> generate access token, return
 // if no  -> error
-
 func (s *serv) Refresh(ctx context.Context, refreshToken string) (string, error) {
-	//TODO: move to one place (refactor)
 	claims := &shared.RefreshClaims{}
 	token, err := jwt.ParseWithClaims(
 		refreshToken,
@@ -37,8 +33,7 @@ func (s *serv) Refresh(ctx context.Context, refreshToken string) (string, error)
 	if err != nil {
 		return "", service.ErrorDBToService(err)
 	}
-	log.Println(claims.CustomRefreshFields)
-	log.Println(roles)
+
 	timeNow := time.Now()
 	accessToken, err := helper.GenerateAccessToken(
 		shared.CustomAccessFields{

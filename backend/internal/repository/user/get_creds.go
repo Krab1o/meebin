@@ -16,14 +16,14 @@ func (r *repo) GetCredsByEmail(
 ) (*rmodel.User, error) {
 	query, args, err := sq.
 		Select(
-			rep.UserIdColumn,
-			rep.UserUsernameColumn,
-			rep.UserEmailColumn,
-			rep.UserPasswordColumn,
+			rep.UserColumnId,
+			rep.UserColumnUsername,
+			rep.UserColumnEmail,
+			rep.UserColumnPassword,
 		).
 		PlaceholderFormat(sq.Dollar).
 		From(rep.UserTableName).
-		Where(sq.Eq{rep.UserEmailColumn: email}).
+		Where(sq.Eq{rep.UserColumnEmail: email}).
 		ToSql()
 	if err != nil {
 		return nil, rep.NewInternalError(err)

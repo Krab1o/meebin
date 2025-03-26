@@ -9,19 +9,26 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-func doUpdate(event *smodel.Event) bool {
-	return event.Data != nil && *event.Data != smodel.EventData{} ||
-		event.Status != 0
+func doDataUpdate(event *smodel.Event) bool {
+	return event.Data != nil && *event.Data != smodel.EventData{}
 }
 
-// TODO: add caller_id == jwtTokenUserId check if forbidden or not
+func doStatusUpdate(event *smodel.Event) bool {
+	return event.Status != 0
+}
+
 func (s *serv) Update(
 	ctx context.Context,
 	updaterId uint64,
 	event *smodel.Event,
 ) (*smodel.Event, error) {
-	startUpdate := doUpdate(event)
-	if !startUpdate {
+	if updaterId != event.Data.CallerId {
+		return nil, service.NewForbiddenError(nil)
+	}
+
+	dataUpdate := doDataUpdate(event)
+	statusUpdate := doStatusUpdate(event)
+	if !dataUpdate && !statusUpdate {
 		return nil, service.NewNoUpdateError(nil)
 	}
 
@@ -37,13 +44,13 @@ func (s *serv) Update(
 	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		repoEvent := converter.EventServiceToRepo(event)
 		var err error
-		if event.Data != nil {
+		if dataUpdate {
 			err = s.eventRepository.UpdateEventData(ctx, repoEvent.Id, repoEvent.Data)
 			if err != nil {
 				return service.ErrorDBToService(err)
 			}
 		}
-		if event.Status != 0 {
+		if statusUpdate {
 			err = s.eventRepository.UpdateEvent(ctx, repoEvent.Id, repoEvent)
 			if err != nil {
 				return service.ErrorDBToService(err)

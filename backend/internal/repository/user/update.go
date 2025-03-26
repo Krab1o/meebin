@@ -16,18 +16,18 @@ func (r *repo) UpdateCreds(
 	builder := sq.Update(rep.UserTableName).
 		PlaceholderFormat(sq.Dollar)
 	if creds.Email != "" {
-		builder = builder.Set(rep.UserEmailColumn, creds.Email)
+		builder = builder.Set(rep.UserColumnEmail, creds.Email)
 	}
 	if creds.HashedPassword != "" {
 		builder = builder.Set(
-			rep.UserPasswordColumn,
+			rep.UserColumnPassword,
 			creds.HashedPassword,
 		)
 	}
 	if creds.Username != "" {
-		builder = builder.Set(rep.UserUsernameColumn, creds.Username)
+		builder = builder.Set(rep.UserColumnUsername, creds.Username)
 	}
-	builder = builder.Where(sq.Eq{rep.UserIdColumn: userId})
+	builder = builder.Where(sq.Eq{rep.UserColumnId: userId})
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return rep.NewInternalError(err)
@@ -51,20 +51,20 @@ func (r *repo) UpdateStats(
 		PlaceholderFormat(sq.Dollar)
 	if stats.UtilizeCount != 0 {
 		builder = builder.Set(
-			rep.StatsUtilizeCounterColumn,
+			rep.StatsColumnUtilizeCounter,
 			stats.UtilizeCount,
 		)
 	}
 	if stats.ReportCount != 0 {
 		builder = builder.Set(
-			rep.StatsReportCounterColumn,
+			rep.StatsColumnReportCounter,
 			stats.ReportCount,
 		)
 	}
 	if stats.Rating != 0.0 {
-		builder = builder.Set(rep.StatsRatingColumn, stats.Rating)
+		builder = builder.Set(rep.StatsColumnRating, stats.Rating)
 	}
-	builder = builder.Where(sq.Eq{rep.UserIdColumn: userId})
+	builder = builder.Where(sq.Eq{rep.UserColumnId: userId})
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return rep.NewInternalError(err)
@@ -78,7 +78,6 @@ func (r *repo) UpdateStats(
 	return nil
 }
 
-// TODO: refactor to passing map[string]string of values
 func (r *repo) UpdatePersonalData(
 	ctx context.Context,
 	userId uint64,
@@ -87,22 +86,22 @@ func (r *repo) UpdatePersonalData(
 	builder := sq.Update(rep.UserDataTableName).
 		PlaceholderFormat(sq.Dollar)
 	if data.GivenName != "" {
-		builder = builder.Set(rep.UserDataGivenNameColumn, data.GivenName)
+		builder = builder.Set(rep.UserDataColumnGivenName, data.GivenName)
 	}
 	if data.Surname != "" {
-		builder = builder.Set(rep.UserDataSurnameColumn, data.Surname)
+		builder = builder.Set(rep.UserDataColumnSurname, data.Surname)
 	}
 	if data.Patronymic != "" {
-		builder = builder.Set(rep.UserDataPatronymicColumn, data.Patronymic)
+		builder = builder.Set(rep.UserDataColumnPatronymic, data.Patronymic)
 	}
 	if data.City != "" {
-		builder = builder.Set(rep.UserDataCityColumn, data.City)
+		builder = builder.Set(rep.UserDataColumnCity, data.City)
 	}
 	if !data.Birthdate.IsZero() {
-		builder = builder.Set(rep.UserDataBirthDateColumn, data.Birthdate)
+		builder = builder.Set(rep.UserDataColumnBirthDate, data.Birthdate)
 	}
 
-	builder = builder.Where(sq.Eq{rep.UserIdColumn: userId})
+	builder = builder.Where(sq.Eq{rep.UserColumnId: userId})
 	query, args, err := builder.ToSql()
 	if err != nil {
 		return rep.NewInternalError(err)

@@ -12,30 +12,30 @@ import (
 
 func (r *repo) List(ctx context.Context) ([]rmodel.User, error) {
 	query, args, err := sq.Select(
-		rep.Col(rep.UserTableName, rep.UserEmailColumn),
-		rep.Col(rep.UserTableName, rep.UserUsernameColumn),
+		rep.Col(rep.UserTableName, rep.UserColumnEmail),
+		rep.Col(rep.UserTableName, rep.UserColumnUsername),
 
-		rep.Col(rep.UserDataTableName, rep.UserDataGivenNameColumn),
-		rep.Col(rep.UserDataTableName, rep.UserDataSurnameColumn),
-		rep.Col(rep.UserDataTableName, rep.UserDataPatronymicColumn),
-		rep.Col(rep.UserDataTableName, rep.UserDataBirthDateColumn),
-		rep.Col(rep.UserDataTableName, rep.UserDataCityColumn),
+		rep.Col(rep.UserDataTableName, rep.UserDataColumnGivenName),
+		rep.Col(rep.UserDataTableName, rep.UserDataColumnSurname),
+		rep.Col(rep.UserDataTableName, rep.UserDataColumnPatronymic),
+		rep.Col(rep.UserDataTableName, rep.UserDataColumnBirthDate),
+		rep.Col(rep.UserDataTableName, rep.UserDataColumnCity),
 
-		rep.Col(rep.StatsTableName, rep.StatsReportCounterColumn),
-		rep.Col(rep.StatsTableName, rep.StatsUtilizeCounterColumn),
-		rep.Col(rep.StatsTableName, rep.StatsRatingColumn),
+		rep.Col(rep.StatsTableName, rep.StatsColumnReportCounter),
+		rep.Col(rep.StatsTableName, rep.StatsColumnUtilizeCounter),
+		rep.Col(rep.StatsTableName, rep.StatsColumnRating),
 	).
 		PlaceholderFormat(sq.Dollar).
 		From(rep.UserTableName).
 		LeftJoin(fmt.Sprintf("%s ON %s = %s",
 			rep.UserDataTableName,
-			rep.Col(rep.UserTableName, rep.UserIdColumn),
-			rep.Col(rep.UserDataTableName, rep.UserDataIdUserColumn),
+			rep.Col(rep.UserTableName, rep.UserColumnId),
+			rep.Col(rep.UserDataTableName, rep.UserDataColumnIdUser),
 		)).
 		LeftJoin(fmt.Sprintf("%s ON %s = %s",
 			rep.StatsTableName,
-			rep.Col(rep.UserTableName, rep.UserIdColumn),
-			rep.Col(rep.StatsTableName, rep.StatsIdUserColumn),
+			rep.Col(rep.UserTableName, rep.UserColumnId),
+			rep.Col(rep.StatsTableName, rep.StatsColumnIdUser),
 		)).
 		ToSql()
 	if err != nil {

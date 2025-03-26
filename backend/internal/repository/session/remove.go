@@ -10,7 +10,7 @@ import (
 func (r *repo) DeleteSessionById(ctx context.Context, sessionId uint64) error {
 	query, args, err := squirrel.Delete(rep.SessionTableName).
 		PlaceholderFormat(squirrel.Dollar).
-		Where(squirrel.Eq{rep.SessionIdColumn: sessionId}).
+		Where(squirrel.Eq{rep.SessionColumnId: sessionId}).
 		ToSql()
 	if err != nil {
 		return rep.NewInternalError(err)
