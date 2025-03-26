@@ -22,7 +22,7 @@ const (
 // @Description	Registers a new user in service
 // @Accept			json
 // @Produce		json
-// @Param			UserData	body		dto.NewUser	true	"New User Info"
+// @Param			UserData	body		dto.RegisterUser	true	"New User Info"
 // @Success		201			{object}	dto.ResponseTokens
 // @Failure		400			{object}	api.Error
 // @Failure		409			{object}	api.Error

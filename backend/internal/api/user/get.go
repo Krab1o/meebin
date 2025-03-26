@@ -32,7 +32,7 @@ func (h *Handler) Get(c *gin.Context) error {
 	if err != nil {
 		return api.NewBadRequestError(err, "Wrong id format")
 	}
-	if userId < 0 {
+	if userId <= 0 {
 		return api.NewBadRequestError(nil, "Wrong id value")
 	}
 	user, err := h.userService.Get(ctx, uint64(userId))

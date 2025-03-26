@@ -11,6 +11,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Tags			Event
+// @Summary		Get event by ID
+// @Schemes		http
+// @Description	Returns event by ID
+// @Accept			json
+// @Produce		json
+// @Security		jwtToken
+// @Param			event_id	path		int	true	"Event ID"
+// @Success		200		{object}	dto.BaseEvent
+// @Failure		400		{object}	api.Error
+// @Failure		401		{object}	api.Error
+// @Failure		404		{object}	api.Error
+// @Failure		500		{object}	api.Error
+// @Router			/events/{event_id} [get]
 func (h *Handler) Get(c *gin.Context) error {
 	ctx := c.Request.Context()
 	idUnparsed := c.Param(api.ParamId)
@@ -31,7 +45,7 @@ func (h *Handler) Get(c *gin.Context) error {
 		}
 	}
 	event.Id = uint64(eventId)
-	dtoUser := converter.BaseEventServiceToDTO(event)
-	c.JSON(http.StatusOK, dtoUser)
+	dtoEvent := converter.BaseEventServiceToDTO(event)
+	c.JSON(http.StatusOK, dtoEvent)
 	return nil
 }

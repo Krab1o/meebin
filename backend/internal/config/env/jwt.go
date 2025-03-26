@@ -60,5 +60,5 @@ func (c *jwtConfig) AccessTimeout() int {
 }
 
 func (c *jwtConfig) RefreshTimeout() int {
-	return c.accessTimeout
+	return c.refreshTimeout
 }

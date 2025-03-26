@@ -14,6 +14,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Tags			Event
+// @Summary		Updates event
+// @Schemes		http
+// @Description	Updates event's fields specified in the body.
+// @Description	Redundant fields ignored.
+// @Description If the field not specified, it is not updated
+// @Accept			json
+// @Produce		json
+// @Security		jwtToken
+// @Param			event_id	path		int	true	"Updated event ID"
+// @Param UpdatedEntity body dto.UpdateEvent true "Updated event fields"
+// @Success		200		{object}	dto.BaseEvent
+// @Failure		400		{object}	api.Error
+// @Failure		401		{object}	api.Error
+// @Failure		403		{object}	api.Error
+// @Failure		404		{object}	api.Error
+// @Failure		500		{object}	api.Error
+// @Router			/events/{event_id} [patch]
 func (h *Handler) Update(c *gin.Context) error {
 	ctx := c.Request.Context()
 	updaterId, ok := c.Get(shared.UserIDJsonName)

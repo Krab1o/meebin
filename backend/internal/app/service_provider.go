@@ -184,7 +184,7 @@ func (s *serviceProvider) UserHandler(ctx context.Context) *apiUser.Handler {
 	return s.userHandler
 }
 
-func (s *serviceProvider) Eventhandler(ctx context.Context) *apiEvent.Handler {
+func (s *serviceProvider) EventHandler(ctx context.Context) *apiEvent.Handler {
 	if s.eventHandler == nil {
 		s.eventHandler = apiEvent.NewHandler(s.EventService(ctx))
 	}

@@ -10,9 +10,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func doUpdate(user *smodel.User) bool {
-	return user.Creds != nil && *user.Creds != smodel.Creds{} ||
-		user.Data != nil && *user.Data != smodel.PersonalData{}
+func doCredsUpdate(user *smodel.User) bool {
+	return user.Creds != nil && *user.Creds != smodel.Creds{}
+}
+
+func doDataUpdate(user *smodel.User) bool {
+	return user.Data != nil && *user.Data != smodel.PersonalData{}
 }
 
 func (s *serv) Update(
@@ -23,8 +26,14 @@ func (s *serv) Update(
 	if updaterId != user.Id {
 		return nil, service.NewForbiddenError(nil)
 	}
-	startUpdate := doUpdate(user)
-	if user.Creds != nil && user.Creds != (&smodel.Creds{}) {
+	credsUpdate := doCredsUpdate(user)
+	dataUpdate := doDataUpdate(user)
+
+	if !credsUpdate && !dataUpdate {
+		return nil, service.NewNoUpdateError(nil)
+	}
+
+	if credsUpdate {
 		if user.Creds.Password != "" {
 			hashedBytes, err := bcrypt.GenerateFromPassword(
 				[]byte(user.Creds.Password),
@@ -37,22 +46,18 @@ func (s *serv) Update(
 		}
 	}
 
-	if !startUpdate {
-		return nil, service.NewNoUpdateError(nil)
-	}
-
 	var updatedRepoUser *rmodel.User
 	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		repoUser := converter.UserServiceToRepo(user)
 		var err error
 
-		if user.Creds != nil {
+		if credsUpdate {
 			err = s.userRepository.UpdateCreds(ctx, user.Id, repoUser.Creds)
 			if err != nil {
 				return service.ErrorDBToService(err)
 			}
 		}
-		if user.Data != nil {
+		if dataUpdate {
 			err = s.userRepository.UpdatePersonalData(ctx, user.Id, repoUser.Data)
 			if err != nil {
 				return service.ErrorDBToService(err)

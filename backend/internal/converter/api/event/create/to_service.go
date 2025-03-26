@@ -19,7 +19,7 @@ func NewEventDataServiceToDTO(event *dto.NewEventData) *smodel.EventData {
 		Longtitude:  event.Longtitude,
 		Title:       event.Title,
 		Description: event.Description,
-		CallerId:    event.CallerId,
-		TimeCalled:  event.TimeCalled,
+		// CallerId:    event.CallerId,
+		// TimeCalled:  event.TimeCalled,
 	}
 }

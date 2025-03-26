@@ -34,5 +34,5 @@ type EventService interface {
 		updaterId uint64,
 		event *smodelEvent.Event,
 	) (*smodelEvent.Event, error)
-	Create(ctx context.Context, event *smodelEvent.Event) (uint64, error)
+	Create(ctx context.Context, callerId uint64, event *smodelEvent.Event) (uint64, error)
 }

@@ -40,11 +40,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Login info",
-                        "name": "UserCreds",
+                        "name": "LoginCreds",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Creds"
+                            "$ref": "#/definitions/dto.LoginCreds"
                         }
                     }
                 ],
@@ -203,7 +203,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.NewUser"
+                            "$ref": "#/definitions/dto.RegisterUser"
                         }
                     }
                 ],
@@ -222,6 +222,295 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/events": {
+            "get": {
+                "security": [
+                    {
+                        "jwtToken": []
+                    }
+                ],
+                "description": "Returns an array of events",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Listing events",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.BaseEvent"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "jwtToken": []
+                    }
+                ],
+                "description": "Creates a new event in the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Creates event",
+                "parameters": [
+                    {
+                        "description": "New Event Info",
+                        "name": "EventData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.NewEvent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.IdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/events/{event_id}": {
+            "get": {
+                "security": [
+                    {
+                        "jwtToken": []
+                    }
+                ],
+                "description": "Returns event by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get event by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Event ID",
+                        "name": "event_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseEvent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "jwtToken": []
+                    }
+                ],
+                "description": "Delete an event from the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Deletes event",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Event ID",
+                        "name": "event_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "jwtToken": []
+                    }
+                ],
+                "description": "Updates event's fields specified in the body.\nRedundant fields ignored.\nIf the field not specified, it is not updated",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Updates event",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Updated event ID",
+                        "name": "event_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated event fields",
+                        "name": "UpdatedEntity",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateEvent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BaseEvent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/api.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/api.Error"
                         }
@@ -410,7 +699,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Update user",
+                "summary": "Updates user",
                 "parameters": [
                     {
                         "type": "integer",
@@ -425,7 +714,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdatedUser"
+                            "$ref": "#/definitions/dto.UpdateUser"
                         }
                     }
                 ],
@@ -433,7 +722,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdatedUser"
+                            "$ref": "#/definitions/dto.BaseUser"
                         }
                     },
                     "400": {
@@ -489,33 +778,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.BaseUser": {
-            "description": "BaseUser-part of a list-of-users requests",
-            "type": "object",
-            "properties": {
-                "creds": {
-                    "$ref": "#/definitions/dto.Creds"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 42
-                },
-                "personalData": {
-                    "$ref": "#/definitions/dto.PersonalData"
-                },
-                "roles": {
-                    "description": "Roles' array",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "stats": {
-                    "$ref": "#/definitions/dto.Stats"
-                }
-            }
-        },
-        "dto.Creds": {
+        "dto.BaseCreds": {
             "description": "BaseUser credentials",
             "type": "object",
             "properties": {
@@ -538,7 +801,223 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.NewCreds": {
+        "dto.BaseEvent": {
+            "type": "object",
+            "required": [
+                "data",
+                "id",
+                "status"
+            ],
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.BaseEventData"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 42
+                },
+                "status": {
+                    "$ref": "#/definitions/model.EventStatus"
+                }
+            }
+        },
+        "dto.BaseEventData": {
+            "type": "object",
+            "required": [
+                "caller_id",
+                "description",
+                "latitude",
+                "longtitude",
+                "time_called",
+                "title"
+            ],
+            "properties": {
+                "caller_id": {
+                    "type": "integer",
+                    "example": 42
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Бла-бла-бла"
+                },
+                "latitude": {
+                    "type": "number",
+                    "example": 42.881
+                },
+                "longtitude": {
+                    "type": "number",
+                    "example": 45.254
+                },
+                "time_called": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "time_utilized": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Ужасное загрязнение"
+                },
+                "utilizator_id": {
+                    "type": "integer",
+                    "example": 42
+                }
+            }
+        },
+        "dto.BasePersonalData": {
+            "description": "BaseUser personal data",
+            "type": "object",
+            "properties": {
+                "birthDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "city": {
+                    "type": "string",
+                    "example": "Vladivostok"
+                },
+                "givenName": {
+                    "type": "string",
+                    "example": "Ivan"
+                },
+                "patronymic": {
+                    "type": "string",
+                    "example": "Ivanovich"
+                },
+                "surname": {
+                    "type": "string",
+                    "example": "Ivanov"
+                }
+            }
+        },
+        "dto.BaseStats": {
+            "description": "BaseUser statistics",
+            "type": "object",
+            "properties": {
+                "rating": {
+                    "type": "number"
+                },
+                "reportCount": {
+                    "type": "integer"
+                },
+                "utilizeCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.BaseUser": {
+            "description": "BaseUser-part of a list-of-users requests",
+            "type": "object",
+            "properties": {
+                "creds": {
+                    "$ref": "#/definitions/dto.BaseCreds"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 42
+                },
+                "personalData": {
+                    "$ref": "#/definitions/dto.BasePersonalData"
+                },
+                "roles": {
+                    "description": "Roles' array",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "stats": {
+                    "$ref": "#/definitions/dto.BaseStats"
+                }
+            }
+        },
+        "dto.IdResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 42
+                }
+            }
+        },
+        "dto.LoginCreds": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user123@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "format": "password",
+                    "minLength": 8,
+                    "example": "Password123"
+                }
+            }
+        },
+        "dto.NewEvent": {
+            "type": "object",
+            "required": [
+                "data",
+                "id"
+            ],
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.NewEventData"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 42
+                }
+            }
+        },
+        "dto.NewEventData": {
+            "type": "object",
+            "required": [
+                "description",
+                "latitude",
+                "longtitude",
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Бла-бла-бла"
+                },
+                "latitude": {
+                    "type": "number",
+                    "example": 42.881
+                },
+                "longtitude": {
+                    "type": "number",
+                    "example": 45.254
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Ужасное загрязнение"
+                }
+            }
+        },
+        "dto.RefreshToken": {
+            "type": "object",
+            "required": [
+                "refreshToken"
+            ],
+            "properties": {
+                "refreshToken": {
+                    "description": "Should be a JWT refresh-token",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RegisterCreds": {
             "description": "New user's credentials",
             "type": "object",
             "required": [
@@ -566,7 +1045,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.NewPersonalData": {
+        "dto.RegisterPersonalData": {
             "description": "New user's personal data",
             "type": "object",
             "required": [
@@ -600,7 +1079,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.NewUser": {
+        "dto.RegisterUser": {
             "description": "New registrating user structure",
             "type": "object",
             "required": [
@@ -609,48 +1088,10 @@ const docTemplate = `{
             ],
             "properties": {
                 "creds": {
-                    "$ref": "#/definitions/dto.NewCreds"
+                    "$ref": "#/definitions/dto.RegisterCreds"
                 },
                 "personalData": {
-                    "$ref": "#/definitions/dto.NewPersonalData"
-                }
-            }
-        },
-        "dto.PersonalData": {
-            "description": "BaseUser personal data",
-            "type": "object",
-            "properties": {
-                "birthDate": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "city": {
-                    "type": "string",
-                    "example": "Vladivostok"
-                },
-                "givenName": {
-                    "type": "string",
-                    "example": "Ivan"
-                },
-                "patronymic": {
-                    "type": "string",
-                    "example": "Ivanovich"
-                },
-                "surname": {
-                    "type": "string",
-                    "example": "Ivanov"
-                }
-            }
-        },
-        "dto.RefreshToken": {
-            "type": "object",
-            "required": [
-                "refreshToken"
-            ],
-            "properties": {
-                "refreshToken": {
-                    "description": "Should be a JWT refresh-token",
-                    "type": "string"
+                    "$ref": "#/definitions/dto.RegisterPersonalData"
                 }
             }
         },
@@ -671,22 +1112,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.Stats": {
-            "description": "BaseUser statistics",
-            "type": "object",
-            "properties": {
-                "rating": {
-                    "type": "number"
-                },
-                "reportCount": {
-                    "type": "integer"
-                },
-                "utilizeCount": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.UpdatedCreds": {
+        "dto.UpdateCreds": {
             "description": "Credentials which will be updated",
             "type": "object",
             "properties": {
@@ -709,7 +1135,59 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdatedPersonalData": {
+        "dto.UpdateEvent": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.UpdateEventData"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 42
+                },
+                "status": {
+                    "$ref": "#/definitions/model.EventStatus"
+                }
+            }
+        },
+        "dto.UpdateEventData": {
+            "type": "object",
+            "properties": {
+                "caller_id": {
+                    "type": "integer",
+                    "example": 42
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Бла-бла-бла"
+                },
+                "latitude": {
+                    "type": "number",
+                    "example": 42.881
+                },
+                "longtitude": {
+                    "type": "number",
+                    "example": 45.254
+                },
+                "time_called": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "time_utilized": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Ужасное загрязнение"
+                },
+                "utilizator_id": {
+                    "type": "integer",
+                    "example": 42
+                }
+            }
+        },
+        "dto.UpdatePersonalData": {
             "description": "Personal data which will be updated",
             "type": "object",
             "properties": {
@@ -736,21 +1214,30 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdatedUser": {
+        "dto.UpdateUser": {
             "description": "Entity which will be updated",
             "type": "object",
             "properties": {
                 "creds": {
-                    "$ref": "#/definitions/dto.UpdatedCreds"
+                    "$ref": "#/definitions/dto.UpdateCreds"
                 },
                 "id": {
                     "type": "integer",
                     "example": 42
                 },
                 "personalData": {
-                    "$ref": "#/definitions/dto.UpdatedPersonalData"
+                    "$ref": "#/definitions/dto.UpdatePersonalData"
                 }
             }
+        },
+        "model.EventStatus": {
+            "type": "integer",
+            "enum": [
+                1
+            ],
+            "x-enum-varnames": [
+                "StatusOnModeration"
+            ]
         }
     },
     "securityDefinitions": {

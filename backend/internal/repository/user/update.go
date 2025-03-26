@@ -98,7 +98,7 @@ func (r *repo) UpdatePersonalData(
 	if data.City != "" {
 		builder = builder.Set(rep.UserDataCityColumn, data.City)
 	}
-	if data.Birthdate.IsZero() {
+	if !data.Birthdate.IsZero() {
 		builder = builder.Set(rep.UserDataBirthDateColumn, data.Birthdate)
 	}
 

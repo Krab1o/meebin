@@ -11,6 +11,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Tags			Event
+// @Summary		Deletes event
+// @Schemes		http
+// @Description	Delete an event from the system
+// @Accept			json
+// @Produce		json
+// @Security		jwtToken
+// @Param			event_id	path	int	true	"Event ID"
+// @Success		204
+// @Failure		400			{object}	api.Error
+// @Failure		401			{object}	api.Error
+// @Failure		409			{object}	api.Error
+// @Failure		500			{object}	api.Error
+// @Router			/events/{event_id} [delete]
 func (h *Handler) Delete(c *gin.Context) error {
 	ctx := c.Request.Context()
 	deleterId, ok := c.Get(shared.UserIDJsonName)

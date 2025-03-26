@@ -2,6 +2,7 @@ package event
 
 import (
 	"context"
+	"time"
 
 	converter "github.com/Krab1o/meebin/internal/converter/service/event"
 	"github.com/Krab1o/meebin/internal/model"
@@ -9,8 +10,10 @@ import (
 	"github.com/Krab1o/meebin/internal/service"
 )
 
-func (s *serv) Create(ctx context.Context, event *smodel.Event) (uint64, error) {
+func (s *serv) Create(ctx context.Context, callerId uint64, event *smodel.Event) (uint64, error) {
 	event.Status = model.StatusOnModeration
+	event.Data.CallerId = callerId
+	event.Data.TimeCalled = time.Now()
 	repoEvent := converter.EventServiceToRepo(event)
 
 	var eventId uint64

@@ -15,7 +15,7 @@ import (
 )
 
 // @Tags			User
-// @Summary		Update user
+// @Summary		Updates user
 // @Schemes		http
 // @Description	Updates user's fields specified in the body.
 // @Description	Redundant fields ignored.
@@ -24,8 +24,8 @@ import (
 // @Produce		json
 // @Security		jwtToken
 // @Param			user_id	path		int	true	"Updated user ID"
-// @Param UpdatedEntity body dto.UpdatedUser true "Updated user fields"
-// @Success		200		{object}	dto.UpdatedUser
+// @Param UpdatedEntity body dto.UpdateUser true "Updated user fields"
+// @Success		200		{object}	dto.BaseUser
 // @Failure		400		{object}	api.Error
 // @Failure		401		{object}	api.Error
 // @Failure		403		{object}	api.Error

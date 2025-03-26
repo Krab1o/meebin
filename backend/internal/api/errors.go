@@ -52,7 +52,7 @@ func newError(statusCode int, err error, message any) *Error {
 
 func NewInternalError(err error, message ...any) *Error {
 	if len(message) == 0 {
-		message[0] = defaultInternalErrorMsg
+		message = append(message, defaultInternalErrorMsg)
 	}
 	return newError(http.StatusInternalServerError, err, message[0])
 }

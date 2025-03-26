@@ -97,14 +97,35 @@ func (a *App) SetupRoutes(ctx context.Context) {
 		events := apiGroup.Group("/events")
 		{
 			// Получить все события
-			events.GET("", nil)
-			// events.GET("", eventsHandler.ListEvents)
-			// events.GET("/:id", eventsHandler.GetEvent)
-			// events.POST("", eventsHandler.CreateEvent)
+			events.GET(
+				"",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).List),
+			)
+
+			events.GET(
+				"/:id",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).Get),
+			)
+			events.POST(
+				"",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).Create),
+			)
 
 			// these to with admin
-			// events.PATCH("/:id", eventsHandler.UpdateEvent)
-			// events.DELETE("/:id", eventsHandler.DeleteEvent)
+			// TODO: add admin check
+			events.PATCH(
+				"/:id",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).Update),
+			)
+			events.DELETE(
+				"/:id",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).Delete),
+			)
 		}
 	}
 }
