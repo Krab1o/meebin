@@ -8,31 +8,31 @@ import (
 )
 
 var (
-	ErrNotFound    = errors.New("[SERVICE] Item not found\n%w")
-	ErrUnautorized = errors.New("[SERVICE] Unauthorized\n%w")
-	ErrInternal    = errors.New("[SERVICE] Internal Error\n%w")
-	ErrDuplicate   = errors.New("[SERVICE] Item already exists\n%w")
-	ErrForbidden   = errors.New("[SERVICE] Forbidden\n%w")
-	ErrNoUpdate    = errors.New("[SERVICE] No fields to update\n%w")
+	ErrNotFound    = errors.New("[SERVICE] Item not found")
+	ErrUnautorized = errors.New("[SERVICE] Unauthorized")
+	ErrInternal    = errors.New("[SERVICE] Internal Error")
+	ErrDuplicate   = errors.New("[SERVICE] Item already exists")
+	ErrForbidden   = errors.New("[SERVICE] Forbidden")
+	ErrNoUpdate    = errors.New("[SERVICE] No fields to update")
 )
 
 func NewNotFoundError(err error, messages ...string) error {
-	return fmt.Errorf(ErrNotFound.Error(), err)
+	return fmt.Errorf("%w\n%v", ErrNotFound, err)
 }
 func NewUnauthorizedError(err error, messages ...string) error {
-	return fmt.Errorf(ErrUnautorized.Error(), err)
+	return fmt.Errorf("%w\n%v", ErrUnautorized, err)
 }
 func NewInternalError(err error, messages ...string) error {
-	return fmt.Errorf(ErrInternal.Error(), err)
+	return fmt.Errorf("%w\n%v", ErrInternal, err)
 }
 func NewDuplicateError(err error, messages ...string) error {
-	return fmt.Errorf(ErrDuplicate.Error(), err)
+	return fmt.Errorf("%w\n%v", ErrDuplicate, err)
 }
 func NewForbiddenError(err error, messages ...string) error {
-	return fmt.Errorf(ErrForbidden.Error(), err)
+	return fmt.Errorf("%w\n%v", ErrForbidden, err)
 }
 func NewNoUpdateError(err error) error {
-	return fmt.Errorf(ErrNoUpdate.Error(), err)
+	return fmt.Errorf("%w\n%v", ErrNoUpdate, err)
 }
 
 func ErrorDBToService(

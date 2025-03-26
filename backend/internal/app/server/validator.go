@@ -52,8 +52,7 @@ func ValidatorInit() error {
 		if err != nil {
 			return err
 		}
-
 		return nil
 	}
-	return errors.New("Failed to get gin validator")
+	return errors.New("failed to get gin validator")
 }

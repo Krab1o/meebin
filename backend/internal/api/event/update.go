@@ -16,7 +16,7 @@ import (
 
 func (h *Handler) Update(c *gin.Context) error {
 	ctx := c.Request.Context()
-	userIdUpdating, ok := c.Get(shared.UserIDJsonName)
+	updaterId, ok := c.Get(shared.UserIDJsonName)
 	if !ok {
 		return api.NewInternalError(nil, "Unable to parse userId")
 	}
@@ -37,7 +37,7 @@ func (h *Handler) Update(c *gin.Context) error {
 		return api.NewBadRequestError(err, api.ParseValidationErrors(err))
 	}
 	serviceEvent := convUpdate.UpdatedEventDTOToService(event)
-	updatedEvent, err := h.eventService.Update(ctx, userIdUpdating.(uint64), serviceEvent)
+	updatedEvent, err := h.eventService.Update(ctx, updaterId.(uint64), serviceEvent)
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrNoUpdate):

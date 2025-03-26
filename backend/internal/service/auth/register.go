@@ -53,6 +53,10 @@ func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens,
 	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		userId, err = s.userRepository.AddUser(ctx, repoUser, roleId)
 		if err != nil {
+			// TODO: fix wrong error
+			// log.Println("===")
+			// fmt.Println(errors.Is(err, repository.ErrDuplicate))
+			// log.Println("===")
 			return service.ErrorDBToService(err)
 		}
 		return nil

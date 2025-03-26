@@ -5,8 +5,8 @@ import (
 	smodel "github.com/Krab1o/meebin/internal/model/event/s_model"
 )
 
-func EventServiceToDTO(event *smodel.Event) *dto.BaseEvent {
-	data := EventDataServiceToDTO(event.Data)
+func BaseEventServiceToDTO(event *smodel.Event) *dto.BaseEvent {
+	data := BaseEventDataServiceToDTO(event.Data)
 	return &dto.BaseEvent{
 		Id:     event.Id,
 		Status: event.Status,
@@ -14,7 +14,7 @@ func EventServiceToDTO(event *smodel.Event) *dto.BaseEvent {
 	}
 }
 
-func EventDataServiceToDTO(data *smodel.EventData) *dto.BaseEventData {
+func BaseEventDataServiceToDTO(data *smodel.EventData) *dto.BaseEventData {
 	return &dto.BaseEventData{
 		Latitude:     data.Latitude,
 		Longtitude:   data.Longtitude,

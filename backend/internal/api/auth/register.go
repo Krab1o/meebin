@@ -39,6 +39,9 @@ func (h *Handler) Register(c *gin.Context) error {
 	serviceUser := convUser.NewUserDTOToService(newUser)
 	tokens, err := h.authService.Register(ctx, serviceUser)
 	if err != nil {
+		// log.Println("+++")
+		// fmt.Println(errors.Is(err, service.ErrDuplicate))
+		// log.Println("+++")
 		switch {
 		case errors.Is(err, service.ErrDuplicate):
 			return api.NewDuplicateError(err, "User already exists")

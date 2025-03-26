@@ -31,7 +31,7 @@ func (h *Handler) Get(c *gin.Context) error {
 		}
 	}
 	event.Id = uint64(eventId)
-	dtoUser := converter.EventServiceToDTO(event)
+	dtoUser := converter.BaseEventServiceToDTO(event)
 	c.JSON(http.StatusOK, dtoUser)
 	return nil
 }
