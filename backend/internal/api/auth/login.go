@@ -12,9 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: add login DTO
-// TODO: add separated login credentials
-
 // @Tags			Auth
 // @Summary		Login
 // @Schemes		http

@@ -12,8 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: create DTOs
-// TODO: create handlers
 // @Tags			Event
 // @Summary		Creates event
 // @Schemes		http

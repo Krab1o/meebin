@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//TODO: change returning status for events in the system
+//TODO: change returning EventStatus from integer to string for events in the system
 
 // @Tags			Event
 // @Summary		Listing events

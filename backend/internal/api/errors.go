@@ -21,13 +21,11 @@ import (
 // in handler error should be asserted as service error and then dependent on
 // its code it should be processed in each handler corresponding its requirements
 
-// TODO: remove status codes from all error
-// TODO: switch to errors.Is
+// TODO: split into two error types with embedded basic error and its methods.
+// Kind of inheritance with different message field
 
 const defaultInternalErrorMsg = "Internal Error"
 
-// TODO: split into two error types with embedded basic error and its methods.
-// Kind of inheritance with different message field
 type Error struct {
 	StatusCode int   `json:"-"`
 	Message    any   `json:"message"`

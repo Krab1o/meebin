@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: replace error messages with strings
 const (
 	envPath = ".env"
 )

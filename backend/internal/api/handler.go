@@ -16,6 +16,7 @@ func MakeHandler(h Handler) gin.HandlerFunc {
 			fmt.Println(err)
 			c.Abort()
 			var apiError *Error
+			//TODO: add validation type error
 			if errors.As(err, &apiError) {
 				c.JSON(apiError.StatusCode, apiError)
 				return
