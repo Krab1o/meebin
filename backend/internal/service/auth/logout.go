@@ -7,7 +7,7 @@ import (
 )
 
 func (s *serv) Logout(ctx context.Context, sessionId uint64) error {
-	err := s.sessionRepo.DeleteSession(ctx, nil, sessionId)
+	err := s.sessionRepository.DeleteSessionById(ctx, sessionId)
 	if err != nil {
 		return service.NewInternalError(err)
 	}

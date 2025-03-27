@@ -6,8 +6,8 @@ import (
 
 	converter "github.com/Krab1o/meebin/internal/converter/service/user"
 	"github.com/Krab1o/meebin/internal/model"
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
-	smodel "github.com/Krab1o/meebin/internal/model/s_model"
+	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
+	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 	"github.com/Krab1o/meebin/internal/service"
 	authHelper "github.com/Krab1o/meebin/internal/service/auth/helper"
 	"github.com/Krab1o/meebin/internal/shared"
@@ -22,7 +22,6 @@ func registrationRole(email string) []model.Role {
 	}
 }
 
-// TODO: add error messages
 func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens, error) {
 	hashedBytes, err := bcrypt.GenerateFromPassword(
 		[]byte(user.Creds.Password),
@@ -44,24 +43,31 @@ func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens,
 	repoUser := converter.UserServiceToRepo(user)
 
 	// TODO: add multiple roles
-	roleId, err := s.roleRepo.GetRolesByTitle(ctx, nil, user.Roles)
-	if err != nil {
-		return nil, service.ErrorDBToService(err)
-	}
-	// TODO: add transaction
-	userId, err := s.userRepo.AddUser(ctx, nil, repoUser, roleId)
+	roleId, err := s.roleRepository.ListRolesByTitles(ctx, user.Roles)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}
 
+	var userId uint64
+	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
+		userId, err = s.userRepository.AddUser(ctx, repoUser, roleId)
+		if err != nil {
+			return service.ErrorDBToService(err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	// Creating database row with session
 	timeNow := time.Now()
-	refreshExpirationTime := timeNow.Add(time.Duration(s.jwtConf.RefreshTimeout()) * time.Hour)
+	refreshExpirationTime := timeNow.Add(time.Duration(s.jwtConfig.RefreshTimeout()) * time.Hour)
 	repoSession := &rmodel.Session{
 		UserId:         userId,
 		ExpirationTime: refreshExpirationTime,
 	}
-	sessionId, err := s.sessionRepo.AddSession(ctx, nil, repoSession)
+	sessionId, err := s.sessionRepository.AddSession(ctx, repoSession)
 	if err != nil {
 		return nil, service.ErrorDBToService(err)
 	}
@@ -73,7 +79,7 @@ func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens,
 		},
 		refreshExpirationTime,
 		timeNow,
-		s.jwtConf.Secret(),
+		s.jwtConfig.Secret(),
 	)
 	if err != nil {
 		return nil, service.NewInternalError(err)
@@ -87,8 +93,8 @@ func (s *serv) Register(ctx context.Context, user *smodel.User) (*smodel.Tokens,
 			Roles:     user.Roles,
 		},
 		timeNow,
-		s.jwtConf.Secret(),
-		s.jwtConf.AccessTimeout(),
+		s.jwtConfig.Secret(),
+		s.jwtConfig.AccessTimeout(),
 	)
 	if err != nil {
 		return nil, service.NewInternalError(err)

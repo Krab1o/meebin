@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:17
+    container_name: meebin_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
+    ports: 
+      - ${PG_PORT}:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  server:
+    container_name: meebin_server_bin
+    build:
+      context: .
+      dockerfile: Dockerfile.bin
+    depends_on:
+      - db
+    ports:
+      - ${HTTP_PORT:-8080}:${HTTP_PORT:-8080}
+    restart: unless-stopped
+
+  migrator:
+    container_name: migrator
+    build:
+      context: .
+      dockerfile: Dockerfile.migration
+    restart: on-failure
+
+volumes:
+  postgres_data:
+    

@@ -73,31 +73,59 @@ func (a *App) SetupRoutes(ctx context.Context) {
 			userGroup.GET(
 				"",
 				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.JWTConfig().Secret())),
-				api.MakeHandler(a.serviceProvider.UserHandler(ctx).ListUser),
+				api.MakeHandler(a.serviceProvider.UserHandler(ctx).List),
 			)
 			// Получить пользователя по ID
 			userGroup.GET(
 				"/:id",
 				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.JWTConfig().Secret())),
-				api.MakeHandler(a.serviceProvider.UserHandler(ctx).GetUser),
+				api.MakeHandler(a.serviceProvider.UserHandler(ctx).Get),
 			)
 			// Обновить данные пользователя
 			userGroup.PATCH(
 				"/:id",
 				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.JWTConfig().Secret())),
-				api.MakeHandler(a.serviceProvider.UserHandler(ctx).UpdateUser),
+				api.MakeHandler(a.serviceProvider.UserHandler(ctx).Update),
 			)
 			// Удалить пользователя
 			userGroup.DELETE(
 				"/:id",
 				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.JWTConfig().Secret())),
-				api.MakeHandler(a.serviceProvider.UserHandler(ctx).DeleteUser),
+				api.MakeHandler(a.serviceProvider.UserHandler(ctx).Delete),
 			)
 		}
 		events := apiGroup.Group("/events")
 		{
 			// Получить все события
-			events.GET("", nil)
+			events.GET(
+				"",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).List),
+			)
+
+			events.GET(
+				"/:id",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).Get),
+			)
+			events.POST(
+				"",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).Create),
+			)
+
+			// these to with admin
+			// TODO: add admin check
+			events.PATCH(
+				"/:id",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).Update),
+			)
+			events.DELETE(
+				"/:id",
+				api.MakeHandler(middleware.JWTMiddleware(a.serviceProvider.jwtConfig.Secret())),
+				api.MakeHandler(a.serviceProvider.EventHandler(ctx).Delete),
+			)
 		}
 	}
 }

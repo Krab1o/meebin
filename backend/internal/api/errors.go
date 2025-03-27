@@ -21,8 +21,8 @@ import (
 // in handler error should be asserted as service error and then dependent on
 // its code it should be processed in each handler corresponding its requirements
 
-// TODO: remove status codes from all error
-// TODO: switch to errors.Is
+// TODO: split into two error types with embedded basic error and its methods.
+// Kind of inheritance with different message field
 
 const defaultInternalErrorMsg = "Internal Error"
 
@@ -50,7 +50,7 @@ func newError(statusCode int, err error, message any) *Error {
 
 func NewInternalError(err error, message ...any) *Error {
 	if len(message) == 0 {
-		message[0] = defaultInternalErrorMsg
+		message = append(message, defaultInternalErrorMsg)
 	}
 	return newError(http.StatusInternalServerError, err, message[0])
 }

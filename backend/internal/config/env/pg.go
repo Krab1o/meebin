@@ -24,28 +24,27 @@ type pgConfig struct {
 	DBName   string
 }
 
-// TODO: Add error messages
 func NewPGConfig() (config.PGConfig, error) {
 
 	host := os.Getenv(pgHostEnvName)
 	if len(host) == 0 {
-		return nil, errors.New(fmt.Sprintf("Empty %s", pgHostEnvName))
+		return nil, errors.New(fmt.Sprintf("empty %s", pgHostEnvName))
 	}
 	port := os.Getenv(pgPortEnvName)
 	if len(host) == 0 {
-		return nil, errors.New(fmt.Sprintf("Empty %s", pgPortEnvName))
+		return nil, errors.New(fmt.Sprintf("empty %s", pgPortEnvName))
 	}
 	user := os.Getenv(pgUserEnvName)
 	if len(host) == 0 {
-		return nil, errors.New(fmt.Sprintf("Empty %s", pgUserEnvName))
+		return nil, errors.New(fmt.Sprintf("empty %s", pgUserEnvName))
 	}
 	password := os.Getenv(pgPasswordEnvName)
 	if len(host) == 0 {
-		return nil, errors.New(fmt.Sprintf("Empty %s", pgPasswordEnvName))
+		return nil, errors.New(fmt.Sprintf("empty %s", pgPasswordEnvName))
 	}
 	dbname := os.Getenv(pgDatabaseEnvName)
 	if len(host) == 0 {
-		return nil, errors.New(fmt.Sprintf("Empty %s", pgDatabaseEnvName))
+		return nil, errors.New(fmt.Sprintf("empty %s", pgDatabaseEnvName))
 	}
 
 	return &pgConfig{

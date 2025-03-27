@@ -14,25 +14,7 @@ definitions:
     required:
     - accessToken
     type: object
-  dto.BaseUser:
-    description: BaseUser-part of a list-of-users requests
-    properties:
-      creds:
-        $ref: '#/definitions/dto.Creds'
-      id:
-        example: 42
-        type: integer
-      personalData:
-        $ref: '#/definitions/dto.PersonalData'
-      roles:
-        description: Roles' array
-        items:
-          type: string
-        type: array
-      stats:
-        $ref: '#/definitions/dto.Stats'
-    type: object
-  dto.Creds:
+  dto.BaseCreds:
     description: BaseUser credentials
     properties:
       email:
@@ -50,7 +32,162 @@ definitions:
         minLength: 3
         type: string
     type: object
-  dto.NewCreds:
+  dto.BaseEvent:
+    properties:
+      data:
+        $ref: '#/definitions/dto.BaseEventData'
+      id:
+        example: 42
+        type: integer
+      status:
+        $ref: '#/definitions/model.EventStatus'
+    required:
+    - data
+    - id
+    - status
+    type: object
+  dto.BaseEventData:
+    properties:
+      caller_id:
+        example: 42
+        type: integer
+      description:
+        example: Бла-бла-бла
+        type: string
+      latitude:
+        example: 42.881
+        type: number
+      longtitude:
+        example: 45.254
+        type: number
+      time_called:
+        format: date-time
+        type: string
+      time_utilized:
+        format: date-time
+        type: string
+      title:
+        example: Ужасное загрязнение
+        type: string
+      utilizator_id:
+        example: 42
+        type: integer
+    required:
+    - caller_id
+    - description
+    - latitude
+    - longtitude
+    - time_called
+    - title
+    type: object
+  dto.BasePersonalData:
+    description: BaseUser personal data
+    properties:
+      birthDate:
+        format: date-time
+        type: string
+      city:
+        example: Vladivostok
+        type: string
+      givenName:
+        example: Ivan
+        type: string
+      patronymic:
+        example: Ivanovich
+        type: string
+      surname:
+        example: Ivanov
+        type: string
+    type: object
+  dto.BaseStats:
+    description: BaseUser statistics
+    properties:
+      rating:
+        type: number
+      reportCount:
+        type: integer
+      utilizeCount:
+        type: integer
+    type: object
+  dto.BaseUser:
+    description: BaseUser-part of a list-of-users requests
+    properties:
+      creds:
+        $ref: '#/definitions/dto.BaseCreds'
+      id:
+        example: 42
+        type: integer
+      personalData:
+        $ref: '#/definitions/dto.BasePersonalData'
+      roles:
+        description: Roles' array
+        items:
+          type: string
+        type: array
+      stats:
+        $ref: '#/definitions/dto.BaseStats'
+    type: object
+  dto.IdResponse:
+    properties:
+      id:
+        example: 42
+        type: integer
+    type: object
+  dto.LoginCreds:
+    properties:
+      email:
+        example: user123@example.com
+        format: email
+        type: string
+      password:
+        example: Password123
+        format: password
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.NewEvent:
+    properties:
+      data:
+        $ref: '#/definitions/dto.NewEventData'
+      id:
+        example: 42
+        type: integer
+    required:
+    - data
+    - id
+    type: object
+  dto.NewEventData:
+    properties:
+      description:
+        example: Бла-бла-бла
+        type: string
+      latitude:
+        example: 42.881
+        type: number
+      longtitude:
+        example: 45.254
+        type: number
+      title:
+        example: Ужасное загрязнение
+        type: string
+    required:
+    - description
+    - latitude
+    - longtitude
+    - title
+    type: object
+  dto.RefreshToken:
+    properties:
+      refreshToken:
+        description: Should be a JWT refresh-token
+        type: string
+    required:
+    - refreshToken
+    type: object
+  dto.RegisterCreds:
     description: New user's credentials
     properties:
       email:
@@ -72,7 +209,7 @@ definitions:
     - password
     - username
     type: object
-  dto.NewPersonalData:
+  dto.RegisterPersonalData:
     description: New user's personal data
     properties:
       birthDate:
@@ -99,43 +236,16 @@ definitions:
     - patronymic
     - surname
     type: object
-  dto.NewUser:
+  dto.RegisterUser:
     description: New registrating user structure
     properties:
       creds:
-        $ref: '#/definitions/dto.NewCreds'
+        $ref: '#/definitions/dto.RegisterCreds'
       personalData:
-        $ref: '#/definitions/dto.NewPersonalData'
+        $ref: '#/definitions/dto.RegisterPersonalData'
     required:
     - creds
     - personalData
-    type: object
-  dto.PersonalData:
-    description: BaseUser personal data
-    properties:
-      birthDate:
-        format: date-time
-        type: string
-      city:
-        example: Vladivostok
-        type: string
-      givenName:
-        example: Ivan
-        type: string
-      patronymic:
-        example: Ivanovich
-        type: string
-      surname:
-        example: Ivanov
-        type: string
-    type: object
-  dto.RefreshToken:
-    properties:
-      refreshToken:
-        description: Should be a JWT refresh-token
-        type: string
-    required:
-    - refreshToken
     type: object
   dto.ResponseTokens:
     properties:
@@ -149,17 +259,7 @@ definitions:
     - accessToken
     - refreshToken
     type: object
-  dto.Stats:
-    description: BaseUser statistics
-    properties:
-      rating:
-        type: number
-      reportCount:
-        type: integer
-      utilizeCount:
-        type: integer
-    type: object
-  dto.UpdatedCreds:
+  dto.UpdateCreds:
     description: Credentials which will be updated
     properties:
       email:
@@ -177,7 +277,44 @@ definitions:
         minLength: 3
         type: string
     type: object
-  dto.UpdatedPersonalData:
+  dto.UpdateEvent:
+    properties:
+      data:
+        $ref: '#/definitions/dto.UpdateEventData'
+      id:
+        example: 42
+        type: integer
+      status:
+        $ref: '#/definitions/model.EventStatus'
+    type: object
+  dto.UpdateEventData:
+    properties:
+      caller_id:
+        example: 42
+        type: integer
+      description:
+        example: Бла-бла-бла
+        type: string
+      latitude:
+        example: 42.881
+        type: number
+      longtitude:
+        example: 45.254
+        type: number
+      time_called:
+        format: date-time
+        type: string
+      time_utilized:
+        format: date-time
+        type: string
+      title:
+        example: Ужасное загрязнение
+        type: string
+      utilizator_id:
+        example: 42
+        type: integer
+    type: object
+  dto.UpdatePersonalData:
     description: Personal data which will be updated
     properties:
       birthDate:
@@ -198,17 +335,23 @@ definitions:
         example: Ivanov
         type: string
     type: object
-  dto.UpdatedUser:
+  dto.UpdateUser:
     description: Entity which will be updated
     properties:
       creds:
-        $ref: '#/definitions/dto.UpdatedCreds'
+        $ref: '#/definitions/dto.UpdateCreds'
       id:
         example: 42
         type: integer
       personalData:
-        $ref: '#/definitions/dto.UpdatedPersonalData'
+        $ref: '#/definitions/dto.UpdatePersonalData'
     type: object
+  model.EventStatus:
+    enum:
+    - 1
+    type: integer
+    x-enum-varnames:
+    - StatusOnModeration
 host: localhost:8080
 info:
   contact:
@@ -226,10 +369,10 @@ paths:
       parameters:
       - description: Login info
         in: body
-        name: UserCreds
+        name: LoginCreds
         required: true
         schema:
-          $ref: '#/definitions/dto.Creds'
+          $ref: '#/definitions/dto.LoginCreds'
       produces:
       - application/json
       responses:
@@ -333,7 +476,7 @@ paths:
         name: UserData
         required: true
         schema:
-          $ref: '#/definitions/dto.NewUser'
+          $ref: '#/definitions/dto.RegisterUser'
       produces:
       - application/json
       responses:
@@ -356,6 +499,194 @@ paths:
       summary: Registration
       tags:
       - Auth
+  /events:
+    get:
+      consumes:
+      - application/json
+      description: Returns an array of events
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.BaseEvent'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Listing events
+      tags:
+      - Event
+    post:
+      consumes:
+      - application/json
+      description: Creates a new event in the system
+      parameters:
+      - description: New Event Info
+        in: body
+        name: EventData
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewEvent'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.IdResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Creates event
+      tags:
+      - Event
+  /events/{event_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an event from the system
+      parameters:
+      - description: Event ID
+        in: path
+        name: event_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Deletes event
+      tags:
+      - Event
+    get:
+      consumes:
+      - application/json
+      description: Returns event by ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: event_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BaseEvent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Get event by ID
+      tags:
+      - Event
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Updates event's fields specified in the body.
+        Redundant fields ignored.
+        If the field not specified, it is not updated
+      parameters:
+      - description: Updated event ID
+        in: path
+        name: event_id
+        required: true
+        type: integer
+      - description: Updated event fields
+        in: body
+        name: UpdatedEntity
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateEvent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BaseEvent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/api.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - jwtToken: []
+      summary: Updates event
+      tags:
+      - Event
   /users:
     get:
       consumes:
@@ -476,14 +807,14 @@ paths:
         name: UpdatedEntity
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdatedUser'
+          $ref: '#/definitions/dto.UpdateUser'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.UpdatedUser'
+            $ref: '#/definitions/dto.BaseUser'
         "400":
           description: Bad Request
           schema:
@@ -506,7 +837,7 @@ paths:
             $ref: '#/definitions/api.Error'
       security:
       - jwtToken: []
-      summary: Update user
+      summary: Updates user
       tags:
       - User
 produces:

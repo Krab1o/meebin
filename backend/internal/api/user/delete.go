@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/Krab1o/meebin/internal/api"
 	"github.com/Krab1o/meebin/internal/service"
@@ -24,17 +25,27 @@ import (
 // @Failure		404	{object}	api.Error
 // @Failure		500	{object}	api.Error
 // @Router			/users/{user_id} [delete]
-func (h *Handler) DeleteUser(c *gin.Context) error {
+func (h *Handler) Delete(c *gin.Context) error {
 	ctx := c.Request.Context()
-	id, ok := c.Get(shared.UserIDJsonName)
+	deleterId, ok := c.Get(shared.UserIDJsonName)
 	if !ok {
 		return api.NewInternalError(nil)
 	}
-	err := h.userService.Delete(ctx, id.(uint64))
+	paramId, ok := c.Params.Get(api.ParamId)
+	if !ok {
+		return api.NewInternalError(nil, "Unable to parse query param")
+	}
+	userIdToDelete, err := strconv.Atoi(paramId)
+	if err != nil {
+		return api.NewInternalError(nil, "Unable to convert query param")
+	}
+	err = h.userService.Delete(ctx, deleterId.(uint64), uint64(userIdToDelete))
 	if err != nil {
 		switch {
 		case errors.Is(err, service.ErrNotFound):
 			return api.NewNotFoundError(err, "Not found user to delete")
+		case errors.Is(err, service.ErrForbidden):
+			return api.NewForbiddenError(err, "Deletion forbidden")
 		default:
 			return api.NewInternalError(err)
 		}

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/Krab1o/meebin/internal/api"
-	convUser "github.com/Krab1o/meebin/internal/converter/api/user"
-	"github.com/Krab1o/meebin/internal/model/dto"
+	convUser "github.com/Krab1o/meebin/internal/converter/api/user/base"
+	"github.com/Krab1o/meebin/internal/model/user/dto"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,9 +20,9 @@ import (
 // @Failure		401	{object}	api.Error
 // @Failure		500	{object}	api.Error
 // @Router			/users [get]
-func (h *Handler) ListUser(c *gin.Context) error {
+func (h *Handler) List(c *gin.Context) error {
 	ctx := c.Request.Context()
-	users, err := h.userService.ListUser(ctx)
+	users, err := h.userService.List(ctx)
 	if err != nil {
 		switch {
 		default:

@@ -1,16 +1,18 @@
 package auth
 
 import (
+	"github.com/Krab1o/meebin/internal/client/db"
 	"github.com/Krab1o/meebin/internal/config"
 	"github.com/Krab1o/meebin/internal/repository"
 	"github.com/Krab1o/meebin/internal/service"
 )
 
 type serv struct {
-	userRepo    repository.UserRepository
-	sessionRepo repository.SessionRepository
-	roleRepo    repository.RoleRepository
-	jwtConf     config.JWTConfig
+	userRepository    repository.UserRepository
+	sessionRepository repository.SessionRepository
+	roleRepository    repository.RoleRepository
+	jwtConfig         config.JWTConfig
+	txManager         db.TxManager
 }
 
 func NewService(
@@ -18,11 +20,13 @@ func NewService(
 	sessionRepository repository.SessionRepository,
 	roleRepository repository.RoleRepository,
 	jwtConfig config.JWTConfig,
+	txManager db.TxManager,
 ) service.AuthService {
 	return &serv{
-		userRepo:    userRepository,
-		sessionRepo: sessionRepository,
-		roleRepo:    roleRepository,
-		jwtConf:     jwtConfig,
+		userRepository:    userRepository,
+		sessionRepository: sessionRepository,
+		roleRepository:    roleRepository,
+		jwtConfig:         jwtConfig,
+		txManager:         txManager,
 	}
 }

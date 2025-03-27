@@ -8,6 +8,9 @@ import (
 	apiEvent "github.com/Krab1o/meebin/internal/api/event"
 	apiUser "github.com/Krab1o/meebin/internal/api/user"
 	"github.com/Krab1o/meebin/internal/app/closer"
+	"github.com/Krab1o/meebin/internal/client/db"
+	"github.com/Krab1o/meebin/internal/client/db/pg"
+	"github.com/Krab1o/meebin/internal/client/db/transaction"
 	"github.com/Krab1o/meebin/internal/config"
 	"github.com/Krab1o/meebin/internal/config/env"
 	"github.com/Krab1o/meebin/internal/repository"
@@ -19,7 +22,6 @@ import (
 	servAuth "github.com/Krab1o/meebin/internal/service/auth"
 	servEvent "github.com/Krab1o/meebin/internal/service/event"
 	servUser "github.com/Krab1o/meebin/internal/service/user"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type serviceProvider struct {
@@ -27,7 +29,8 @@ type serviceProvider struct {
 	httpConfig config.HTTPConfig
 	jwtConfig  config.JWTConfig
 
-	pgPool *pgxpool.Pool
+	dbClient  db.Client
+	txManager db.TxManager
 
 	userRepo    repository.UserRepository
 	eventRepo   repository.EventRepository
@@ -73,69 +76,63 @@ func (s *serviceProvider) JWTConfig() config.JWTConfig {
 	if s.jwtConfig == nil {
 		cfg, err := env.NewJWTConfig()
 		if err != nil {
-			log.Fatal("Failed to setup jwtConfig")
+			log.Fatal("failed to setup jwtConfig")
 		}
 		s.jwtConfig = cfg
 	}
 	return s.jwtConfig
 }
 
-func (s *serviceProvider) PGPool(ctx context.Context) *pgxpool.Pool {
-	if s.pgPool == nil {
-		pool, err := pgxpool.New(ctx, s.pgConfig.DSN())
+func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
+	if s.dbClient == nil {
+		client, err := pg.New(ctx, s.PGConfig().DSN())
 		if err != nil {
-			log.Fatalf("Failed to connect to DB: %v", err)
+			log.Fatalf("failed to connect to DB: %v", err)
 		}
-		closer.Add(func() error {
-			pool.Close()
-			return nil
-		})
-		err = pool.Ping(ctx)
+
+		err = client.DB().Ping(ctx)
 		if err != nil {
-			log.Fatalf("DB is not reachable, %v", err)
+			log.Fatalf("db is not reachable, %v", err)
 		}
-		s.pgPool = pool
+
+		closer.Add(client.Close)
+
+		s.dbClient = client
 	}
-	return s.pgPool
+	return s.dbClient
 }
 
-// 	sessionRepository := repoSession.NewRepository(pool)
-// 	roleRepository := repoRole.NewRepository(pool)
-// 	authService := servAuth.NewService(
-// 		userRepository,
-// 		sessionRepository,
-// 		roleRepository,
-// 		jwtConfig,
-// 	)
-// 	userService := servUser.NewService(userRepository)
-
-// 	authHandler := apiAuth.NewHandler(authService)
-// 	userHandler := apiUser.NewHandler(userService)
+func (s *serviceProvider) TxManager(ctx context.Context) db.TxManager {
+	if s.txManager == nil {
+		s.txManager = transaction.NewTransactionManager(s.DBClient(ctx).DB())
+	}
+	return s.txManager
+}
 
 func (s *serviceProvider) UserRepository(ctx context.Context) repository.UserRepository {
 	if s.userRepo == nil {
-		s.userRepo = repoUser.NewRepository(s.pgPool)
+		s.userRepo = repoUser.NewRepository(s.DBClient(ctx))
 	}
 	return s.userRepo
 }
 
 func (s *serviceProvider) EventRepository(ctx context.Context) repository.EventRepository {
 	if s.eventRepo == nil {
-		s.eventRepo = repoEvent.NewRepository(s.pgPool)
+		s.eventRepo = repoEvent.NewRepository(s.DBClient(ctx))
 	}
 	return s.eventRepo
 }
 
 func (s *serviceProvider) SessionRepository(ctx context.Context) repository.SessionRepository {
 	if s.sessionRepo == nil {
-		s.sessionRepo = repoSession.NewRepository(s.pgPool)
+		s.sessionRepo = repoSession.NewRepository(s.DBClient(ctx))
 	}
 	return s.sessionRepo
 }
 
 func (s *serviceProvider) RoleRepository(ctx context.Context) repository.RoleRepository {
 	if s.roleRepo == nil {
-		s.roleRepo = repoRole.NewRepository(s.pgPool)
+		s.roleRepo = repoRole.NewRepository(s.DBClient(ctx))
 	}
 	return s.roleRepo
 }
@@ -147,6 +144,7 @@ func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
 			s.SessionRepository(ctx),
 			s.RoleRepository(ctx),
 			s.JWTConfig(),
+			s.TxManager(ctx),
 		)
 	}
 	return s.authService
@@ -154,14 +152,20 @@ func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
 
 func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
 	if s.userService == nil {
-		s.userService = servUser.NewService(s.UserRepository(ctx))
+		s.userService = servUser.NewService(
+			s.UserRepository(ctx),
+			s.TxManager(ctx),
+		)
 	}
 	return s.userService
 }
 
 func (s *serviceProvider) EventService(ctx context.Context) service.EventService {
 	if s.eventService == nil {
-		s.eventService = servEvent.NewService(s.EventRepository(ctx))
+		s.eventService = servEvent.NewService(
+			s.EventRepository(ctx),
+			s.TxManager(ctx),
+		)
 	}
 	return s.eventService
 }
@@ -180,7 +184,7 @@ func (s *serviceProvider) UserHandler(ctx context.Context) *apiUser.Handler {
 	return s.userHandler
 }
 
-func (s *serviceProvider) Eventhandler(ctx context.Context) *apiEvent.Handler {
+func (s *serviceProvider) EventHandler(ctx context.Context) *apiEvent.Handler {
 	if s.eventHandler == nil {
 		s.eventHandler = apiEvent.NewHandler(s.EventService(ctx))
 	}

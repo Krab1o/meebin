@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Krab1o/meebin/internal/model"
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
-	"github.com/jackc/pgx/v5"
+	rmodelEvent "github.com/Krab1o/meebin/internal/model/event/r_model"
+	rmodelUser "github.com/Krab1o/meebin/internal/model/user/r_model"
 )
 
 func Col(table, column string) string {
@@ -14,40 +14,36 @@ func Col(table, column string) string {
 }
 
 type UserRepository interface {
-	AddUser(ctx context.Context, tx pgx.Tx, user *rmodel.User, roleId uint64) (uint64, error)
-	GetCredsByEmail(ctx context.Context, tx pgx.Tx, email string) (*rmodel.User, error)
-	GetById(ctx context.Context, tx pgx.Tx, id uint64) (*rmodel.User, error)
-	DeleteById(ctx context.Context, tx pgx.Tx, id uint64) error
-	List(ctx context.Context, tx pgx.Tx) ([]rmodel.User, error)
-	UpdateStats(ctx context.Context, tx pgx.Tx, userId uint64, stats *rmodel.Stats) error
-	UpdateCreds(ctx context.Context, tx pgx.Tx, userId uint64, creds *rmodel.Creds) error
+	AddUser(ctx context.Context, user *rmodelUser.User, roleId uint64) (uint64, error)
+	GetCredsByEmail(ctx context.Context, email string) (*rmodelUser.User, error)
+	GetUserById(ctx context.Context, userId uint64) (*rmodelUser.User, error)
+	DeleteUserById(ctx context.Context, userId uint64) error
+	List(ctx context.Context) ([]rmodelUser.User, error)
+	UpdateStats(ctx context.Context, userId uint64, stats *rmodelUser.Stats) error
+	UpdateCreds(ctx context.Context, userId uint64, creds *rmodelUser.Creds) error
 	UpdatePersonalData(
 		ctx context.Context,
-		tx pgx.Tx,
 		userId uint64,
-		data *rmodel.PersonalData,
+		data *rmodelUser.PersonalData,
 	) error
 }
 type SessionRepository interface {
-	AddSession(context.Context, pgx.Tx, *rmodel.Session) (uint64, error)
-	DeleteSession(context.Context, pgx.Tx, uint64) error
-	FindSession(context.Context, pgx.Tx, uint64) (*rmodel.Session, error)
+	AddSession(ctx context.Context, session *rmodelUser.Session) (uint64, error)
+	DeleteSessionById(ctx context.Context, sessionId uint64) error
+	FindSessionById(ctx context.Context, sessionId uint64) (*rmodelUser.Session, error)
 }
 
 type RoleRepository interface {
-	GetRolesByTitle(context.Context, pgx.Tx, []model.Role) (uint64, error)
-	GetUserRolesById(ctx context.Context, tx pgx.Tx, userId uint64) ([]model.Role, error)
+	ListRolesByTitles(ctx context.Context, roles []model.Role) (uint64, error)
+	ListUserRolesById(ctx context.Context, userId uint64) ([]model.Role, error)
 }
 
-// type UserDataRepository interface {
-// }
-// type UserStatsRepository interface {
-// }
-
 type EventRepository interface {
-	// Add(*event.Event) (int64, error)
-	// GetById(id int64) (*event.Event, error)
-	// List() ([]event.Event, error)
-	// Update(id int64) error
-	// Delete(id int64) error
+	AddEvent(ctx context.Context, newEvent *rmodelEvent.Event) (uint64, error)
+	GetEventById(ctx context.Context, eventId uint64) (*rmodelEvent.Event, error)
+	GetCallerIdById(ctx context.Context, eventId uint64) (uint64, error)
+	List(ctx context.Context) ([]rmodelEvent.Event, error)
+	UpdateEvent(ctx context.Context, eventId uint64, event *rmodelEvent.Event) error
+	UpdateEventData(ctx context.Context, eventId uint64, eventData *rmodelEvent.EventData) error
+	DeleteEventById(ctx context.Context, id uint64) error
 }

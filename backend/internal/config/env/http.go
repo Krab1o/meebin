@@ -18,16 +18,14 @@ type httpConfig struct {
 	port string
 }
 
-// TODO: add error messages
 func NewHTTPConfig() (config.HTTPConfig, error) {
 	// host := os.Getenv(httpHostEnvName)
 	// if len(host) == 0 {
 	// 	return nil, errors.New("No env var")
 	// }
 	port := os.Getenv(httpPortEnvName)
-
 	if len(port) == 0 {
-		return nil, errors.New("No env var")
+		return nil, errors.New(fmt.Sprintf("empty %s", httpPortEnvName))
 	}
 
 	return &httpConfig{

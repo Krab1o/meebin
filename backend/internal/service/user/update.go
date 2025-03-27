@@ -3,28 +3,37 @@ package user
 import (
 	"context"
 
-	convUser "github.com/Krab1o/meebin/internal/converter/service/user"
-	smodel "github.com/Krab1o/meebin/internal/model/s_model"
+	converter "github.com/Krab1o/meebin/internal/converter/service/user"
+	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
+	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 	"github.com/Krab1o/meebin/internal/service"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func doUpdate(user *smodel.User) bool {
-	return user.Creds != nil && *user.Creds != smodel.Creds{} ||
-		user.Data != nil && *user.Data != smodel.PersonalData{}
+func doCredsUpdate(user *smodel.User) bool {
+	return user.Creds != nil && *user.Creds != smodel.Creds{}
 }
 
-// TODO: construct map with repository column name
+func doDataUpdate(user *smodel.User) bool {
+	return user.Data != nil && *user.Data != smodel.PersonalData{}
+}
+
 func (s *serv) Update(
 	ctx context.Context,
+	updaterId uint64,
 	user *smodel.User,
-	updatedUserId uint64,
 ) (*smodel.User, error) {
-	if user.Id != updatedUserId {
+	if updaterId != user.Id {
 		return nil, service.NewForbiddenError(nil)
 	}
-	startUpdate := doUpdate(user)
-	if user.Creds != nil && user.Creds != (&smodel.Creds{}) {
+
+	credsUpdate := doCredsUpdate(user)
+	dataUpdate := doDataUpdate(user)
+	if !credsUpdate && !dataUpdate {
+		return nil, service.NewNoUpdateError(nil)
+	}
+
+	if credsUpdate {
 		if user.Creds.Password != "" {
 			hashedBytes, err := bcrypt.GenerateFromPassword(
 				[]byte(user.Creds.Password),
@@ -37,29 +46,33 @@ func (s *serv) Update(
 		}
 	}
 
-	if !startUpdate {
-		return nil, service.NewNoUpdateError(nil)
-	}
+	var updatedRepoUser *rmodel.User
+	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
+		repoUser := converter.UserServiceToRepo(user)
+		var err error
 
-	repoUser := convUser.UserServiceToRepo(user)
-	var err error
-	if user.Creds != nil {
-		err = s.userRepo.UpdateCreds(ctx, nil, user.Id, repoUser.Creds)
-		if err != nil {
-			return nil, service.ErrorDBToService(err)
+		if credsUpdate {
+			err = s.userRepository.UpdateCreds(ctx, user.Id, repoUser.Creds)
+			if err != nil {
+				return service.ErrorDBToService(err)
+			}
 		}
-	}
-	if user.Data != nil {
-		err = s.userRepo.UpdatePersonalData(ctx, nil, user.Id, repoUser.Data)
-		if err != nil {
-			return nil, service.ErrorDBToService(err)
+		if dataUpdate {
+			err = s.userRepository.UpdatePersonalData(ctx, user.Id, repoUser.Data)
+			if err != nil {
+				return service.ErrorDBToService(err)
+			}
 		}
-	}
+		updatedRepoUser, err = s.userRepository.GetUserById(ctx, user.Id)
+		if err != nil {
+			return service.ErrorDBToService(err)
+		}
 
-	newRepoUser, err := s.userRepo.GetById(ctx, nil, user.Id)
+		return nil
+	})
 	if err != nil {
-		return nil, service.ErrorDBToService(err)
+		return nil, err
 	}
-	newUser := convUser.UserRepoToService(newRepoUser)
-	return newUser, nil
+	updatedUser := converter.UserRepoToService(updatedRepoUser)
+	return updatedUser, err
 }

@@ -1,14 +1,14 @@
 package user
 
 import (
-	"github.com/Krab1o/meebin/internal/repository"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/Krab1o/meebin/internal/client/db"
+	rep "github.com/Krab1o/meebin/internal/repository"
 )
 
 type repo struct {
-	db *pgxpool.Pool
+	db db.Client
 }
 
-func NewRepository(db *pgxpool.Pool) repository.UserRepository {
+func NewRepository(db db.Client) rep.UserRepository {
 	return &repo{db: db}
 }

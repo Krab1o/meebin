@@ -1,16 +1,16 @@
 package user
 
 import (
-	"github.com/Krab1o/meebin/internal/model"
-	rmodel "github.com/Krab1o/meebin/internal/model/r_model"
-	smodel "github.com/Krab1o/meebin/internal/model/s_model"
+	"github.com/Krab1o/meebin/internal/converter"
+	rmodel "github.com/Krab1o/meebin/internal/model/user/r_model"
+	smodel "github.com/Krab1o/meebin/internal/model/user/s_model"
 )
 
 func UserServiceToRepo(user *smodel.User) *rmodel.User {
 	repoCreds := CredsServiceToRepo(user.Creds)
 	repoStats := StatsServiceToRepo(user.Stats)
 	repoData := PersonalDataServiceToRepo(user.Data)
-	repoRoles := RolesServiceToRepo(user.Roles)
+	repoRoles := converter.ConvertRoles(user.Roles)
 	return &rmodel.User{
 		Id:    user.Id,
 		Roles: repoRoles,
@@ -18,17 +18,6 @@ func UserServiceToRepo(user *smodel.User) *rmodel.User {
 		Stats: repoStats,
 		Data:  repoData,
 	}
-}
-
-func RolesServiceToRepo(roles []model.Role) []model.Role {
-	if roles == nil {
-		return nil
-	}
-
-	copiedRoles := make([]model.Role, len(roles))
-	copy(copiedRoles, roles)
-
-	return copiedRoles
 }
 
 func StatsServiceToRepo(stats *smodel.Stats) *rmodel.Stats {

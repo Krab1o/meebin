@@ -2,6 +2,7 @@ package env
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -12,7 +13,7 @@ const (
 	jwtSecretEnvName         = "JWT_SECRET"
 	jwtAccessTimeoutEnvName  = "JWT_ACCESS_TIMEOUT"
 	jwtRefreshTimeoutEnvName = "JWT_REFRESH_TIMEOUT"
-	jwtTimeoutParseError     = "Unable to parse JWT timeout"
+	ErrJWTTimeoutParse       = "unable to parse JWT timeout"
 )
 
 type jwtConfig struct {
@@ -21,28 +22,26 @@ type jwtConfig struct {
 	refreshTimeout int
 }
 
-// TODO: add error messages
-// TODO: move error messages to one place for config
 func NewJWTConfig() (config.JWTConfig, error) {
 	jwt := os.Getenv(jwtSecretEnvName)
 	if len(jwt) == 0 {
-		return nil, errors.New("No env var")
+		return nil, errors.New(fmt.Sprintf("empty %s", jwtSecretEnvName))
 	}
 	accessTime := os.Getenv(jwtAccessTimeoutEnvName)
 	if len(accessTime) == 0 {
-		return nil, errors.New("No env var")
+		return nil, errors.New(fmt.Sprintf("empty %s", jwtAccessTimeoutEnvName))
 	}
 	refreshTime := os.Getenv(jwtRefreshTimeoutEnvName)
 	if len(refreshTime) == 0 {
-		return nil, errors.New("No env var")
+		return nil, errors.New(fmt.Sprintf("empty %s", jwtRefreshTimeoutEnvName))
 	}
 	accessTimeVal, err := strconv.Atoi(accessTime)
 	if err != nil {
-		return nil, errors.New(jwtTimeoutParseError)
+		return nil, errors.New(ErrJWTTimeoutParse)
 	}
 	refreshTimeVal, err := strconv.Atoi(refreshTime)
 	if err != nil {
-		return nil, errors.New(jwtTimeoutParseError)
+		return nil, errors.New(ErrJWTTimeoutParse)
 	}
 	return &jwtConfig{
 		jwtSecret:      []byte(jwt),
@@ -60,5 +59,5 @@ func (c *jwtConfig) AccessTimeout() int {
 }
 
 func (c *jwtConfig) RefreshTimeout() int {
-	return c.accessTimeout
+	return c.refreshTimeout
 }
