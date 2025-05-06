@@ -1,7 +1,7 @@
 
 import type { Route } from "./+types/home"
 import { Link } from "react-router-dom";
-import CleanupRequestsPage from "~/components/trashJournal/trashJounral"
+import CleanupRequestsPage from "~/components/trashJournal/trashJournal"
  
 export function meta({}: Route.MetaArgs) {
   return [
