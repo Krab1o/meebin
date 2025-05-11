@@ -3,6 +3,8 @@ import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+
 
 interface CleanupRequest {
   id: number;
@@ -130,7 +132,10 @@ const CleanupRequestsPage = () => {
             >
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <h3 className="text-xl font-semibold">{request.address}</h3>
+                  <Link to="/test" 
+                    className="text-sm font-medium hover:text-blue-500 hover:underline">  
+                    <h3 className="text-xl font-semibold">{request.address}</h3>
+                  </Link>
                 </CardHeader>
                 <CardContent>
                   <img

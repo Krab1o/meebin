@@ -18,7 +18,7 @@ export function AppSidebar() {
   const navItems = [
     {
       title: "Главная",
-      path: "/",
+      path: "/home",
       icon: Home,
     },
     {
